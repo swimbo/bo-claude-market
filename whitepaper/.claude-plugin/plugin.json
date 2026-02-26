@@ -1,0 +1,9 @@
+{
+  "name": "whitepaper",
+  "version": "0.1.0",
+  "description": "Technical whitepaper authoring plugin — guides users through creating high-quality whitepapers with structured workflows, research, review, and PDF generation.",
+  "author": {
+    "name": "Bo"
+  },
+  "keywords": ["whitepaper", "technical-writing", "documentation", "research", "pdf"]
+}
