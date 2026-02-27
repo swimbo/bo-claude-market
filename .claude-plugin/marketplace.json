@@ -10,6 +10,13 @@
       "version": "0.1.0",
       "description": "Technical whitepaper authoring plugin — guides users through creating high-quality whitepapers with structured workflows, research, review, and PDF generation.",
       "author": {"name": "Bo"}
+    },
+    {
+      "name": "top-10",
+      "source": "./top-10",
+      "version": "0.1.0",
+      "description": "Competitive research plugin — identifies top 10 solutions in any market, deep-dives each, and generates a comprehensive PRD from the findings.",
+      "author": {"name": "Bo"}
     }
   ]
 }
