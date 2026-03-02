@@ -137,18 +137,27 @@ Every visual must include:
 
 For whitepapers authored in markdown:
 
-Architecture diagram (using code block for ASCII or mermaid):
+Architecture diagram (using D2 code block):
 
 ````
-```mermaid
-graph TD
-    A[Client] --> B[API Gateway]
-    B --> C[Auth Service]
-    B --> D[Data Service]
-    C --> E[(Database)]
-    D --> E
+```d2
+client: Client
+gateway: API Gateway
+auth: Auth Service
+data: Data Service
+db: Database {
+  shape: cylinder
+}
+
+client -> gateway
+gateway -> auth
+gateway -> data
+auth -> db
+data -> db
 ```
 ````
+
+To render D2 diagrams to SVG/PNG for embedding: `d2 input.d2 output.svg`
 
 Comparison table:
 
