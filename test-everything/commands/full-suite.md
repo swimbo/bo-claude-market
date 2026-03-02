@@ -1,5 +1,5 @@
 ---
-name: test-everything
+name: full-suite
 description: Full testing workflow — audit gaps, plan strategy, scaffold infrastructure, write tests, run them, and fix until everything passes
 argument-hint: "[path-to-project]"
 allowed-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "Agent"]
