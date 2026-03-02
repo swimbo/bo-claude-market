@@ -17,6 +17,13 @@
       "version": "0.1.0",
       "description": "Competitive research plugin — identifies top 10 solutions in any market, deep-dives each, and generates a comprehensive PRD from the findings.",
       "author": {"name": "Bo"}
+    },
+    {
+      "name": "test-everything",
+      "source": "./test-everything",
+      "version": "0.1.0",
+      "description": "Comprehensive testing toolkit — audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers.",
+      "author": {"name": "Bo"}
     }
   ]
 }
