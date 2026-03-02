@@ -1,6 +1,6 @@
 {
   "name": "test-everything",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Comprehensive testing toolkit: audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers",
   "author": {
     "name": "Bo"

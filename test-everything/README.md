@@ -22,9 +22,10 @@ Tailored to: React + Vitest, Rust `#[test]`, Playwright, k6, Semgrep, axe-core
 
 | Command                             | Description                                                                                     |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `/test-everything:audit`            | Analyze test coverage and produce gap report                                                    |
-| `/test-everything:plan`             | Generate phased testing strategy                                                                |
-| `/test-everything:scaffold <layer>` | Scaffold test infrastructure (unit, integration, e2e, performance, security, accessibility, ci) |
+| `/test-everything:test-audit`            | Analyze test coverage and produce gap report                                                    |
+| `/test-everything:test-plan`             | Generate phased testing strategy                                                                |
+| `/test-everything:test-scaffold <layer>` | Scaffold test infrastructure (unit, integration, e2e, performance, security, accessibility, ci) |
+| `/test-everything:test-full-suite`       | Full workflow: audit, plan, scaffold, write, run, fix until green                               |
 
 ## Agents
 
@@ -35,7 +36,7 @@ Tailored to: React + Vitest, Rust `#[test]`, Playwright, k6, Semgrep, axe-core
 
 ## Skill
 
-The **testing-strategy** skill auto-activates when discussing testing types, strategy, architecture models, or CI/CD testing.
+The **test-strategy** skill auto-activates when discussing testing types, strategy, architecture models, or CI/CD testing.
 
 ## Installation
 

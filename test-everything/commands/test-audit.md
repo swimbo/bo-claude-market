@@ -1,5 +1,5 @@
 ---
-name: audit
+name: test-audit
 description: Analyze a project's current test coverage and identify gaps against comprehensive testing best practices
 argument-hint: "[path-to-project]"
 allowed-tools: ["Read", "Glob", "Grep", "Bash", "Agent"]
@@ -134,4 +134,4 @@ Output a structured report:
 
 * Note if test quality looks low (e.g., many tests but no assertions, snapshot-only tests)
 
-* Reference the testing-strategy skill for detailed guidance on any testing type
+* Reference the test-strategy skill for detailed guidance on any testing type

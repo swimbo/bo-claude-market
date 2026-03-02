@@ -1,5 +1,5 @@
 ---
-name: full-suite
+name: test-full-suite
 description: Full testing workflow — audit gaps, plan strategy, scaffold infrastructure, write tests, run them, and fix until everything passes
 argument-hint: "[path-to-project]"
 allowed-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "Agent"]
@@ -15,7 +15,7 @@ Execute the full testing lifecycle for the project at the given path (or cwd).
 
 ### Phase 1: Audit
 
-Perform the same analysis as `/test-everything:audit`:
+Perform the same analysis as `/test-everything:test-audit`:
 
 1. Detect project type, languages, frameworks
 2. Inventory existing tests and configs
@@ -97,6 +97,6 @@ Once everything is green, output:
 
 * Prefer fixing source code bugs over weakening test assertions
 
-* Use the testing-strategy skill for guidance on any testing type
+* Use the test-strategy skill for guidance on any testing type
 
 * Don't install tools outside the project's preferred stack without asking

@@ -1,5 +1,5 @@
 ---
-name: plan
+name: test-plan
 description: Generate a phased testing strategy and implementation plan tailored to the current project
 argument-hint: "[path-to-project]"
 allowed-tools: ["Read", "Glob", "Grep", "Bash", "Agent"]
@@ -15,7 +15,7 @@ Analyze the project and produce an actionable testing strategy with prioritized 
 
 ### Step 1: Assess Current State
 
-If a `/test-everything:audit` was recently run, use those results. Otherwise, perform a quick assessment:
+If a `/test-everything:test-audit` was recently run, use those results. Otherwise, perform a quick assessment:
 
 * Detect project type, languages, frameworks
 
@@ -126,4 +126,4 @@ Config: [what to configure]
 
 * Include "quick wins" in Phase 1 to build momentum
 
-* Reference the testing-strategy skill for deeper guidance on any testing type
+* Reference the test-strategy skill for deeper guidance on any testing type

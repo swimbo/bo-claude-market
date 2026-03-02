@@ -1,5 +1,5 @@
 ---
-name: scaffold
+name: test-scaffold
 description: Scaffold test files, configurations, and CI pipeline definitions for a specific testing layer
 argument-hint: "<layer> [path-to-project] — layers: unit, integration, e2e, performance, security, accessibility, ci"
 allowed-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash"]
@@ -161,4 +161,4 @@ Detect which CI system the project uses (look for `.github/`, `.gitlab-ci.yml`, 
 
 * Include helpful comments in generated files explaining what each section does
 
-* Reference the testing-strategy skill for deeper context on any testing type
+* Reference the test-strategy skill for deeper context on any testing type
