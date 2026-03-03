@@ -14,7 +14,7 @@ Systematic approach to researching, analyzing, and synthesizing competitive land
 
 ## Core Workflow
 
-The competitive research process follows five sequential phases. Each phase produces a deliverable file.
+The competitive research process follows six sequential phases. Each phase produces a deliverable file.
 
 ### Phase 1: Solution Discovery
 
@@ -82,7 +82,27 @@ For each solution, extract features that:
 
 Write `{area}-unique-features.md` organized by solution, with context on why each feature matters.
 
-### Phase 5: PRD Generation
+### Phase 5: Recommended Pricing
+
+Read all 10 individual reports (focusing on their Pricing sections) and the trends report (Pricing Patterns section). Synthesize a recommended pricing strategy.
+
+Analyze across these dimensions:
+
+* **Market pricing landscape**: Aggregate all competitors' tiers, models, and price points into a comparison
+
+* **Pricing model analysis**: Which models dominate and how users feel about each
+
+* **Price sensitivity insights**: What pricing-related praise and complaints appear in reviews
+
+* **Free tier strategy**: Whether to offer a free plan, with what limits, based on competitive evidence
+
+* **Recommended pricing structure**: Concrete tiers with price ranges and feature allocation
+
+* **Pricing pitfalls to avoid**: Common mistakes identified from user backlash
+
+Write `{area}-recommended-pricing.md` with the complete pricing recommendation.
+
+### Phase 6: PRD Generation
 
 Synthesize the trends and unique features into a product requirements document.
 

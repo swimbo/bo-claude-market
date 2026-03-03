@@ -58,7 +58,15 @@ You will receive:
    - Differentiating features (what sets it apart)
    - Integration ecosystem (what it connects to)
 
-3. **Pricing analysis**: Find current pricing tiers, free plan limitations, and enterprise options. Note any recent pricing changes that generated user reaction.
+3. **Pricing deep dive**: Conduct thorough pricing research. Search for:
+   - All pricing tiers with exact prices (monthly and annual billing)
+   - Per-seat vs flat-rate vs usage-based breakdown
+   - Free plan/trial details and limitations
+   - Enterprise pricing (published or "contact sales" — note which)
+   - Add-on costs (storage, integrations, premium features)
+   - Recent pricing changes and user reaction to them
+   - Price-to-value perception from user reviews
+   - Search queries: `"{product name}" pricing`, `"{product name}" pricing tiers 2026`, `"{product name}" pricing complaints reddit`, `"{product name}" enterprise pricing`
 
 4. **User sentiment — what people love**: Search G2, Capterra, TrustRadius, Reddit, and Hacker News for positive reviews. Look for:
    - Consistently praised features
@@ -87,8 +95,27 @@ Write the report as a markdown file with this structure:
 - **Founded**: [Year]
 - **Headquarters**: [Location]
 - **Target market**: [Who it's for]
-- **Pricing**: [Pricing summary with tiers]
 - **Website**: [URL]
+
+## Pricing
+
+### Pricing Model
+[Freemium / Per-seat / Flat-rate / Usage-based / Hybrid — describe the model]
+
+### Tiers
+
+| Tier | Monthly (per seat) | Annual (per seat) | Key Limits/Features |
+|------|-------------------|-------------------|---------------------|
+| Free | $0 | $0 | [Limits] |
+| [Tier name] | $X | $X | [What's included] |
+| [Tier name] | $X | $X | [What's included] |
+| Enterprise | [Price or "Contact sales"] | — | [What's included] |
+
+### Add-ons & Hidden Costs
+- [Any premium add-ons, storage overages, integration fees, etc.]
+
+### Pricing Perception
+[How do users feel about the pricing? Are there common complaints about value-for-money? Note any recent price increases and backlash.]
 
 ## Features
 

@@ -47,8 +47,27 @@ Solutions were identified by cross-referencing:
 - **Founded**: [Year]
 - **Headquarters**: [Location]
 - **Target market**: [Who it's for]
-- **Pricing**: [Pricing summary with tiers]
 - **Website**: [URL]
+
+## Pricing
+
+### Pricing Model
+[Freemium / Per-seat / Flat-rate / Usage-based / Hybrid — describe the model]
+
+### Tiers
+
+| Tier | Monthly (per seat) | Annual (per seat) | Key Limits/Features |
+|------|-------------------|-------------------|---------------------|
+| Free | $0 | $0 | [Limits] |
+| [Tier name] | $X | $X | [What's included] |
+| [Tier name] | $X | $X | [What's included] |
+| Enterprise | [Price or "Contact sales"] | — | [What's included] |
+
+### Add-ons & Hidden Costs
+- [Any premium add-ons, storage overages, integration fees, etc.]
+
+### Pricing Perception
+[How do users feel about the pricing? Are there common complaints about value-for-money? Note any recent price increases and backlash.]
 
 ## Features
 
@@ -171,6 +190,107 @@ Features found in 7+ of the 10 solutions analyzed:
 ...
 ```
 
+## Recommended Pricing Template
+
+```markdown
+# {Area} — Recommended Pricing Strategy
+
+> Synthesized from pricing analysis of 10 leading solutions
+> Research date: {date}
+
+## Market Pricing Landscape
+
+| Solution | Model | Free Tier | Lowest Paid | Mid Tier | Enterprise | Billing |
+|----------|-------|-----------|-------------|----------|------------|---------|
+| [Name] | [Per-seat/Flat/Usage] | [Yes/No — limits] | [$X/mo] | [$X/mo] | [$X or Contact] | [Monthly/Annual] |
+...
+
+## Pricing Model Analysis
+
+### Dominant Models
+- **[Model type]** — Used by [X]/10 solutions
+  - Pros: [From user reviews]
+  - Cons: [From user reviews]
+  - Best suited for: [Product types]
+
+### Emerging Models
+- [Any newer approaches like usage-based, hybrid, etc.]
+
+## Price Sensitivity Insights
+
+### What Users Appreciate
+- [Pricing aspects praised in reviews with evidence]
+- [E.g., generous free tiers, transparent pricing, fair per-seat costs]
+
+### What Users Resent
+- [Pricing complaints from reviews with evidence]
+- [E.g., essential features gated behind expensive tiers, surprise price hikes, confusing tier structures]
+
+### Price Anchoring
+- **Budget segment**: $[X]-$[Y]/seat/mo — solutions: [list]
+- **Mid-market segment**: $[X]-$[Y]/seat/mo — solutions: [list]
+- **Premium segment**: $[X]-$[Y]/seat/mo — solutions: [list]
+
+## Free Tier Strategy
+
+### Recommendation: [Offer / Don't offer / Freemium with limits]
+
+**Rationale**:
+- [Evidence from competitor analysis]
+- [What free tier limits work well vs frustrate users]
+- [Conversion patterns observed]
+
+### Suggested Free Tier Limits
+| Dimension | Recommended Limit | Rationale |
+|-----------|------------------|-----------|
+| [Users/seats] | [Limit] | [Why] |
+| [Projects/items] | [Limit] | [Why] |
+| [Storage/usage] | [Limit] | [Why] |
+| [Features] | [What to gate] | [Why] |
+
+## Recommended Pricing Structure
+
+### Tier 1: [Name — e.g., "Starter" or "Free"]
+- **Price**: $[X]/seat/mo (annual) / $[X]/seat/mo (monthly)
+- **Target**: [Who this tier is for]
+- **Includes**: [Key features]
+- **Limits**: [What's capped]
+- **Rationale**: [Why this configuration, based on competitive evidence]
+
+### Tier 2: [Name — e.g., "Pro" or "Team"]
+- **Price**: $[X]/seat/mo (annual) / $[X]/seat/mo (monthly)
+- **Target**: [Who this tier is for]
+- **Includes**: [Everything in Tier 1, plus...]
+- **Key unlock**: [The feature that drives upgrades]
+- **Rationale**: [Why this price point, citing competitor benchmarks]
+
+### Tier 3: [Name — e.g., "Business" or "Scale"]
+- **Price**: $[X]/seat/mo (annual) / $[X]/seat/mo (monthly)
+- **Target**: [Who this tier is for]
+- **Includes**: [Everything in Tier 2, plus...]
+- **Key unlock**: [The feature that drives upgrades]
+- **Rationale**: [Why this price point, citing competitor benchmarks]
+
+### Tier 4: [Enterprise]
+- **Price**: [Custom / Contact sales / Starting at $X]
+- **Target**: [Large organizations]
+- **Includes**: [Everything in Tier 3, plus...]
+- **Must include**: [SSO, SAML, audit logs, SLA — based on what competitors offer]
+- **Rationale**: [What enterprise buyers expect based on research]
+
+## Pricing Pitfalls to Avoid
+
+Based on user complaints across the competitive landscape:
+
+1. **[Pitfall]**: [Description with evidence from competitor backlash]
+2. **[Pitfall]**: [Description]
+3. **[Pitfall]**: [Description]
+...
+
+## Sources
+- [Pricing pages and review sources used for this analysis]
+```
+
 ## PRD Template
 
 ```markdown
@@ -271,4 +391,5 @@ that [key differentiator]. Unlike [competitors], [product] [unique value].]
 - Individual solution reports (10 files)
 - `{area}-trends.md` — Cross-solution trend analysis
 - `{area}-unique-features.md` — Standout features analysis
+- `{area}-recommended-pricing.md` — Pricing strategy recommendation
 ```

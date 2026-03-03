@@ -35,11 +35,15 @@ All file paths in subsequent steps are relative to `./research/top-10/`.
 
 Search the web to identify the top 10 solutions in the given area. Use multiple queries to cross-reference:
 
-- `"best {area} software 2026"`
-- `"top {area} tools"`
-- `"G2 best {area}"`
-- `"{area} market leaders"`
-- `"{area} comparison"`
+* `"best {area} software 2026"`
+
+* `"top {area} tools"`
+
+* `"G2 best {area}"`
+
+* `"{area} market leaders"`
+
+* `"{area} comparison"`
 
 Cross-reference across sources (G2, Capterra, Gartner, industry blogs, Reddit). Rank by frequency of appearance, market share data, and review volume.
 
@@ -69,12 +73,17 @@ Wait for all 10 to complete before proceeding.
 
 Read all 10 individual solution reports. Analyze across these dimensions:
 
-- **Common features**: Present in 7+ solutions (table stakes)
-- **Common strengths**: What users consistently love
-- **Common pain points**: What users consistently hate
-- **Pricing patterns**: How pricing models compare
-- **Architecture patterns**: Technical commonalities
-- **Market convergence**: Previously differentiating features now standard
+* **Common features**: Present in 7+ solutions (table stakes)
+
+* **Common strengths**: What users consistently love
+
+* **Common pain points**: What users consistently hate
+
+* **Pricing patterns**: How pricing models compare
+
+* **Architecture patterns**: Technical commonalities
+
+* **Market convergence**: Previously differentiating features now standard
 
 Write `research/top-10/{area}-trends.md` following the template from the competitive-research skill's `references/report-templates.md`.
 
@@ -82,15 +91,30 @@ Write `research/top-10/{area}-trends.md` following the template from the competi
 
 Read all 10 individual solution reports again. For each solution, extract features that:
 
-- Are unique to that solution (not in most competitors)
-- Are specifically called out as loved by users
-- Represent innovative approaches
+* Are unique to that solution (not in most competitors)
+
+* Are specifically called out as loved by users
+
+* Represent innovative approaches
 
 Write `research/top-10/{area}-unique-features.md` following the template from the competitive-research skill's `references/report-templates.md`.
 
-## Step 5: Generate PRD
+## Step 5: Generate Recommended Pricing
 
-Read `{area}-trends.md` and `{area}-unique-features.md`. Synthesize into a full product requirements document:
+Read all 10 individual solution reports (focusing on their Pricing sections) and `{area}-trends.md` (focusing on the Pricing Patterns section). Synthesize into a recommended pricing strategy:
+
+1. **Market Pricing Landscape** — summary table of all 10 competitors' pricing tiers, models, and ranges
+2. **Pricing Model Analysis** — which models dominate (per-seat, flat-rate, freemium, usage-based), pros/cons of each based on user sentiment
+3. **Price Sensitivity Insights** — what users love/hate about current pricing from reviews
+4. **Free Tier Strategy** — whether to offer a free plan, what limits to set, based on what works and what frustrates users
+5. **Recommended Pricing Structure** — concrete tier recommendations with price ranges, feature allocation per tier, and rationale grounded in competitive data
+6. **Pricing Pitfalls to Avoid** — common pricing mistakes identified from user complaints (e.g., gating essential features, confusing tiers, surprise price hikes)
+
+Write `research/top-10/{area}-recommended-pricing.md` following the template from the competitive-research skill's `references/report-templates.md`.
+
+## Step 6: Generate PRD
+
+Read `{area}-trends.md`, `{area}-unique-features.md`, and `{area}-recommended-pricing.md`. Synthesize into a full product requirements document:
 
 1. **Problem Statement** — from common pain points
 2. **Target Users** — from user bases of researched solutions
@@ -101,7 +125,7 @@ Read `{area}-trends.md` and `{area}-unique-features.md`. Synthesize into a full 
 
 Write `research/top-10/{area}-prd.md` following the template from the competitive-research skill's `references/report-templates.md`.
 
-## Step 6: Summary
+## Step 7: Summary
 
 Present a summary to the user listing all files generated:
 
@@ -111,15 +135,22 @@ Research complete! Generated files in research/top-10/:
 - {solution-1}-report.md through {solution-10}-report.md (individual deep dives)
 - {area}-trends.md (cross-solution trends and patterns)
 - {area}-unique-features.md (standout features people love)
+- {area}-recommended-pricing.md (pricing strategy recommendation)
 - {area}-prd.md (product requirements document)
 ```
 
 ## Important Rules
 
-- Never skip the user approval step for the top 10 list
-- Launch all 10 deep-dive agents in parallel, not sequentially
-- Every claim in reports must be sourced
-- Use the current year in search queries for recency
-- Slugify all file names consistently (lowercase, hyphens, no special chars)
-- Write all files to `./research/top-10/` — create the directory if it doesn't exist
-- If a solution cannot be adequately researched (too niche, no reviews), note this in the report rather than fabricating content
+* Never skip the user approval step for the top 10 list
+
+* Launch all 10 deep-dive agents in parallel, not sequentially
+
+* Every claim in reports must be sourced
+
+* Use the current year in search queries for recency
+
+* Slugify all file names consistently (lowercase, hyphens, no special chars)
+
+* Write all files to `./research/top-10/` — create the directory if it doesn't exist
+
+* If a solution cannot be adequately researched (too niche, no reviews), note this in the report rather than fabricating content
