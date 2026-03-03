@@ -1,7 +1,7 @@
 {
   "name": "top-10",
-  "version": "0.1.0",
-  "description": "Competitive research plugin — identifies top 10 solutions in any market, deep-dives each, and generates a comprehensive PRD from the findings.",
+  "version": "0.2.0",
+  "description": "Competitive research plugin — identifies top 10 solutions in any market, deep-dives each with detailed pricing analysis, and generates a comprehensive PRD and recommended pricing strategy from the findings.",
   "author": {
     "name": "Bo"
   },
