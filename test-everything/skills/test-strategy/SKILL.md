@@ -48,7 +48,9 @@ Testing divides along three axes:
 
 * **Tools**: Playwright (multi-browser)
 
-* **Target**: Top 10-20 critical user journeys
+* **Target**: Every user story workflow in `docs/planning/user-stories.md`; if no user stories file exists, infer stories from the codebase first
+
+* **Approach**: User-story-driven — one spec per story, each step tested in sequence, acceptance criteria mapped to assertions
 
 ### Other Functional Types
 
@@ -127,7 +129,8 @@ For a typical React + Rust + PostgreSQL project:
 | Unit tests                          | 80%+ business logic   | Fully automated             |
 | Integration tests                   | All critical paths    | Fully automated             |
 | Component tests                     | Key UI components     | Fully automated             |
-| E2E tests                           | Top 15 user journeys  | Fully automated             |
+| E2E tests (user stories)            | All user story workflows | Fully automated          |
+| E2E tests (common)                  | Smoke, errors, responsive, navigation | Fully automated    |
 | Performance                         | Key API endpoints     | Automated in CI             |
 | Security                            | All code + deps       | Automated + periodic manual |
 | Accessibility                       | All user-facing pages | Automated + manual audit    |

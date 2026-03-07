@@ -67,17 +67,38 @@ Search for test files and configurations:
 
 For each layer, determine status: Present, Partial, or Missing.
 
-| Layer                   | What to Look For                                          |
-| ----------------------- | --------------------------------------------------------- |
-| **Static analysis**     | Linter configs, type checking, SAST tools in CI           |
-| **Unit tests**          | Test files co-located or in test dirs, test runner config |
-| **Integration tests**   | Tests touching DB/API/services, test database setup       |
-| **Component tests**     | Testing Library usage, Storybook tests                    |
-| **E2E tests**           | Playwright/Cypress config and test files                  |
-| **Performance tests**   | k6/Locust/JMeter scripts, perf benchmarks                 |
-| **Security scanning**   | SAST in CI, dependency scanning, secret scanning          |
-| **Accessibility tests** | axe-core usage, Lighthouse CI, a11y test files            |
-| **CI/CD integration**   | Tests in pipeline configs, quality gates defined          |
+| Layer                   | What to Look For                                              |
+| ----------------------- | ------------------------------------------------------------- |
+| **Static analysis**     | Linter configs, type checking, SAST tools in CI               |
+| **Unit tests**          | Test files co-located or in test dirs, test runner config     |
+| **Integration tests**   | Tests touching DB/API/services, test database setup           |
+| **Component tests**     | Testing Library usage, Storybook tests                        |
+| **E2E tests**           | Playwright/Cypress config and test files; user story coverage |
+| **Performance tests**   | k6/Locust/JMeter scripts, perf benchmarks                     |
+| **Security scanning**   | SAST in CI, dependency scanning, secret scanning              |
+| **Accessibility tests** | axe-core usage, Lighthouse CI, a11y test files                |
+| **CI/CD integration**   | Tests in pipeline configs, quality gates defined              |
+
+### Step 3b: Assess E2E Coverage Against User Stories
+
+Evaluate whether E2E tests cover actual user workflows:
+
+1. **Check for `docs/planning/user-stories.md`** in the project root
+2. **If found**:
+   * Parse each user story and its workflow steps
+   * For each story, check if a corresponding E2E spec exists
+   * Determine how many workflow steps are covered by test assertions
+   * Report coverage per story:
+     ```
+     | User Story | E2E Spec | Steps Covered | Status |
+     |------------|----------|---------------|--------|
+     | US-001     | e2e/...  | 5/5           | Full   |
+     | US-002     | —        | 0/4           | Missing|
+     ```
+3. **If NOT found**:
+   * Note the absence in the gap report: "No user stories document found — E2E tests may not cover real user workflows"
+   * Recommend creating `docs/planning/user-stories.md` to drive E2E test coverage
+   * If E2E tests exist, check whether they appear to cover coherent workflows or just isolated page checks
 
 ### Step 4: Count and Categorize
 

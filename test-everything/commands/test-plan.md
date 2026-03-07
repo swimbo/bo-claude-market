@@ -51,7 +51,7 @@ Create an implementation plan organized in 2-week phases:
 
 **Phase 1 (Foundation)**: Static analysis + unit testing framework
 **Phase 2 (Integration)**: Integration tests + test database setup
-**Phase 3 (E2E)**: Playwright setup + critical user journey tests
+**Phase 3 (E2E)**: User-story-driven Playwright tests
 **Phase 4 (Security + Performance)**: SAST in CI + k6 load tests
 **Phase 5 (Polish)**: Accessibility + cross-browser + documentation
 
@@ -66,6 +66,27 @@ For each phase, provide:
 * Estimated effort (hours/days)
 
 * Dependencies on previous phases
+
+#### Phase 3 — User Story Discovery
+
+Before planning E2E tests, discover user stories:
+
+1. **Check for** **`docs/planning/user-stories.md`** in the project root
+2. **If found**: Parse each user story's workflow steps and acceptance criteria. Plan one E2E spec per story, with tests covering every workflow step.
+3. **If not found**: Analyze the codebase to infer user stories:
+
+   * Scan routes, pages, and navigation to identify user-facing features
+
+   * Read API endpoints to understand data flows and CRUD operations
+
+   * Identify authentication, authorization, and role-based access
+
+   * Examine forms, interactive components, and error handling
+
+   * Document inferred stories in `docs/planning/user-stories.md` (using `US-XXX` identifiers, workflow steps, and acceptance criteria)
+
+   * Present to the user for review before proceeding
+4. **Plan E2E specs**: Map each approved user story to a spec file, listing which workflow steps and acceptance criteria each test will cover
 
 ### Step 5: Define Quality Gates
 

@@ -19,8 +19,9 @@ Perform the same analysis as `/test-everything:test-audit`:
 
 1. Detect project type, languages, frameworks
 2. Inventory existing tests and configs
-3. Assess each testing layer (unit, integration, E2E, performance, security, accessibility)
-4. Identify gaps — output a brief summary table (not the full report)
+3. Assess each testing layer (unit, integration, component, E2E, performance, security, accessibility)
+4. Assess E2E coverage against user stories (check for `docs/planning/user-stories.md` — see test-audit Step 3b)
+5. Identify gaps — output a brief summary table (not the full report)
 
 ### Phase 2: Plan
 
@@ -48,6 +49,67 @@ For each item in the approved plan:
    * Co-locate tests with source when that's the project convention
 4. Use parallel subagents for independent test files when possible
 
+#### Component Tests (Frontend)
+
+For projects with a frontend, write component tests for complex interactive UI components:
+
+1. Identify components with significant logic: forms, data tables, modals, interactive widgets, permission-gated views
+2. Test each component in isolation covering: all visual states (loading, empty, error, success), user interactions (clicks, input, keyboard), prop variations, and conditional rendering
+3. Use React Testing Library + Vitest — test behavior, not implementation details
+4. Skip simple presentational components that are just markup wrappers
+
+#### User-Story-Driven E2E Tests
+
+E2E tests MUST be derived from user story workflows:
+
+1. **Check for user stories**: Look for `docs/planning/user-stories.md` in the project root
+2. **If the file exists**:
+   * Parse every user story and its acceptance criteria / workflow steps
+   * Create one E2E spec file per user story (e.g., `e2e/user-story-registration.spec.ts`)
+   * Each spec must test every step in the user story workflow, in sequence
+   * Map acceptance criteria directly to test assertions
+   * Group related stories into describe blocks by feature area
+3. **If the file does NOT exist**:
+   * Analyze the codebase to infer user story workflows:
+     - Scan routes/pages to identify user-facing features
+     - Read API endpoints to understand data flows
+     - Examine navigation, forms, and interactive components
+     - Identify authentication/authorization boundaries
+   * Generate a `docs/planning/user-stories.md` file documenting the inferred stories using this format:
+     ```
+     ## US-001: [Story Title]
+     **As a** [role], **I want to** [action], **so that** [benefit].
+
+     ### Workflow Steps
+     1. [Step 1 — specific user action]
+     2. [Step 2 — expected system response]
+     3. [Step 3 — next user action]
+     ...
+
+     ### Acceptance Criteria
+     - [ ] [Criterion 1]
+     - [ ] [Criterion 2]
+     ```
+   * Present the inferred user stories to the user for approval before writing E2E tests
+   * After approval, create E2E specs covering each story's workflow steps
+4. **Coverage mapping**: After writing E2E tests, output a traceability matrix:
+   ```
+   | User Story | E2E Spec File | Steps Covered | Status |
+   |------------|---------------|---------------|--------|
+   | US-001     | e2e/...       | 5/5           | Full   |
+   | US-002     | e2e/...       | 3/4           | Partial|
+   ```
+
+#### Common E2E Tests
+
+In addition to user-story specs, write cross-cutting E2E tests not tied to any single story:
+
+1. **Smoke tests** (`e2e/smoke.spec.ts`) — homepage loads, login works, main nav links resolve, API health responds
+2. **Error pages** (`e2e/error-pages.spec.ts`) — 404 for unknown routes, unauthorized redirects, API error handling, empty states
+3. **Responsive** (`e2e/responsive.spec.ts`) — critical pages at mobile (375px), tablet (768px), and desktop (1280px) viewports
+4. **Navigation** (`e2e/navigation.spec.ts`) — deep links, back/forward, redirects, URL state preservation
+5. **Visual regression** (`e2e/visual-regression.spec.ts`, optional) — baseline screenshots of key pages using `toHaveScreenshot()`, only if user opts in
+
 ### Phase 4: Run & Fix
 
 Loop until all tests pass:
@@ -65,9 +127,18 @@ Loop until all tests pass:
 3. If tests pass, run linting/type-checking if available
 4. Fix any lint or type errors introduced
 
-### Phase 5: Summary
+### Phase 5: Quality Review
 
-Once everything is green, output:
+After all tests pass, review the test suite for quality issues (same checks as the test-quality-reviewer agent):
+
+1. **Anti-patterns**: Scan new test files for tests with no assertions, snapshot-only tests, excessive mocking, implementation-detail testing, tautological assertions, commented-out tests
+2. **Flakiness risks**: Check for hardcoded timeouts, shared mutable state, system time dependencies, missing `await` in async tests, network calls without mocking in unit tests
+3. **Architecture alignment**: Verify test distribution matches the recommended model (Pyramid/Diamond/Trophy) — flag if too many E2E tests relative to unit tests or if integration layer has gaps
+4. Fix any issues found before proceeding to summary
+
+### Phase 6: Summary
+
+Once everything is green and quality-reviewed, output:
 
 ```
 ## Test Everything — Complete
@@ -78,9 +149,20 @@ Once everything is green, output:
 ### Infrastructure Created
 - [configs, CI files, setup files]
 
+### User Story Coverage
+| User Story | E2E Spec File | Steps Covered | Status |
+|------------|---------------|---------------|--------|
+| US-001     | e2e/...       | 5/5           | Full   |
+| ...        | ...           | ...           | ...    |
+
 ### Coverage Change
 - Before: [if known]
 - After: [run coverage if available]
+
+### Test Quality
+- Anti-patterns: [count found and fixed]
+- Flakiness risks: [count found and fixed]
+- Architecture: [model] — [distribution summary]
 
 ### All Passing
 - [test command]: ✅ N tests passed

@@ -1,7 +1,7 @@
 ---
 name: test-scaffold
 description: Scaffold test files, configurations, and CI pipeline definitions for a specific testing layer
-argument-hint: "<layer> [path-to-project] — layers: unit, integration, e2e, performance, security, accessibility, ci"
+argument-hint: "<layer> [path-to-project] — layers: unit, integration, component, e2e, performance, security, accessibility, ci"
 allowed-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash"]
 ---
 
@@ -13,7 +13,7 @@ Create test infrastructure files for a specific testing layer.
 
 Parse the argument to determine which layer to scaffold. If no layer specified, ask the user.
 
-Valid layers: `unit`, `integration`, `e2e`, `performance`, `security`, `accessibility`, `ci`
+Valid layers: `unit`, `integration`, `component`, `e2e`, `performance`, `security`, `accessibility`, `ci`
 
 ### Before Scaffolding
 
@@ -61,6 +61,43 @@ Valid layers: `unit`, `integration`, `e2e`, `performance`, `security`, `accessib
 
 * Configure test database URL in `.env.test`
 
+### Layer: `component`
+
+Test UI components in isolation with various states, props, and interactions.
+
+**React + Vitest + Testing Library**:
+
+* Create `src/components/__tests__/` directory if not using co-located tests
+* For each complex interactive component, create a test file covering:
+  * Default rendering — component mounts without errors
+  * All visual states — loading, empty, error, success, disabled
+  * User interactions — clicks, form input, keyboard navigation, focus management
+  * Prop variations — required vs optional props, edge case values
+  * Conditional rendering — permission-gated content, responsive breakpoints
+* Example structure:
+  ```typescript
+  // src/components/__tests__/DataTable.test.tsx
+  import { render, screen } from '@testing-library/react';
+  import userEvent from '@testing-library/user-event';
+  import { DataTable } from '../DataTable';
+
+  describe('DataTable', () => {
+    it('renders loading skeleton', () => { ... });
+    it('renders empty state with message', () => { ... });
+    it('renders rows from data', () => { ... });
+    it('sorts by column on header click', () => { ... });
+    it('paginates when rows exceed page size', () => { ... });
+    it('renders error state on fetch failure', () => { ... });
+  });
+  ```
+* Install deps if missing: `@testing-library/react @testing-library/user-event @testing-library/jest-dom`
+
+**Storybook (optional)**:
+
+* Install Storybook if the team wants visual component documentation: `npx storybook@latest init`
+* Create stories alongside components: `ComponentName.stories.tsx`
+* Configure Storybook test runner for CI: `@storybook/test-runner`
+
 ### Layer: `e2e`
 
 **Playwright**:
@@ -79,13 +116,83 @@ Valid layers: `unit`, `integration`, `e2e`, `performance`, `security`, `accessib
 
 * Create `e2e/` directory structure:
 
-  * `e2e/auth.spec.ts` — login/logout flow template
-
   * `e2e/fixtures/` — test data and auth state
 
 * Add scripts to `package.json`: `"test:e2e"`, `"test:e2e:ui"`
 
 * Install: `@playwright/test` + browsers
+
+**User-Story-Driven Test Generation**:
+
+E2E specs must be derived from user stories, not invented ad-hoc:
+
+1. **Check for** **`docs/planning/user-stories.md`** in the project root
+2. **If found**:
+
+   * Parse each user story (`US-XXX`) with its workflow steps and acceptance criteria
+
+   * Create one spec file per story: `e2e/user-story-<slug>.spec.ts`
+
+   * Each spec tests the full workflow step-by-step, with assertions matching acceptance criteria
+
+   * Example structure:
+
+     ```typescript
+     // e2e/user-story-registration.spec.ts
+     import { test, expect } from '@playwright/test';
+
+     test.describe('US-001: User Registration', () => {
+       test('Step 1: Navigate to registration page', async ({ page }) => { ... });
+       test('Step 2: Fill in registration form', async ({ page }) => { ... });
+       test('Step 3: Submit and see confirmation', async ({ page }) => { ... });
+       test('Acceptance: Email verification sent', async ({ page }) => { ... });
+     });
+     ```
+3. **If NOT found**:
+
+   * Analyze the codebase to infer user stories:
+
+     * Scan routes/pages for user-facing features
+
+     * Read API endpoints for data flows
+
+     * Identify auth boundaries, forms, and interactive components
+
+   * Generate `docs/planning/user-stories.md` with inferred stories
+
+   * Present to the user for approval before creating specs
+
+   * After approval, create specs as described above
+4. After scaffolding, output a coverage matrix showing which user stories have specs
+
+**Common E2E Tests**:
+
+In addition to user-story specs, scaffold these cross-cutting E2E tests that aren't tied to any single story:
+
+* `e2e/smoke.spec.ts` — Quick post-deployment sanity checks:
+  * Homepage loads successfully
+  * Login/auth flow works
+  * Main navigation links resolve
+  * API health endpoint responds
+* `e2e/error-pages.spec.ts` — Error handling:
+  * 404 page renders for unknown routes
+  * Unauthorized redirect for protected routes
+  * Graceful handling of API errors (500, timeout)
+  * Empty states render correctly (no data scenarios)
+* `e2e/responsive.spec.ts` — Viewport/responsive tests:
+  * Mobile viewport (375px) — navigation collapses, layout adapts
+  * Tablet viewport (768px) — intermediate layout
+  * Desktop viewport (1280px) — full layout
+  * Test critical pages at each breakpoint
+* `e2e/navigation.spec.ts` — Routing and navigation:
+  * Deep links load correctly (direct URL access)
+  * Browser back/forward works after navigation
+  * Redirects work (e.g., `/` → `/dashboard` when authenticated)
+  * Query parameters and URL state preserved
+* `e2e/visual-regression.spec.ts` (optional) — Screenshot comparison:
+  * Capture baseline screenshots of key pages
+  * Use `expect(page).toHaveScreenshot()` for visual diff
+  * Only scaffold if user opts in (can be noisy)
 
 ### Layer: `performance`
 

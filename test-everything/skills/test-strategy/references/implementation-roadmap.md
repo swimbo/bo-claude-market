@@ -93,23 +93,20 @@ A phased 10-week plan for building comprehensive testing from scratch, tailored 
 
 * [ ] Set up test database seeding for E2E tests
 
-### Critical User Journeys (write tests for top 10-15)
+### User-Story-Driven E2E Tests
 
-* [ ] User registration and login
+Derive E2E tests from user stories rather than ad-hoc feature lists:
 
-* [ ] Core business workflow (main user action)
-
-* [ ] Data CRUD operations (create, read, update, delete)
-
-* [ ] Search and filtering
-
-* [ ] Settings and profile management
-
-* [ ] Permission-based access (admin vs. user)
-
-* [ ] Error handling (invalid input, network errors)
-
-* [ ] Responsive behavior (mobile viewport)
+* [ ] Check for `docs/planning/user-stories.md` in the project
+* [ ] **If found**: Parse each user story and create one spec per story covering all workflow steps
+* [ ] **If NOT found**: Infer user stories from the codebase:
+  * Scan routes/pages, API endpoints, forms, auth boundaries
+  * Document inferred stories in `docs/planning/user-stories.md`
+  * Get user approval before proceeding
+* [ ] Create E2E specs: `e2e/user-story-<slug>.spec.ts` per story
+* [ ] Each spec tests every workflow step in sequence with acceptance criteria as assertions
+* [ ] Output traceability matrix mapping stories to specs and step coverage
+* [ ] Cover at minimum: registration/login, core business workflow, CRUD operations, search/filter, settings, permissions, error handling, responsive behavior
 
 ### Component Tests
 
