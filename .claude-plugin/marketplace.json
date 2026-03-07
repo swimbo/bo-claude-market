@@ -24,6 +24,13 @@
       "version": "0.1.0",
       "description": "Comprehensive testing toolkit — audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers.",
       "author": {"name": "Bo"}
+    },
+    {
+      "name": "bo-planner",
+      "source": "./bo-planner",
+      "version": "0.1.0",
+      "description": "File-based planning with scope fences, environment snapshots, verification gates, and subagent delegation tracking. Produces structured artifacts in docs/planning/.",
+      "author": {"name": "Bo"}
     }
   ]
 }
