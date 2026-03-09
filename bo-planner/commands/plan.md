@@ -33,6 +33,10 @@ The argument is the task description. If no argument is provided, ask the user w
 
    * `architecture.md` — Tech stack, architecture decisions, project structure. If building a new fullstack app, reference `~/.claude/templates/fullstack/` for the preferred stack.
 
+   * `ux-plan.md` — User flows, interaction patterns, accessibility requirements, error handling strategy, dark pattern audit _(create when project has user-facing components)_
+
+   * `ui-plan.md` — Visual design system, color palette, typography scale, component inventory, layout architecture _(create when project has visual interfaces)_
+
    * `phase-1-plan.md` through `phase-N-plan.md` — Detailed plan for each phase with task checklist, dependencies, verification criteria
 
    * `findings.md` — Research, discoveries, technical decisions

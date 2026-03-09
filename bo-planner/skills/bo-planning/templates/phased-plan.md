@@ -40,9 +40,14 @@ Phase 1
 | ----- | ------------------------ | ------------ | -------- |
 | 1     | Requirements & Discovery | in\_progress | no       |
 | 2     | Planning & Structure     | pending      | no       |
-| 3     | Implementation           | pending      | no       |
-| 4     | Testing & Verification   | pending      | no       |
-| 5     | Delivery                 | pending      | no       |
+| 3     | UX Planning              | pending      | no       |
+| 4     | UI Planning              | pending      | no       |
+| 5     | Implementation           | pending      | no       |
+| 6     | Testing & Verification   | pending      | no       |
+| 7     | Delivery                 | pending      | no       |
+
+<!-- Phases 3-4 apply when the project has user-facing components.
+     For backend-only or library projects, skip and renumber. -->
 
 See `phase-#-plan.md` for detailed plans per phase.
 

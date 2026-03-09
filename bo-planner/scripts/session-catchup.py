@@ -21,6 +21,8 @@ PLANNING_FILES = [
     f'{PLANNING_DIR}/findings.md',
     f'{PLANNING_DIR}/architecture.md',
     f'{PLANNING_DIR}/user-stories.md',
+    f'{PLANNING_DIR}/ux-plan.md',
+    f'{PLANNING_DIR}/ui-plan.md',
 ]
 
 

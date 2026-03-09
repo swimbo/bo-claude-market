@@ -6,30 +6,31 @@ Opinionated fork of [planning-with-files](https://github.com/othmanadi/planning-
 
 ## What's Different
 
-| Feature | planning-with-files | bo-planner |
-|---------|-------------------|------------|
-| Output location | Project root (3 files) | `docs/planning/` (structured artifact set) |
-| Scope management | None | Explicit IN/OUT scope fence per plan |
-| Environment capture | None | Snapshot of existing state before planning |
-| Verification | Optional | Mandatory gate per phase |
-| Phase detail | Single file | `phased-plan.md` overview + individual `phase-#-plan.md` |
-| User stories | None | Dedicated `user-stories.md` with acceptance criteria |
-| Architecture | None | Dedicated `architecture.md` with stack/data model/API |
-| Subagent tracking | None | Delegation table in phased-plan.md |
-| Hook frequency | PreToolUse on every call | PostToolUse on writes only |
-| Templates | Verbose with tutorial comments | Lean, no-noise templates |
-| Platform support | 16 IDEs + Windows | macOS + Claude Code |
-| Architecture reference | None | Points to ~/.claude/templates/fullstack/ |
-| Completion check | Status report only | Full verification protocol with user confirmation |
-| Testing integration | None | Integrates with test-everything plugin |
+| Feature                | planning-with-files            | bo-planner                                               |
+| ---------------------- | ------------------------------ | -------------------------------------------------------- |
+| Output location        | Project root (3 files)         | `docs/planning/` (structured artifact set)               |
+| Scope management       | None                           | Explicit IN/OUT scope fence per plan                     |
+| Environment capture    | None                           | Snapshot of existing state before planning               |
+| Verification           | Optional                       | Mandatory gate per phase                                 |
+| Phase detail           | Single file                    | `phased-plan.md` overview + individual `phase-#-plan.md` |
+| User stories           | None                           | Dedicated `user-stories.md` with acceptance criteria     |
+| Architecture           | None                           | Dedicated `architecture.md` with stack/data model/API    |
+| Subagent tracking      | None                           | Delegation table in phased-plan.md                       |
+| Hook frequency         | PreToolUse on every call       | PostToolUse on writes only                               |
+| Templates              | Verbose with tutorial comments | Lean, no-noise templates                                 |
+| Platform support       | 16 IDEs + Windows              | macOS + Claude Code                                      |
+| Architecture reference | None                           | Points to \~/.claude/templates/fullstack/                |
+| Completion check       | Status report only             | Full verification protocol with user confirmation        |
+| UX/UI planning         | None                           | Dedicated UX and UI planning phases with templates       |
+| Testing integration    | None                           | Integrates with test-everything plugin                   |
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `/plan` | Start a planning session with scope negotiation |
-| `/status` | Quick status check of current plan |
-| `/done` | Verification protocol before declaring complete |
+| Command   | Description                                     |
+| --------- | ----------------------------------------------- |
+| `/plan`   | Start a planning session with scope negotiation |
+| `/status` | Quick status check of current plan              |
+| `/done`   | Verification protocol before declaring complete |
 
 ## Install
 
@@ -49,15 +50,22 @@ docs/planning/
 ├── phase-N-plan.md          # ...one per phase
 ├── user-stories.md          # User stories with acceptance criteria
 ├── architecture.md          # Tech stack, data model, API design, decisions
+├── ux-plan.md               # UX: user flows, interaction patterns, accessibility
+├── ui-plan.md               # UI: visual design system, typography, colors, components
 ├── findings.md              # Research discoveries, external content
 └── progress.md              # Session log, test results, errors
 ```
 
 ## Philosophy
 
-- Explore first, plan second, code third
-- Scope fence is non-negotiable
-- Every phase needs documented verification
-- Parallel subagents for independent work
-- Never repeat a failed action
-- User confirms completion, not Claude
+* Explore first, plan second, code third
+
+* Scope fence is non-negotiable
+
+* Every phase needs documented verification
+
+* Parallel subagents for independent work
+
+* Never repeat a failed action
+
+* User confirms completion, not Claude

@@ -59,6 +59,8 @@ docs/planning/
 ├── phase-N-plan.md          # ...one per phase
 ├── user-stories.md          # User stories derived from requirements
 ├── architecture.md          # Architecture decisions, tech stack, diagrams
+├── ux-plan.md               # UX: user flows, interaction patterns, accessibility
+├── ui-plan.md               # UI: visual design system, typography, colors, components
 ├── findings.md              # Research discoveries, external content
 └── progress.md              # Session log, test results, errors
 ```
@@ -73,10 +75,12 @@ Before any complex task:
 4. **Create** **`phased-plan.md`** — High-level phases, scope fence, environment snapshot
 5. **Create** **`user-stories.md`** — User stories from requirements
 6. **Create** **`architecture.md`** — Tech stack, architecture decisions
-7. **Create** **`phase-#-plan.md`** — One detailed plan per phase
-8. **Create** **`findings.md`** — Research, decisions, resources
-9. **Create** **`progress.md`** — Session log, test results, errors
-10. **Get approval** — Present plan to user before starting
+7. **Create** **`ux-plan.md`** — User flows, interaction patterns, accessibility, error handling _(if project has user-facing components)_
+8. **Create** **`ui-plan.md`** — Visual design system, typography, colors, component inventory _(if project has visual interfaces)_
+9. **Create** **`phase-#-plan.md`** — One detailed plan per phase
+10. **Create** **`findings.md`** — Research, decisions, resources
+11. **Create** **`progress.md`** — Session log, test results, errors
+12. **Get approval** — Present plan to user before starting
 
 Use templates from `${CLAUDE_PLUGIN_ROOT}/templates/` as starting points.
 
@@ -148,13 +152,17 @@ After 3 failures: Escalate to user with what you tried
 
 ## Phase Planning
 
-Use the 5-phase pattern (customize phase names to the task):
+Use the 7-phase pattern (customize phase names to the task):
 
 1. **Requirements & Discovery** — Understand intent, capture constraints, environment snapshot
 2. **Planning & Structure** — Technical approach, architecture decisions, scope confirmation
-3. **Implementation** — Build it, using subagents for independent work
-4. **Testing & Verification** — Run tests, verify requirements met. Consider `test-everything:test-full-suite` for comprehensive coverage.
-5. **Delivery** — Final review, user verification, cleanup
+3. **UX Planning** — User flows, interaction patterns, accessibility, error handling, dark pattern audit _(skip for backend-only/library projects)_
+4. **UI Planning** — Visual design system, typography, color palette, component inventory, layout _(skip for non-visual projects)_
+5. **Implementation** — Build it, using subagents for independent work
+6. **Testing & Verification** — Run tests, verify requirements met. Consider `test-everything:test-full-suite` for comprehensive coverage.
+7. **Delivery** — Final review, user verification, cleanup
+
+Phases 3-4 apply when the project has user-facing components (web apps, CLI tools, plugins, IDE extensions). For backend-only or pure library projects, skip and renumber to 5 phases.
 
 `phased-plan.md` contains the high-level overview of all phases with status tracking.
 Each phase gets its own `phase-#-plan.md` with:
@@ -183,11 +191,31 @@ When delegating to subagents, track in `phased-plan.md`:
 
 Launch independent agents in a single message for parallel execution.
 
+## UX & UI Planning Reference
+
+When creating UX or UI plans, reference the research documents in the plugin's `research/` directory:
+
+* **`research/ux-design.md`** — Nielsen's heuristics, Shneiderman's rules, dark patterns taxonomy, CLI usability (12-Factor CLI, Heroku standards), IDE plugin architecture, Microsoft HAX guidelines for AI interaction, MCP tool design, accessibility standards
+* **`research/ui-design.md`** — Dieter Rams' principles, Gestalt composition, color theory with WCAG contrast ratios, monospaced typography adjustments, VS Code extension containers, JetBrains UI paradigms, CLI/TUI aesthetics (Ratatui, Charmbracelet), Anthropic brand color palette, visual anti-patterns
+
+### When to include UX/UI phases
+
+| Project Type | UX Plan | UI Plan |
+| ------------ | ------- | ------- |
+| Web application | Yes | Yes |
+| CLI tool | Yes | Yes (TUI composition) |
+| IDE plugin/extension | Yes | Yes (container mapping) |
+| API / backend service | No | No |
+| Library / SDK | Partial (API ergonomics) | No |
+| MCP server | Partial (tool descriptions for LLM "users") | No |
+
 ## Integration with Existing Skills
 
 This planning system works alongside:
 
 * **brainstorming** — Use BEFORE planning for creative/design work
+
+* **frontend-design** — Use during UI Planning phase for production-grade interfaces
 
 * **test-driven-development** — Use during Implementation phase
 
@@ -221,6 +249,10 @@ This planning system works alongside:
 * [templates/user-stories.md](templates/user-stories.md)
 
 * [templates/architecture.md](templates/architecture.md)
+
+* [templates/ux-plan.md](templates/ux-plan.md)
+
+* [templates/ui-plan.md](templates/ui-plan.md)
 
 * [templates/findings.md](templates/findings.md)
 
