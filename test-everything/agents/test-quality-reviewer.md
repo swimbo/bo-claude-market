@@ -91,6 +91,12 @@ Scan test files for common problems:
 
 * Commented-out tests
 
+* Fire-and-forget interactions — `page.click()`, `page.fill()`, or other interactions without a subsequent assertion verifying the outcome (grep for `\.click(` not followed by `expect(` or `waitFor(` within 3 lines). This is the #1 cause of "tests pass but app is broken."
+
+* CSS/attribute selectors over accessible locators — using `page.click('[data-testid=...]')`, `page.click('.class')`, `page.click('#id')`, or `page.fill('[name=...]')` instead of `page.getByRole()`, `page.getByLabel()`, or `page.getByText()`. Accessible selectors verify the element is properly functional, not just present in the DOM.
+
+* No browser health monitoring — E2E test suites without console error detection (`pageerror` listener) or network failure detection (`requestfailed` listener). Silent JS errors and failed API calls pass undetected.
+
 **Architecture misalignment**:
 
 * Too many E2E tests relative to unit tests (inverted pyramid)

@@ -159,24 +159,108 @@ async fn test_create_user(pool: PgPool) {
 
 * Error recovery (network failure, invalid input)
 
-**Playwright example**:
+**Interaction Verification**:
+
+Every E2E test interaction must be paired with an outcome assertion. A test that clicks a button without verifying the result provides zero confidence — the click may silently fail while the test passes.
+
+*Before (fire-and-forget — AVOID):*
 
 ```typescript
-import { test, expect } from '@playwright/test'
+await page.click('#submit-btn')
+// test passes even if nothing happened
+```
+
+*After (verified — REQUIRED):*
+
+```typescript
+await page.getByRole('button', { name: 'Submit' }).click()
+// MUST verify the outcome with at least one of:
+await expect(page).toHaveURL(/\/success/)              // navigation changed
+await expect(page.getByText('Saved')).toBeVisible()    // UI feedback appeared
+```
+
+Four verification patterns to apply after every interaction:
+
+| Pattern | When to Use | Example |
+|---------|------------|---------|
+| **Navigation** | Action should change URL | `await expect(page).toHaveURL(/\/dashboard/)` |
+| **DOM change** | Action should show/hide content | `await expect(page.getByText('Saved')).toBeVisible()` |
+| **Network** | Action should trigger API call | `await page.waitForResponse(r => r.url().includes('/api/'))` |
+| **State** | Action should enable/disable elements | `await expect(button).toBeEnabled()` |
+
+**Browser Health Monitoring**:
+
+Silent failures — uncaught JS exceptions, console errors, and failed network requests — are the most common cause of "tests pass but app is broken." E2E tests should automatically fail when the browser encounters these errors.
+
+Use a shared Playwright fixture (`e2e/fixtures/browser-health.ts`) that:
+* Listens for `pageerror` events (uncaught exceptions) in `beforeEach`
+* Listens for `console.error` messages in `beforeEach`
+* Tracks `requestfailed` events and API error responses (4xx/5xx)
+* Asserts no errors were captured in `afterEach`
+
+```typescript
+// e2e/fixtures/browser-health.ts — extend Playwright's base test
+import { test as base, expect } from '@playwright/test';
+
+export const test = base.extend<{ browserHealth: void }>({
+  browserHealth: [async ({ page }, use) => {
+    const consoleErrors: string[] = [];
+    const failedRequests: string[] = [];
+
+    page.on('pageerror', err => consoleErrors.push(err.message));
+    page.on('console', msg => {
+      if (msg.type() === 'error') consoleErrors.push(msg.text());
+    });
+    page.on('requestfailed', req => {
+      failedRequests.push(`${req.method()} ${req.url()}`);
+    });
+    page.on('response', resp => {
+      if (resp.status() >= 400 && resp.url().includes('/api/')) {
+        failedRequests.push(`${resp.status()} ${resp.url()}`);
+      }
+    });
+
+    await use();
+
+    expect(consoleErrors, 'Browser errors detected').toEqual([]);
+    expect(failedRequests, 'API failures detected').toEqual([]);
+  }, { auto: true }],
+});
+export { expect } from '@playwright/test';
+```
+
+All E2E test files should import from this fixture instead of `@playwright/test`.
+
+**Playwright example** (with interaction verification and browser health):
+
+```typescript
+import { test, expect } from './fixtures/browser-health'
 
 test('user can create and publish a post', async ({ page }) => {
+  // Login — verify navigation
   await page.goto('/login')
-  await page.fill('[name="email"]', 'test@example.com')
-  await page.fill('[name="password"]', 'password123')
-  await page.click('button[type="submit"]')
+  await page.getByLabel('Email').fill('test@example.com')
+  await page.getByLabel('Password').fill('password123')
+  await page.getByRole('button', { name: 'Sign In' }).click()
+  await expect(page).toHaveURL(/\/dashboard/)  // verify login succeeded
 
-  await page.click('text=New Post')
-  await page.fill('[name="title"]', 'My Test Post')
-  await page.fill('[name="body"]', 'Post content here')
-  await page.click('text=Publish')
+  // Create post — verify form interaction
+  await page.getByRole('link', { name: 'New Post' }).click()
+  await expect(page).toHaveURL(/\/posts\/new/)  // verify navigation
+  await page.getByLabel('Title').fill('My Test Post')
+  await page.getByLabel('Body').fill('Post content here')
 
-  await expect(page.locator('.toast-success')).toBeVisible()
-  await expect(page).toHaveURL(/\/posts\/\d+/)
+  // Publish — verify API call and UI feedback
+  const responsePromise = page.waitForResponse(resp =>
+    resp.url().includes('/api/posts') && resp.status() === 201
+  )
+  await page.getByRole('button', { name: 'Publish' }).click()
+  await responsePromise  // verify API call completed
+  await expect(page.getByText('Post published')).toBeVisible()  // verify UI feedback
+  await expect(page).toHaveURL(/\/posts\/\d+/)  // verify navigation to new post
+
+  // Browser health fixture automatically checks for console errors
+  // and failed network requests — no manual assertion needed
 })
 ```
 

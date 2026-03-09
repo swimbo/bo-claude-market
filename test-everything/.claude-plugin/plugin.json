@@ -1,9 +1,9 @@
 {
   "name": "test-everything",
-  "version": "0.4.0",
-  "description": "Comprehensive testing toolkit: audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers — with user-story-driven E2E testing",
+  "version": "0.6.0",
+  "description": "Comprehensive testing toolkit: audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers — with user-story-driven E2E testing, interaction verification, and UX/UI quality auditing",
   "author": {
     "name": "Bo"
   },
-  "keywords": ["testing", "quality", "coverage", "strategy", "tdd", "e2e", "performance", "security"]
+  "keywords": ["testing", "quality", "coverage", "strategy", "tdd", "e2e", "performance", "security", "interaction-verification", "ux", "ui"]
 }

@@ -77,6 +77,8 @@ For each layer, determine status: Present, Partial, or Missing.
 | **Performance tests**   | k6/Locust/JMeter scripts, perf benchmarks                     |
 | **Security scanning**   | SAST in CI, dependency scanning, secret scanning              |
 | **Accessibility tests** | axe-core usage, Lighthouse CI, a11y test files                |
+| **UX quality**          | Feedback loops, error messages, confirmations, dark patterns  |
+| **UI visual quality**   | Color contrast, typography, spacing, component consistency    |
 | **CI/CD integration**   | Tests in pipeline configs, quality gates defined              |
 
 ### Step 3b: Assess E2E Coverage Against User Stories
@@ -99,6 +101,90 @@ Evaluate whether E2E tests cover actual user workflows:
    * Note the absence in the gap report: "No user stories document found — E2E tests may not cover real user workflows"
    * Recommend creating `docs/planning/user-stories.md` to drive E2E test coverage
    * If E2E tests exist, check whether they appear to cover coherent workflows or just isolated page checks
+
+### Step 3c: Assess Interaction Verification Quality
+
+Evaluate whether E2E tests actually verify that interactions produce expected outcomes:
+
+1. **Action-outcome pairing**: Check if interactions are followed by assertions
+   * Grep E2E test files for `\.click(` and `\.fill(` calls
+   * For each interaction, check if the next meaningful line contains `expect(`, `waitFor(`, or `waitForResponse(`
+   * Count: verified interactions vs. fire-and-forget interactions
+   * Report: "X of Y interactions (Z%) have outcome assertions"
+
+2. **Selector quality**: Check if tests use accessible selectors
+   * Count usage of accessible locators: `getByRole`, `getByLabel`, `getByText`, `getByPlaceholder` (good)
+   * Count usage of CSS/attribute selectors: `.click('[data-testid=`, `.click('.`, `.click('#`, `.fill('[name=` (poor)
+   * Report: "X% of selectors use accessible locators"
+
+3. **Browser health monitoring**: Check if silent failures are being caught
+   * Look for `pageerror` listener in test fixtures or setup files
+   * Look for `requestfailed` listener
+   * Look for console error monitoring
+   * Report: "Browser health monitoring: Present / Absent"
+
+4. Include findings in the gap report:
+
+```
+### Interaction Verification
+| Check | Result | Status |
+|-------|--------|--------|
+| Action-outcome pairing | X of Y interactions verified (Z%) | ✅/⚠️/❌ |
+| Selector quality | X% accessible locators | ✅/⚠️/❌ |
+| Browser health monitoring | Present/Absent | ✅/❌ |
+```
+
+Thresholds: ✅ >80%, ⚠️ 50-80%, ❌ <50% for pairing and selectors.
+
+### Step 3d: Assess UX Quality
+
+Evaluate the application's user experience quality (requires a running app):
+
+1. **Feedback loops**: Check that interactive elements produce visible responses
+   * Scan for buttons, form submits, and links — do they show loading/success/error states?
+   * Look for bare `onClick` handlers without associated loading or feedback UI
+   * Check for "dead end" error states (errors without recovery paths)
+   * Report: "Feedback coverage: X of Y interactive flows have visible feedback"
+
+2. **Error message quality**: Check error handling UX
+   * Grep source code for error messages, toast notifications, alert text
+   * Evaluate: Are messages plain language? Do they include resolution steps?
+   * Look for raw HTTP status codes, stack traces, or technical jargon exposed to users
+   * Report: "Error UX: X of Y error messages are user-friendly"
+
+3. **Destructive action safety**: Check for confirmation patterns
+   * Find all delete/remove/destroy actions in the UI
+   * Check if they have confirmation dialogs or undo mechanisms
+   * Report: "Destructive action safety: X of Y destructive actions have confirmations"
+
+4. **Dark pattern scan**: Check for manipulative UI
+   * Look for confirmshaming language on opt-out buttons
+   * Check if cancellation/unsubscribe paths are equally accessible as signup paths
+   * Look for pre-checked checkboxes that opt users into non-essential features
+   * Report: "Dark patterns: None found / [list each]"
+
+### Step 3e: Assess UI Visual Quality
+
+Evaluate the visual design quality (requires a running app):
+
+1. **Color contrast**: Run axe-core contrast audit
+   * Count total WCAG contrast failures (body text, large text, non-text)
+   * Report: "Contrast: X failures across Y pages"
+
+2. **Typography consistency**: Analyze CSS/rendered output
+   * Count distinct font families in use
+   * Check heading hierarchy (h1 > h2 > h3, no skipped levels)
+   * Report: "Typography: N font families, heading hierarchy [correct/broken]"
+
+3. **Component consistency**: Visual pattern matching
+   * Count distinct button styles, input styles, card styles
+   * Check for missing interactive states (hover, focus, disabled)
+   * Report: "Component consistency: N button variants (target ≤ 4), N missing states"
+
+4. **Spacing and alignment**: Grid analysis
+   * Check if spacing follows a consistent scale
+   * Look for irregular padding on similar components
+   * Report: "Spacing: [consistent N-px grid / inconsistent]"
 
 ### Step 4: Count and Categorize
 
@@ -136,6 +222,8 @@ Output a structured report:
 | Performance Tests | ... | N | ~N | ... |
 | Security Scanning | ... | N | - | ... |
 | Accessibility | ... | N | ~N | ... |
+| UX Quality | ✅ / ⚠️ / ❌ | - | - | heuristic scores, feedback, errors |
+| UI Visual Quality | ✅ / ⚠️ / ❌ | - | - | contrast, typography, consistency |
 | CI/CD Gates | ... | - | - | ... |
 
 ### Top Priority Gaps

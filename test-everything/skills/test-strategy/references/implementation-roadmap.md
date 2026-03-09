@@ -93,6 +93,10 @@ A phased 10-week plan for building comprehensive testing from scratch, tailored 
 
 * [ ] Set up test database seeding for E2E tests
 
+* [ ] Scaffold browser health fixture (`e2e/fixtures/browser-health.ts`) — console error and network failure detection
+
+* [ ] Configure custom test fixture extending Playwright's base test with auto-enabled browser health monitoring
+
 ### User-Story-Driven E2E Tests
 
 Derive E2E tests from user stories rather than ad-hoc feature lists:
@@ -105,8 +109,12 @@ Derive E2E tests from user stories rather than ad-hoc feature lists:
   * Get user approval before proceeding
 * [ ] Create E2E specs: `e2e/user-story-<slug>.spec.ts` per story
 * [ ] Each spec tests every workflow step in sequence with acceptance criteria as assertions
+* [ ] **Apply action-outcome pairing to all test interactions** — every click/fill/submit must verify its outcome
+* [ ] **Use accessible selectors** (`getByRole`, `getByLabel`, `getByText`) — avoid CSS selectors and `data-testid` except as last resort
 * [ ] Output traceability matrix mapping stories to specs and step coverage
 * [ ] Cover at minimum: registration/login, core business workflow, CRUD operations, search/filter, settings, permissions, error handling, responsive behavior
+* [ ] **Write post-suite walkthrough test** chaining top 3-5 user story flows into a single continuous session
+* [ ] **Add visual regression tests** for critical page states (opt-in, using `toHaveScreenshot()`)
 
 ### Component Tests
 

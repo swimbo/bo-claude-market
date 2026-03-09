@@ -52,6 +52,21 @@ Testing divides along three axes:
 
 * **Approach**: User-story-driven — one spec per story, each step tested in sequence, acceptance criteria mapped to assertions
 
+### Interaction Verification
+
+Every E2E test interaction must be paired with an outcome assertion. A test that clicks without verifying the result is the #1 cause of "tests pass but app is broken."
+
+* **Principle**: Every `click()`, `fill()`, `check()`, `selectOption()` MUST be followed by an assertion verifying the outcome
+* **Three verification patterns**:
+  * Navigation: `await expect(page).toHaveURL(...)` — action changed the URL
+  * DOM change: `await expect(page.getByText(...)).toBeVisible()` — action changed visible content
+  * Network: `await page.waitForResponse(...)` — action triggered an API call
+* **Browser health monitoring**: Use a shared Playwright fixture that automatically fails tests on:
+  * Uncaught JS exceptions (`pageerror` events)
+  * Console errors (`console.error` messages)
+  * Failed API requests (4xx/5xx responses, `requestfailed` events)
+* **Selector strategy**: Use accessible locators — `getByRole` > `getByLabel` > `getByText` > `data-testid` (last resort). Accessible selectors verify the element is functional, not just present in the DOM.
+
 ### Other Functional Types
 
 * **Regression**: Re-run full suite after changes — automate heavily
@@ -97,6 +112,22 @@ Testing divides along three axes:
 
 * **Run**: Automated in CI + quarterly manual audit
 
+### UX Quality Testing
+
+* **Scope**: Heuristic evaluation, feedback loops, error messages, dark pattern detection
+* **Framework**: Nielsen's 10 usability heuristics scored 1-5
+* **Tools**: Playwright (crawl and interact), manual checklist, axe-core
+* **Target**: All heuristics score ≥ 3, no dark patterns, all destructive actions confirmed
+* **Approach**: Audit → Report → Implement top improvements → Verify
+
+### UI Visual Quality Testing
+
+* **Scope**: Color contrast, typography, spacing, component consistency, visual hierarchy
+* **Framework**: WCAG 2.2 contrast ratios, Gestalt principles, design system auditing
+* **Tools**: axe-core (contrast), Playwright screenshots, Lighthouse
+* **Target**: Zero WCAG contrast failures, ≤ 3 font families, consistent component styling
+* **Approach**: Audit → Report with screenshots → Implement fixes → Before/after comparison
+
 ### Other Non-Functional Types
 
 * **Compatibility**: Cross-browser (Playwright multi-browser), cross-device (BrowserStack)
@@ -129,11 +160,13 @@ For a typical React + Rust + PostgreSQL project:
 | Unit tests                          | 80%+ business logic   | Fully automated             |
 | Integration tests                   | All critical paths    | Fully automated             |
 | Component tests                     | Key UI components     | Fully automated             |
-| E2E tests (user stories)            | All user story workflows | Fully automated          |
-| E2E tests (common)                  | Smoke, errors, responsive, navigation | Fully automated    |
+| E2E tests (user stories)            | All user story workflows + interaction verification | Fully automated          |
+| E2E tests (common)                  | Smoke, errors, responsive, navigation, walkthrough | Fully automated    |
 | Performance                         | Key API endpoints     | Automated in CI             |
 | Security                            | All code + deps       | Automated + periodic manual |
 | Accessibility                       | All user-facing pages | Automated + manual audit    |
+| UX quality                          | All user flows        | Audit + implement           |
+| UI visual quality                   | All pages             | Automated contrast + audit  |
 
 ## Quality Gates
 
@@ -141,7 +174,7 @@ For a typical React + Rust + PostgreSQL project:
 | ---------- | ----------------- | ------------------------------------------------ |
 | Pre-commit | Before push       | Lint, type-check, unit tests                     |
 | PR/MR      | Before merge      | All unit + integration, SAST, coverage threshold |
-| Staging    | Before production | E2E smoke suite, performance baseline            |
+| Staging    | Before production | E2E smoke suite + interaction verification, performance baseline |
 | Release    | Before go-live    | Full regression, security scan, accessibility    |
 
 ## CI/CD Pipeline Speed Targets
