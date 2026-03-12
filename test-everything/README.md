@@ -1,54 +1,93 @@
 # test-everything
 
-Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers.
+Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan strategies, scaffold infrastructure, and review quality across all testing layers — with user-story-driven E2E, exhaustive interaction crawling, desired outcome assessment, and UX/UI auditing.
 
 ## Features
 
-* **Audit** — Scan a project and identify testing gaps against best practices, including interaction verification quality and selector usage
+* **Coverage Audit** — Scan any project and produce a gap report across all testing layers, including interaction verification quality, selector usage, exhaustive element coverage, and desired outcome completeness
 
-* **Plan** — Generate a phased testing implementation strategy tailored to your project
+* **Testing Strategy Plan** — Generate a phased implementation plan (Foundation → Integration → E2E → Security/Performance → Polish) tailored to your project type and current state
 
-* **Scaffold** — Create test files, configs, and CI pipelines for any testing layer
+* **Test Scaffolding** — Create test files, configs, and CI pipelines for any testing layer: unit, integration, component, E2E, performance, security, accessibility, UX, UI, or CI
 
-* **Interaction Verification** — Generated E2E tests pair every interaction with an outcome assertion, catching broken buttons and failing workflows
+* **User-Story-Driven E2E** — E2E specs derived from user stories in `docs/planning/user-stories.md` (or inferred from the codebase); one spec per story covering every workflow step
 
-* **Exhaustive Interaction Crawl** — Systematically discovers and tests EVERY interactive element on every page, including buttons and links hidden behind sub-tabs, accordions, modals, and dropdowns
+* **Desired Outcome Assessment** — Defines measurable desired outcomes for each user story and assesses actual software results against those outcomes, producing a pass/fail report per story
 
-* **Desired Outcome Assessment** — Identifies measurable desired outcomes for each user story and assesses actual software results against those outcomes, producing a pass/fail report per story
+* **Exhaustive Interaction Crawl** — Systematically discovers and tests EVERY interactive element on every page, including buttons and links hidden behind sub-tabs, accordions, modals, and dropdowns — catches dead buttons, broken links, and non-functional fields that user-story tests miss
 
-* **Browser Health Monitoring** — Shared Playwright fixture that automatically fails tests on console errors, uncaught exceptions, and failed API requests
+* **Interaction Verification** — Every E2E interaction is paired with an outcome assertion (URL change, DOM change, network response, or element state); fire-and-forget clicks are flagged as anti-patterns
 
-* **Gap Analysis** — Proactive agent that identifies missing tests after code changes
+* **Browser Health Monitoring** — Shared Playwright fixture that automatically fails tests on console errors, uncaught JS exceptions, and failed API requests (4xx/5xx), catching silent failures across all E2E tests
 
-* **UX Quality Audit** — Evaluate against Nielsen's heuristics, detect dark patterns, check feedback loops and error messages, then implement improvements
+* **Walkthrough Test** — Single continuous test chaining top user story workflows in one browser session to catch cross-flow bugs that isolated tests miss
 
-* **UI Visual Quality Audit** — Check color contrast (WCAG), typography, spacing consistency, component uniformity, and visual hierarchy, then fix issues
+* **Common E2E Tests** — Scaffolds cross-cutting tests: smoke, error pages (404/unauthorized/API errors), responsive (375/768/1280px), navigation (deep links, back/forward, redirects), and optional visual regression
 
-* **Quality Review** — Agent that finds anti-patterns (including fire-and-forget clicks, poor selector usage, missing outcome assessment, and incomplete element coverage), flakiness risks, and architecture issues in tests
+* **UX Quality Audit** — Evaluate against Nielsen's 10 usability heuristics, detect dark patterns (confirmshaming, roach motel, bad defaults), check feedback loops and error messages, then implement top improvements
 
-## Stack
+* **UI Visual Quality Audit** — Check color contrast (WCAG 2.2), typography consistency, spacing grid alignment, component uniformity, and visual hierarchy via axe-core + screenshots, then fix issues
 
-Tailored to: React + Vitest, Rust `#[test]`, Playwright, k6, Semgrep, axe-core
+* **Gap Analysis** — Proactive agent that identifies missing tests after code changes, including missing outcome assessments and uncovered interactive elements
+
+* **Quality Review** — Agent that finds anti-patterns (fire-and-forget clicks, CSS selectors over accessible locators, missing outcome assessment, incomplete element coverage), flakiness risks, and architecture misalignment
 
 ## Commands
 
-| Command                             | Description                                                                                     |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `/test-everything:test-audit`            | Analyze test coverage and produce gap report                                                    |
-| `/test-everything:test-plan`             | Generate phased testing strategy                                                                |
-| `/test-everything:test-scaffold <layer>` | Scaffold test infrastructure (unit, integration, e2e, performance, security, accessibility, ux, ui, ci) |
-| `/test-everything:test-full-suite`       | Full workflow: audit, plan, scaffold, write, run, fix until green                               |
+| Command | Description |
+| ------- | ----------- |
+| `/test-everything:test-audit` | Analyze test coverage across all layers and produce a gap report including interaction verification, exhaustive element coverage, and desired outcome completeness |
+| `/test-everything:test-plan` | Generate a phased testing strategy with user story discovery, outcome definitions, exhaustive crawl planning, and quality gates |
+| `/test-everything:test-scaffold <layer>` | Scaffold test infrastructure for a specific layer |
+| `/test-everything:test-full-suite` | Full workflow: audit → plan → scaffold → write → run → fix until green |
+
+### Scaffold Layers
+
+| Layer | What gets created |
+|-------|------------------|
+| `unit` | Vitest config, setup file, example test; Rust test module |
+| `integration` | MSW handlers + server (frontend); SQLx test fixtures (backend) |
+| `component` | React Testing Library tests for complex UI components |
+| `e2e` | Playwright config, browser health fixture, user-story specs with desired outcome assessments, exhaustive interaction crawl, smoke/error/responsive/navigation tests, walkthrough test |
+| `performance` | k6 load, smoke, and stress test scripts |
+| `security` | Semgrep config, dependabot, cargo/npm audit CI steps |
+| `accessibility` | axe-core + Playwright spec, Lighthouse CI config |
+| `ux` | UX audit (Nielsen heuristics, dark patterns, feedback loops) + implement improvements |
+| `ui` | UI visual audit (contrast, typography, spacing, consistency) + implement improvements |
+| `ci` | GitHub Actions or GitLab CI pipeline with staged quality gates |
 
 ## Agents
 
-| Agent                     | Trigger                                                              |
-| ------------------------- | -------------------------------------------------------------------- |
-| **test-gap-analyzer**     | Proactively after implementing features or modifying code            |
-| **test-quality-reviewer** | When asked to review tests, find flaky tests, or optimize test suite |
+| Agent | Trigger | What it does |
+| ----- | ------- | ------------ |
+| **test-gap-analyzer** | After implementing features or modifying code | Analyzes git changes, categorizes risk, identifies missing unit/integration/E2E tests, flags missing outcome assessments and uncovered interactive elements |
+| **test-quality-reviewer** | "Review my tests", flaky CI, test suite optimization | Finds anti-patterns (no assertions, fire-and-forget clicks, CSS selectors, missing outcome tests), flakiness risks, architecture misalignment, and incomplete element coverage |
 
 ## Skill
 
-The **test-strategy** skill auto-activates when discussing testing types, strategy, architecture models, or CI/CD testing.
+The **test-strategy** skill auto-activates when discussing testing strategy, types, architecture models, CI/CD testing, desired outcomes, exhaustive testing, or interaction crawling. Covers:
+
+* All functional testing layers (unit, integration, E2E, component, smoke, regression, contract)
+* Interaction verification and exhaustive crawling methodology
+* Desired outcome assessment pattern (vs. acceptance criteria)
+* Browser health monitoring
+* Non-functional layers (performance, security, accessibility, UX, UI)
+* Testing architecture models: Pyramid, Diamond, Trophy, Honeycomb
+* Quality gates (pre-commit, PR, staging, release)
+* CI/CD speed targets
+
+## Workflow
+
+```
+/test-everything:test-audit        ← understand current state
+/test-everything:test-plan         ← approve strategy before writing
+/test-everything:test-scaffold e2e ← scaffold infrastructure for a layer
+/test-everything:test-full-suite   ← do everything end-to-end
+```
+
+## Stack
+
+Tailored to: React + Vitest + Testing Library, Rust `#[test]`, Playwright, k6, Semgrep, axe-core
 
 ## Installation
 
