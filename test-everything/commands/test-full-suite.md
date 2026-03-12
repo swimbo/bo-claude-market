@@ -20,8 +20,9 @@ Perform the same analysis as `/test-everything:test-audit`:
 1. Detect project type, languages, frameworks
 2. Inventory existing tests and configs
 3. Assess each testing layer (unit, integration, component, E2E, performance, security, accessibility)
-4. Assess E2E coverage against user stories (check for `docs/planning/user-stories.md` — see test-audit Step 3b)
-5. Identify gaps — output a brief summary table (not the full report)
+4. Assess E2E coverage against user stories and desired outcomes (check for `docs/planning/user-stories.md` — see test-audit Steps 3b, 3d, 3e)
+5. Assess exhaustive interaction coverage — check if all interactive elements on all pages are tested (see test-audit Step 3d)
+6. Identify gaps — output a brief summary table (not the full report)
 
 ### Phase 2: Plan
 
@@ -58,9 +59,9 @@ For projects with a frontend, write component tests for complex interactive UI c
 3. Use React Testing Library + Vitest — test behavior, not implementation details
 4. Skip simple presentational components that are just markup wrappers
 
-#### User-Story-Driven E2E Tests
+#### User-Story-Driven E2E Tests with Desired Outcome Assessment
 
-E2E tests MUST be derived from user story workflows and MUST use interaction verification.
+E2E tests MUST be derived from user story workflows, MUST use interaction verification, and MUST assess **desired outcomes** — the measurable end-states that prove each feature works correctly.
 
 **Before writing any E2E tests:**
 1. Scaffold the browser health fixture (`e2e/fixtures/browser-health.ts`) — see test-scaffold for the template
@@ -72,12 +73,24 @@ E2E tests MUST be derived from user story workflows and MUST use interaction ver
 
 1. **Check for user stories**: Look for `docs/planning/user-stories.md` in the project root
 2. **If the file exists**:
-   * Parse every user story and its acceptance criteria / workflow steps
+   * Parse every user story — its workflow steps, acceptance criteria, and **desired outcomes**
    * Create one E2E spec file per user story (e.g., `e2e/user-story-registration.spec.ts`)
    * Each spec must test every step in the user story workflow, in sequence
    * Map acceptance criteria directly to test assertions
    * **Every workflow step must pair the user action with an outcome assertion** — not just perform the action
    * Group related stories into describe blocks by feature area
+   * **Add a desired outcome assessment test** at the end of each story's spec — a test that executes the full workflow and then explicitly verifies every desired outcome:
+     ```typescript
+     test('Desired outcomes: [list outcomes]', async ({ page }) => {
+       // Execute full workflow end-to-end
+       // ...
+
+       // ASSESS each desired outcome
+       // Outcome 1: [description] — verify via [method]
+       expect(actualResult).toBe(expectedResult);
+       // Outcome 2: ...
+     });
+     ```
 3. **If the file does NOT exist**:
    * Analyze the codebase to infer user story workflows:
      - Scan routes/pages to identify user-facing features
@@ -92,21 +105,26 @@ E2E tests MUST be derived from user story workflows and MUST use interaction ver
      ### Workflow Steps
      1. [Step 1 — specific user action]
      2. [Step 2 — expected system response]
-     3. [Step 3 — next user action]
-     ...
 
      ### Acceptance Criteria
      - [ ] [Criterion 1]
      - [ ] [Criterion 2]
+
+     ### Desired Outcomes
+     | # | Outcome | How to Verify | Expected Result |
+     |---|---------|---------------|-----------------|
+     | 1 | [What success looks like] | [API / URL / DOM / data] | [Expected value] |
+     | 2 | [Second outcome] | [Method] | [Expected value] |
      ```
+   * For each story, define 2-5 **desired outcomes** — observable, specific, end-to-end results
    * Present the inferred user stories to the user for approval before writing E2E tests
-   * After approval, create E2E specs covering each story's workflow steps
+   * After approval, create E2E specs covering each story's workflow steps and desired outcomes
 4. **Coverage mapping**: After writing E2E tests, output a traceability matrix:
    ```
-   | User Story | E2E Spec File | Steps Covered | Status |
-   |------------|---------------|---------------|--------|
-   | US-001     | e2e/...       | 5/5           | Full   |
-   | US-002     | e2e/...       | 3/4           | Partial|
+   | User Story | E2E Spec File | Steps Covered | Outcomes Defined | Outcomes Assessed | Status |
+   |------------|---------------|---------------|------------------|-------------------|--------|
+   | US-001     | e2e/...       | 5/5           | 3                | 3/3 ✅            | Full   |
+   | US-002     | e2e/...       | 3/4           | 2                | 1/2 ⚠️            | Partial|
    ```
 
 #### Common E2E Tests
@@ -128,6 +146,25 @@ After writing all individual E2E tests, write a walkthrough test:
 3. Use the browser health fixture to catch cross-flow console errors and network failures
 4. This test runs AFTER all individual E2E tests pass (Phase 4)
 5. See test-scaffold for the walkthrough template
+
+#### Exhaustive Interaction Crawl
+
+After user-story and common E2E tests, scaffold and write an exhaustive interaction test that discovers and tests EVERY interactive element on every page:
+
+1. **Discover all routes** by analyzing the project's router config (React Router, Next.js pages, etc.)
+2. **Scaffold** `e2e/exhaustive-interactions.spec.ts` — see test-scaffold for the full template
+3. For each route, the test must:
+   * **Reveal hidden elements** — click unselected tabs, expand collapsed accordions, open `<details>` elements, expand `aria-expanded="false"` sections
+   * **Discover all interactive elements** — buttons, links, inputs, textareas, selects, checkboxes, radios, switches, menu items
+   * **Test every button** — click it and rely on browser health fixture to catch JS errors and failed API requests; if navigation occurs, go back; if a dialog opens, dismiss it
+   * **Validate every link** — verify `href` is not empty or `"#"`
+   * **Test every input** — fill it with test data and verify it accepts input
+   * **Test sub-tab content** — click each tab within a page and test the buttons/links inside the tab panel
+   * **Test dropdown menus** — open each dropdown trigger and verify menu items exist and are functional
+4. The browser health fixture is what makes this powerful — every click that triggers a JS error or failed API request automatically fails the test
+5. This test is a **safety net** that catches interactive elements missed by user-story tests
+6. Add script: `"test:e2e:exhaustive": "playwright test exhaustive-interactions.spec.ts"`
+7. Run AFTER walkthrough test in Phase 4
 
 #### UX Quality Audit
 
@@ -178,6 +215,8 @@ Loop until all tests pass:
 3. If tests pass, run linting/type-checking if available
 4. Fix any lint or type errors introduced
 5. Verify browser health monitoring is active — confirm test output shows the fixture loaded (no console errors, no failed requests)
+6. Run the exhaustive interaction crawl (`test:e2e:exhaustive`) to verify all interactive elements across all pages work without errors — fix any elements that trigger JS errors or API failures when clicked
+7. Run desired outcome assessment tests — verify all defined outcomes pass; if any fail, investigate whether the issue is in the test or the application
 
 ### Phase 5: Quality Review
 
@@ -202,11 +241,20 @@ Once everything is green and quality-reviewed, output:
 - [configs, CI files, setup files]
 - Browser health fixture: e2e/fixtures/browser-health.ts
 
-### User Story Coverage
-| User Story | E2E Spec File | Steps Covered | Status |
-|------------|---------------|---------------|--------|
-| US-001     | e2e/...       | 5/5           | Full   |
-| ...        | ...           | ...           | ...    |
+### User Story Coverage & Desired Outcome Assessment
+| User Story | E2E Spec File | Steps Covered | Outcomes Defined | Outcomes Assessed | Status |
+|------------|---------------|---------------|------------------|-------------------|--------|
+| US-001     | e2e/...       | 5/5           | 3                | 3/3 ✅            | Full   |
+| ...        | ...           | ...           | ...              | ...               | ...    |
+
+### Desired Outcome Assessment Summary
+| User Story | Outcome | Expected Result | Actual Result | Status |
+|------------|---------|-----------------|---------------|--------|
+| US-001     | Account created | API returns 201 with user ID | 201 + ID present | ✅ Pass |
+| US-001     | User can log in | Redirect to /dashboard | /dashboard | ✅ Pass |
+| US-002     | Data saved | Success toast visible | Toast not shown | ❌ Fail |
+
+Overall: X of Y desired outcomes passing (Z%)
 
 ### Interaction Verification
 | Check | Result | Status |
@@ -215,19 +263,23 @@ Once everything is green and quality-reviewed, output:
 | Selector quality | X% accessible locators | ✅/⚠️/❌ |
 | Browser health monitoring | Active | ✅ |
 
-### Interaction Coverage
-| Page/Route | Interactive Elements | Tested | Coverage |
-|------------|---------------------|--------|----------|
-| /dashboard | N                   | N      | N%       |
-| /settings  | N                   | N      | N%       |
+### Exhaustive Interaction Coverage
+| Page/Route | Interactive Elements | Tested (Story) | Tested (Exhaustive) | Total Coverage |
+|------------|---------------------|-----------------|---------------------|----------------|
+| /dashboard | N                   | N               | N                   | N%             |
+| /settings  | N                   | N               | N                   | N%             |
 
 Untested elements:
 - [page]: [list of untested buttons, links, forms by accessible name]
 
+Elements tested ONLY by exhaustive crawl (not covered by any user story):
+- [page]: [list — these are coverage gaps in user stories]
+
 Note: Generate this report by using Playwright to visit each route after E2E tests
 complete, query for all interactive elements (button, a[href], input, select,
-textarea, [role="button"]), and cross-reference against elements the tests
-actually interacted with. This report is informational — it does not fail the suite.
+textarea, [role="button"], [role="checkbox"], [role="switch"]), and cross-reference
+against elements the tests actually interacted with. The exhaustive crawl fills gaps
+left by user-story tests.
 
 ### Coverage Change
 - Before: [if known]
@@ -243,6 +295,8 @@ actually interacted with. This report is informational — it does not fail the 
 - [lint command]: ✅ clean
 - Browser health: ✅ No console errors, no failed API requests
 - Walkthrough: ✅ Full session test passed
+- Exhaustive crawl: ✅ All interactive elements functional (N elements across M routes)
+- Desired outcomes: ✅ X of Y outcomes passing
 ```
 
 ### Guidelines

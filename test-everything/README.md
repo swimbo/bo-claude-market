@@ -12,6 +12,10 @@ Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan testing
 
 * **Interaction Verification** — Generated E2E tests pair every interaction with an outcome assertion, catching broken buttons and failing workflows
 
+* **Exhaustive Interaction Crawl** — Systematically discovers and tests EVERY interactive element on every page, including buttons and links hidden behind sub-tabs, accordions, modals, and dropdowns
+
+* **Desired Outcome Assessment** — Identifies measurable desired outcomes for each user story and assesses actual software results against those outcomes, producing a pass/fail report per story
+
 * **Browser Health Monitoring** — Shared Playwright fixture that automatically fails tests on console errors, uncaught exceptions, and failed API requests
 
 * **Gap Analysis** — Proactive agent that identifies missing tests after code changes
@@ -20,7 +24,7 @@ Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan testing
 
 * **UI Visual Quality Audit** — Check color contrast (WCAG), typography, spacing consistency, component uniformity, and visual hierarchy, then fix issues
 
-* **Quality Review** — Agent that finds anti-patterns (including fire-and-forget clicks and poor selector usage), flakiness risks, and architecture issues in tests
+* **Quality Review** — Agent that finds anti-patterns (including fire-and-forget clicks, poor selector usage, missing outcome assessment, and incomplete element coverage), flakiness risks, and architecture issues in tests
 
 ## Stack
 

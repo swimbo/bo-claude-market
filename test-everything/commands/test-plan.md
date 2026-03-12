@@ -51,7 +51,7 @@ Create an implementation plan organized in 2-week phases:
 
 **Phase 1 (Foundation)**: Static analysis + unit testing framework
 **Phase 2 (Integration)**: Integration tests + test database setup
-**Phase 3 (E2E)**: User-story-driven Playwright tests
+**Phase 3 (E2E)**: User-story-driven Playwright tests with desired outcome assessment + exhaustive interaction crawl
 **Phase 4 (Security + Performance)**: SAST in CI + k6 load tests
 **Phase 5 (Polish)**: Accessibility + cross-browser + documentation
 
@@ -86,7 +86,17 @@ Before planning E2E tests, discover user stories:
    * Document inferred stories in `docs/planning/user-stories.md` (using `US-XXX` identifiers, workflow steps, and acceptance criteria)
 
    * Present to the user for review before proceeding
-4. **Plan E2E specs**: Map each approved user story to a spec file, listing which workflow steps and acceptance criteria each test will cover
+4. **Plan E2E specs**: Map each approved user story to a spec file, listing which workflow steps, acceptance criteria, and desired outcomes each test will cover
+5. **Plan desired outcome assessment**: For each user story, define 2-5 desired outcomes — measurable end-states that prove the feature works. Include:
+   * What success looks like (e.g., "User account exists and is accessible")
+   * How to verify it (e.g., "API returns 201, user can log in")
+   * Expected result (e.g., "Redirect to /dashboard after login")
+   * Plan a dedicated outcome assessment test per story that verifies all outcomes after executing the full workflow
+6. **Plan exhaustive interaction crawl**: After user-story specs, plan an exhaustive interaction test:
+   * List all routes to crawl (from router config)
+   * Identify pages with tabs, accordions, dropdowns, or modals that hide interactive elements
+   * Plan the crawl to reveal hidden elements, then test every button, link, input, and dropdown
+   * This catches dead buttons, broken links, and non-functional elements missed by user-story tests
 
 ### Step 5: Define Quality Gates
 

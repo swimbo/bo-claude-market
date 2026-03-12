@@ -196,9 +196,9 @@ Scaffold a shared Playwright fixture that automatically detects silent failures 
   });
   ```
 
-**User-Story-Driven Test Generation**:
+**User-Story-Driven Test Generation with Desired Outcomes**:
 
-E2E specs must be derived from user stories, not invented ad-hoc.
+E2E specs must be derived from user stories, not invented ad-hoc. Each user story must define **desired outcomes** — the measurable, verifiable end-states that prove the feature works correctly.
 
 **Interaction Verification Rules**:
 
@@ -238,7 +238,7 @@ If a test step cannot verify an outcome with at least one of these patterns, the
 1. **Check for** **`docs/planning/user-stories.md`** in the project root
 2. **If found**:
 
-   * Parse each user story (`US-XXX`) with its workflow steps and acceptance criteria
+   * Parse each user story (`US-XXX`) with its workflow steps, acceptance criteria, and **desired outcomes**
 
    * Create one spec file per story: `e2e/user-story-<slug>.spec.ts`
 
@@ -254,6 +254,25 @@ If a test step cannot verify an outcome with at least one of these patterns, the
      4. `page.getByTestId('...')` — last resort only, when no accessible name exists
 
      Why: `getByRole('button', { name: 'Submit' })` verifies the element is an actual button with the correct accessible name. A `<div>` styled to look like a button will NOT match `getByRole('button')` — catching a real bug that CSS selectors would miss.
+
+   * **Desired Outcome Assessment**: Each user story spec must include a final `test()` block that explicitly assesses all desired outcomes for that story. This is separate from step-by-step verification — it checks the end-state holistically:
+
+     ```typescript
+     test('Desired outcomes achieved', async ({ page }) => {
+       // Execute the full workflow first (register, submit, etc.)
+       // ...
+
+       // ASSESS each desired outcome against actual result
+       // Outcome 1: Account exists — verify via API or UI confirmation
+       await expect(page.getByText('Welcome, user@example.com')).toBeVisible();
+
+       // Outcome 2: User is redirected to the correct destination
+       await expect(page).toHaveURL(/\/dashboard/);
+
+       // Outcome 3: User can perform the next logical action
+       await expect(page.getByRole('button', { name: 'Create Project' })).toBeEnabled();
+     });
+     ```
 
    * Example structure:
 
@@ -286,6 +305,33 @@ If a test step cannot verify an outcome with at least one of these patterns, the
          await responsePromise;  // verify API call succeeded
          await expect(page.getByText('Check your email')).toBeVisible();  // verify UI feedback
        });
+
+       // --- DESIRED OUTCOME ASSESSMENT ---
+       test('Desired outcomes: account created, email sent, user can log in', async ({ page }) => {
+         // Execute full workflow
+         await page.goto('/register');
+         await page.getByLabel('Email').fill('newuser@example.com');
+         await page.getByLabel('Password').fill('SecurePass123!');
+         await page.getByLabel('Confirm Password').fill('SecurePass123!');
+         const apiResponse = page.waitForResponse(r =>
+           r.url().includes('/api/') && r.status() < 400
+         );
+         await page.getByRole('button', { name: 'Create Account' }).click();
+         const response = await apiResponse;
+
+         // OUTCOME 1: Account was created (API returned success with user data)
+         expect(response.status()).toBeLessThan(400);
+
+         // OUTCOME 2: User sees confirmation (email sent)
+         await expect(page.getByText('Check your email')).toBeVisible();
+
+         // OUTCOME 3: User can now log in with new credentials
+         await page.goto('/login');
+         await page.getByLabel('Email').fill('newuser@example.com');
+         await page.getByLabel('Password').fill('SecurePass123!');
+         await page.getByRole('button', { name: 'Sign In' }).click();
+         await expect(page).toHaveURL(/\/dashboard/);
+       });
      });
      ```
 3. **If NOT found**:
@@ -298,12 +344,43 @@ If a test step cannot verify an outcome with at least one of these patterns, the
 
      * Identify auth boundaries, forms, and interactive components
 
-   * Generate `docs/planning/user-stories.md` with inferred stories
+   * Generate `docs/planning/user-stories.md` with inferred stories using this format:
+
+     ```markdown
+     ## US-001: [Story Title]
+     **As a** [role], **I want to** [action], **so that** [benefit].
+
+     ### Workflow Steps
+     1. [Step 1 — specific user action]
+     2. [Step 2 — expected system response]
+
+     ### Acceptance Criteria
+     - [ ] [Criterion 1]
+     - [ ] [Criterion 2]
+
+     ### Desired Outcomes
+     | # | Outcome | How to Verify | Expected Result |
+     |---|---------|---------------|-----------------|
+     | 1 | [What success looks like] | [API response / URL / DOM state / data check] | [Specific expected value] |
+     | 2 | [Second outcome] | [Verification method] | [Expected value] |
+     ```
+
+   * For each user story, define 2-5 **desired outcomes** — the measurable end-states that prove the feature works. Outcomes should be:
+     * **Observable** — verifiable through UI state, API response, URL, or data
+     * **Specific** — not "it works" but "user sees dashboard with their name"
+     * **End-to-end** — cover the full result, not just intermediate steps
 
    * Present to the user for approval before creating specs
 
    * After approval, create specs as described above
-4. After scaffolding, output a coverage matrix showing which user stories have specs
+
+4. After scaffolding, output a coverage matrix showing which user stories have specs and desired outcome coverage:
+   ```
+   | User Story | E2E Spec File | Steps Covered | Outcomes Defined | Outcomes Tested | Status |
+   |------------|---------------|---------------|------------------|-----------------|--------|
+   | US-001     | e2e/...       | 5/5           | 3                | 3/3             | Full   |
+   | US-002     | e2e/...       | 3/4           | 2                | 1/2             | Partial|
+   ```
 
 **Common E2E Tests**:
 
@@ -411,6 +488,220 @@ Scaffold a single end-to-end walkthrough test that chains the top user story wor
 * Derive the walkthrough steps from the top 3-5 user stories in `docs/planning/user-stories.md`
 * Do NOT use separate `test()` blocks — maintain session state in one continuous test
 * Add script: `"test:e2e:walkthrough": "playwright test walkthrough.spec.ts"`
+
+**Exhaustive Interaction Crawl**:
+
+Scaffold a test that systematically discovers and interacts with EVERY interactive element on every page — including elements hidden behind tabs, accordions, modals, and dropdowns. This catches dead buttons, broken links, non-functional form fields, and elements that produce JavaScript errors when clicked.
+
+User-story tests cover the happy paths. The exhaustive crawl covers everything else — the settings tab nobody tested, the admin dropdown behind a sub-menu, the modal with a broken close button.
+
+* Create `e2e/exhaustive-interactions.spec.ts`:
+
+  ```typescript
+  import { test, expect } from './fixtures/browser-health';
+
+  // All app routes — discover from router config or list manually
+  const ROUTES: string[] = [
+    '/dashboard',
+    '/settings',
+    '/profile',
+    // ... add all authenticated and public routes
+  ];
+
+  // Selectors for containers that hide interactive elements.
+  // Click these first to reveal nested buttons, links, and fields.
+  const REVEALERS = [
+    '[role="tab"]:not([aria-selected="true"])',  // Unselected tabs
+    'details:not([open]) > summary',             // Collapsed details
+    '[aria-expanded="false"]',                   // Collapsed sections/accordions
+  ];
+
+  for (const route of ROUTES) {
+    test.describe(`Exhaustive interactions: ${route}`, () => {
+
+      test('all interactive elements respond without errors', async ({ page }) => {
+        await page.goto(route);
+        await page.waitForLoadState('networkidle');
+
+        // --- Phase 1: Reveal hidden content ---
+        // Click tabs, open accordions, expand collapsed sections
+        // to expose interactive elements that aren't immediately visible.
+        for (const selector of REVEALERS) {
+          const elements = page.locator(selector);
+          const count = await elements.count();
+          for (let i = 0; i < count; i++) {
+            const el = elements.nth(i);
+            if (await el.isVisible()) {
+              await el.click();
+              await page.waitForTimeout(300); // allow animations/transitions
+            }
+          }
+        }
+
+        // --- Phase 2: Discover all interactive elements ---
+        const interactiveElements = page.locator(
+          'button:visible, [role="button"]:visible, ' +
+          'a[href]:visible, ' +
+          'input:visible, textarea:visible, select:visible, ' +
+          '[role="checkbox"]:visible, [role="radio"]:visible, ' +
+          '[role="switch"]:visible, [role="menuitem"]:visible'
+        );
+        const totalCount = await interactiveElements.count();
+
+        // --- Phase 3: Test each element ---
+        // For buttons: click and verify no JS errors (browser health catches these)
+        // For links: verify href is valid (not empty, not "#")
+        // For inputs: fill and verify field accepts input
+        // For checkboxes/radios/switches: toggle and verify state changes
+
+        const buttons = page.locator('button:visible, [role="button"]:visible');
+        const btnCount = await buttons.count();
+        for (let i = 0; i < btnCount; i++) {
+          const btn = buttons.nth(i);
+          if (await btn.isEnabled()) {
+            const urlBefore = page.url();
+            const name = (await btn.textContent())?.trim() || `button[${i}]`;
+
+            await btn.click();
+            await page.waitForTimeout(200);
+
+            // If navigation occurred, go back to continue testing
+            if (page.url() !== urlBefore) {
+              await page.goBack();
+              await page.waitForLoadState('networkidle');
+            }
+
+            // If a modal/dialog opened, close it
+            const dialog = page.getByRole('dialog');
+            if (await dialog.isVisible()) {
+              const closeBtn = dialog.getByRole('button', { name: /close|cancel|dismiss/i });
+              if (await closeBtn.isVisible()) {
+                await closeBtn.click();
+                await page.waitForTimeout(200);
+              }
+            }
+            // Browser health fixture automatically catches any JS errors
+            // or failed API requests triggered by the click
+          }
+        }
+
+        const links = page.locator('a[href]:visible');
+        const linkCount = await links.count();
+        for (let i = 0; i < linkCount; i++) {
+          const link = links.nth(i);
+          const href = await link.getAttribute('href');
+          // Verify link has a real destination (not empty or just "#")
+          expect(href, `Link ${i} has empty/placeholder href`).toBeTruthy();
+          expect(href, `Link ${i} has placeholder "#" href`).not.toBe('#');
+        }
+
+        const inputs = page.locator('input:visible, textarea:visible');
+        const inputCount = await inputs.count();
+        for (let i = 0; i < inputCount; i++) {
+          const input = inputs.nth(i);
+          const type = await input.getAttribute('type');
+          const disabled = !(await input.isEnabled());
+          if (!disabled && type !== 'hidden' && type !== 'submit' && type !== 'file') {
+            await input.fill('test-interaction');
+            const value = await input.inputValue();
+            expect(value, `Input ${i} did not accept text`).toBe('test-interaction');
+            await input.fill(''); // reset
+          }
+        }
+
+        // Log coverage for the report
+        console.log(`[Exhaustive] ${route}: ${totalCount} interactive elements tested`);
+      });
+
+      test('sub-tabs and nested views expose functional elements', async ({ page }) => {
+        await page.goto(route);
+        await page.waitForLoadState('networkidle');
+
+        // Find all tab-like navigation within the page (not the main nav)
+        const tabs = page.locator('[role="tab"], [role="tablist"] button');
+        const tabCount = await tabs.count();
+
+        for (let i = 0; i < tabCount; i++) {
+          const tab = tabs.nth(i);
+          if (await tab.isVisible()) {
+            await tab.click();
+            await page.waitForTimeout(300);
+
+            // After clicking each tab, verify the tab panel has content
+            const tabPanel = page.locator('[role="tabpanel"]:visible');
+            if (await tabPanel.count() > 0) {
+              // Check that buttons/links inside the panel are functional
+              const panelButtons = tabPanel.locator('button:visible, [role="button"]:visible');
+              const panelBtnCount = await panelButtons.count();
+              for (let j = 0; j < panelBtnCount; j++) {
+                const btn = panelButtons.nth(j);
+                if (await btn.isEnabled()) {
+                  // Click and rely on browser health to catch errors
+                  await btn.click();
+                  await page.waitForTimeout(200);
+                  // Dismiss any dialog that opened
+                  const dialog = page.getByRole('dialog');
+                  if (await dialog.isVisible()) {
+                    const closeBtn = dialog.getByRole('button', { name: /close|cancel|dismiss/i });
+                    if (await closeBtn.isVisible()) await closeBtn.click();
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      test('dropdown menus and popovers contain functional items', async ({ page }) => {
+        await page.goto(route);
+        await page.waitForLoadState('networkidle');
+
+        // Find dropdown triggers
+        const dropdownTriggers = page.locator(
+          '[aria-haspopup="true"]:visible, ' +
+          '[aria-haspopup="menu"]:visible, ' +
+          '[aria-haspopup="listbox"]:visible'
+        );
+        const triggerCount = await dropdownTriggers.count();
+
+        for (let i = 0; i < triggerCount; i++) {
+          const trigger = dropdownTriggers.nth(i);
+          if (await trigger.isVisible()) {
+            await trigger.click();
+            await page.waitForTimeout(300);
+
+            // Find menu items in the opened dropdown
+            const menuItems = page.locator(
+              '[role="menuitem"]:visible, [role="option"]:visible'
+            );
+            const itemCount = await menuItems.count();
+            // Verify dropdown has items (not empty)
+            expect(itemCount, `Dropdown ${i} opened but has no items`).toBeGreaterThan(0);
+
+            // Click first item to verify it's functional
+            if (itemCount > 0) {
+              const firstItem = menuItems.first();
+              await firstItem.click();
+              await page.waitForTimeout(200);
+              // Browser health catches any errors from the menu action
+            }
+
+            // Re-navigate if needed (menu action may have changed page)
+            if (page.url() !== route && !page.url().endsWith(route)) {
+              await page.goto(route);
+              await page.waitForLoadState('networkidle');
+            }
+          }
+        }
+      });
+    });
+  }
+  ```
+
+* The ROUTES list should be generated by analyzing the project's router config (React Router routes, Next.js pages, etc.)
+* Add script: `"test:e2e:exhaustive": "playwright test exhaustive-interactions.spec.ts"`
+* This test runs AFTER user-story and common E2E tests — it's a safety net, not a replacement
+* **IMPORTANT**: The browser health fixture is what makes this powerful — every click that triggers a JS error or failed API request automatically fails the test, even if the test doesn't explicitly check for it
 
 ### Layer: `performance`
 

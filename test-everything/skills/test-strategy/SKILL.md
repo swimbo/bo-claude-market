@@ -1,6 +1,6 @@
 ---
 name: test-strategy
-description: This skill should be used when the user asks about "testing strategy", "what tests to write", "testing types", "test pyramid", "test diamond", "testing trophy", "what should I test", "testing architecture", "quality gates", "CI/CD testing", "shift-left testing", "test coverage gaps", "performance testing", "security testing", "accessibility testing", "E2E testing", "integration testing", "how to test", "test automation", "testing best practices", "test plan", "test coverage", or discusses how to plan, structure, or improve testing in a project. Provides comprehensive knowledge of all software testing types, architecture models, and implementation strategies tailored to React + Vitest, Rust, Playwright, and k6.
+description: This skill should be used when the user asks about "testing strategy", "what tests to write", "testing types", "test pyramid", "test diamond", "testing trophy", "what should I test", "testing architecture", "quality gates", "CI/CD testing", "shift-left testing", "test coverage gaps", "performance testing", "security testing", "accessibility testing", "E2E testing", "integration testing", "how to test", "test automation", "testing best practices", "test plan", "test coverage", "desired outcomes", "outcome assessment", "exhaustive testing", "interaction crawl", "click every button", or discusses how to plan, structure, or improve testing in a project. Provides comprehensive knowledge of all software testing types, architecture models, and implementation strategies tailored to React + Vitest, Rust, Playwright, and k6.
 version: 0.1.0
 ---
 
@@ -66,6 +66,46 @@ Every E2E test interaction must be paired with an outcome assertion. A test that
   * Console errors (`console.error` messages)
   * Failed API requests (4xx/5xx responses, `requestfailed` events)
 * **Selector strategy**: Use accessible locators — `getByRole` > `getByLabel` > `getByText` > `data-testid` (last resort). Accessible selectors verify the element is functional, not just present in the DOM.
+
+### Desired Outcome Assessment
+
+User-story tests verify individual steps work. Desired outcome assessment verifies the feature achieves its purpose.
+
+* **Concept**: For each user story, define 2-5 **desired outcomes** — the measurable end-states that prove the feature works correctly
+* **Desired outcomes are**:
+  * **Observable** — verifiable through UI state, API response, URL, or data
+  * **Specific** — not "it works" but "user sees dashboard with their name displayed"
+  * **End-to-end** — cover the full result, not just intermediate steps
+* **Assessment pattern**: Each user story spec includes a final test that executes the full workflow and then explicitly assesses every desired outcome:
+  1. Execute the complete workflow (registration, purchase, configuration, etc.)
+  2. For each desired outcome, verify actual result matches expected result
+  3. Report pass/fail per outcome with evidence
+* **Example outcomes**:
+  * Registration: "Account is created" → API returns 201 + user can log in
+  * Purchase: "Order is placed" → confirmation page shows order ID + email received
+  * Settings: "Preference is saved" → page reload preserves the setting
+* **vs. acceptance criteria**: Acceptance criteria define what to test; desired outcomes define what success looks like. "User can fill the form" is a criterion. "User account is created and immediately usable" is a desired outcome.
+
+### Exhaustive Interaction Crawling
+
+User-story tests cover the happy paths. The exhaustive crawl covers everything else — the settings tab nobody tested, the admin dropdown behind a sub-menu, the modal with a broken close button.
+
+* **Concept**: Systematically discover and interact with EVERY interactive element on every page, including elements hidden behind tabs, accordions, modals, and dropdowns
+* **What it catches**:
+  * Dead buttons (click produces no response and no error)
+  * Broken links (empty or `"#"` href)
+  * Non-functional form fields (input doesn't accept text)
+  * JavaScript errors triggered by clicking elements nobody usually clicks
+  * Failed API requests triggered by forgotten/untested features
+  * Empty dropdowns (trigger opens but no menu items inside)
+* **How it works**:
+  1. Visit every route in the application
+  2. **Reveal hidden content**: Click unselected tabs, expand collapsed accordions, open `<details>` elements, expand `aria-expanded="false"` sections
+  3. **Discover all interactive elements**: query for buttons, links, inputs, textareas, selects, checkboxes, radios, switches, menu items
+  4. **Test each element**: click buttons, validate link hrefs, fill inputs, open dropdowns
+  5. **Browser health fixture catches errors**: every click that triggers a JS error or failed API request automatically fails the test
+* **Runs AFTER** user-story and common E2E tests — it's a safety net, not a replacement
+* **Not a substitute for user-story tests**: Exhaustive crawling verifies elements don't break. User-story tests verify features work correctly. Both are needed.
 
 ### Other Functional Types
 
@@ -160,8 +200,9 @@ For a typical React + Rust + PostgreSQL project:
 | Unit tests                          | 80%+ business logic   | Fully automated             |
 | Integration tests                   | All critical paths    | Fully automated             |
 | Component tests                     | Key UI components     | Fully automated             |
-| E2E tests (user stories)            | All user story workflows + interaction verification | Fully automated          |
+| E2E tests (user stories)            | All user story workflows + interaction verification + desired outcome assessment | Fully automated          |
 | E2E tests (common)                  | Smoke, errors, responsive, navigation, walkthrough | Fully automated    |
+| E2E tests (exhaustive crawl)        | Every interactive element on every page, including sub-tabs and dropdowns | Fully automated    |
 | Performance                         | Key API endpoints     | Automated in CI             |
 | Security                            | All code + deps       | Automated + periodic manual |
 | Accessibility                       | All user-facing pages | Automated + manual audit    |

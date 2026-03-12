@@ -97,6 +97,10 @@ Scan test files for common problems:
 
 * No browser health monitoring — E2E test suites without console error detection (`pageerror` listener) or network failure detection (`requestfailed` listener). Silent JS errors and failed API calls pass undetected.
 
+* Missing desired outcome assessment — E2E tests walk through user story steps but never verify the end-state (e.g., tests fill a form and click submit, but never check whether the data was actually saved or the user can actually log in). Look for test files matching user stories that lack a final outcome-checking test block.
+
+* Incomplete element coverage — E2E tests only interact with elements mentioned in user stories, leaving buttons behind sub-tabs, dropdown menu items, accordion content, and secondary navigation completely untested. Check if an exhaustive interaction crawl test exists (`exhaustive-interactions.spec.ts`).
+
 **Architecture misalignment**:
 
 * Too many E2E tests relative to unit tests (inverted pyramid)

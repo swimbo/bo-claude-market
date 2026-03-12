@@ -90,16 +90,19 @@ Evaluate whether E2E tests cover actual user workflows:
    * Parse each user story and its workflow steps
    * For each story, check if a corresponding E2E spec exists
    * Determine how many workflow steps are covered by test assertions
+   * Check if **desired outcomes** are defined for each story
+   * Check if desired outcomes have corresponding assessment tests
    * Report coverage per story:
      ```
-     | User Story | E2E Spec | Steps Covered | Status |
-     |------------|----------|---------------|--------|
-     | US-001     | e2e/...  | 5/5           | Full   |
-     | US-002     | —        | 0/4           | Missing|
+     | User Story | E2E Spec | Steps Covered | Outcomes Defined | Outcomes Assessed | Status |
+     |------------|----------|---------------|------------------|-------------------|--------|
+     | US-001     | e2e/...  | 5/5           | 3                | 3/3 ✅            | Full   |
+     | US-002     | —        | 0/4           | 0                | —                 | Missing|
+     | US-003     | e2e/...  | 3/3           | 2                | 0/2 ❌            | Partial|
      ```
 3. **If NOT found**:
    * Note the absence in the gap report: "No user stories document found — E2E tests may not cover real user workflows"
-   * Recommend creating `docs/planning/user-stories.md` to drive E2E test coverage
+   * Recommend creating `docs/planning/user-stories.md` with desired outcomes to drive E2E test coverage
    * If E2E tests exist, check whether they appear to cover coherent workflows or just isolated page checks
 
 ### Step 3c: Assess Interaction Verification Quality
@@ -136,7 +139,68 @@ Evaluate whether E2E tests actually verify that interactions produce expected ou
 
 Thresholds: ✅ >80%, ⚠️ 50-80%, ❌ <50% for pairing and selectors.
 
-### Step 3d: Assess UX Quality
+### Step 3d: Assess Exhaustive Interaction Coverage
+
+Evaluate whether the test suite covers ALL interactive elements across all pages, not just those in user story workflows:
+
+1. **Check for exhaustive interaction tests**: Look for `e2e/exhaustive-interactions.spec.ts` or similar files that crawl pages and test all interactive elements
+2. **If found**:
+   * Check which routes are included in the crawl list
+   * Verify the test reveals hidden elements (tabs, accordions, dropdowns) before testing
+   * Verify the test covers buttons, links, inputs, checkboxes, and dropdown menus
+   * Report: "Exhaustive crawl covers N of M routes"
+3. **If NOT found**:
+   * Note the absence: "No exhaustive interaction tests — elements not covered by user stories may be untested (dead buttons, broken links behind sub-tabs, non-functional dropdown items)"
+   * Recommend scaffolding `e2e/exhaustive-interactions.spec.ts` to cover all interactive elements
+4. **Cross-reference with user-story tests**:
+   * Estimate how many interactive elements exist across all pages (use Playwright to query `button, a[href], input, select, textarea, [role="button"], [role="checkbox"], [role="switch"]`)
+   * Estimate how many are covered by user-story E2E tests
+   * Report: "Estimated N interactive elements across M routes; user-story tests cover approximately X%"
+   * Flag pages with zero E2E coverage (no user story touches them)
+
+Include in the gap report:
+```
+### Exhaustive Interaction Coverage
+| Check | Result | Status |
+|-------|--------|--------|
+| Exhaustive crawl test exists | Yes/No | ✅/❌ |
+| Routes covered by crawl | N of M | ✅/⚠️/❌ |
+| Hidden element discovery | Tabs, accordions, dropdowns tested | ✅/❌ |
+| Pages with zero E2E coverage | [list] | ⚠️ |
+```
+
+### Step 3e: Assess Desired Outcome Coverage
+
+Evaluate whether user story tests verify desired outcomes — the measurable end-states that prove features work:
+
+1. **Check if user stories define desired outcomes**: Look for "Desired Outcomes" sections in `docs/planning/user-stories.md`
+   * If present: count how many stories have desired outcomes defined
+   * If absent: note "User stories lack desired outcomes — tests may verify steps without confirming the feature actually works end-to-end"
+
+2. **Check if E2E tests assess desired outcomes**: For each user story with a test spec:
+   * Look for a test block that explicitly assesses outcomes (named "Desired outcomes:" or similar)
+   * A test that just walks through steps without checking the final result is NOT an outcome assessment
+   * Report: "X of Y user stories have outcome assessment tests"
+
+3. **Evaluate outcome quality**: For stories that do have outcome tests, check:
+   * Are outcomes **observable** (verified via UI state, API response, URL)?
+   * Are outcomes **specific** (expected value defined, not just "it works")?
+   * Are outcomes **end-to-end** (cover the full result, not just an intermediate step)?
+   * Report: "Outcome quality: X% observable, Y% specific, Z% end-to-end"
+
+Include in the gap report:
+```
+### Desired Outcome Assessment
+| Check | Result | Status |
+|-------|--------|--------|
+| Stories with desired outcomes defined | X of Y | ✅/⚠️/❌ |
+| Stories with outcome assessment tests | X of Y | ✅/⚠️/❌ |
+| Outcome quality (observable, specific, E2E) | X% pass | ✅/⚠️/❌ |
+```
+
+Thresholds: ✅ >80%, ⚠️ 50-80%, ❌ <50%.
+
+### Step 3f: Assess UX Quality
 
 Evaluate the application's user experience quality (requires a running app):
 
@@ -163,7 +227,7 @@ Evaluate the application's user experience quality (requires a running app):
    * Look for pre-checked checkboxes that opt users into non-essential features
    * Report: "Dark patterns: None found / [list each]"
 
-### Step 3e: Assess UI Visual Quality
+### Step 3g: Assess UI Visual Quality
 
 Evaluate the visual design quality (requires a running app):
 

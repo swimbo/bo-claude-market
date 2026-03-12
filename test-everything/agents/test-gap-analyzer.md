@@ -99,6 +99,22 @@ For each change, recommend specific tests:
 
 * Permission-based access changed
 
+**Desired outcome assessment needed when**:
+
+* A user story's E2E spec tests steps but doesn't verify the end-state outcome
+
+* New desired outcomes are defined in user stories without corresponding assessment tests
+
+* The feature's purpose (why) hasn't been verified, only its mechanics (how)
+
+**Exhaustive interaction coverage needed when**:
+
+* New pages or routes are added with interactive elements not covered by user stories
+
+* New tabs, accordions, dropdowns, or modals are added that contain buttons/links/inputs
+
+* Interactive elements exist on pages that have zero E2E test coverage
+
 ### Step 4: Output Recommendations
 
 ```
