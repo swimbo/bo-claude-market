@@ -1,0 +1,18 @@
+{
+  "name": "article-writer",
+  "version": "0.1.0",
+  "description": "Write well-researched, professional articles with voice profiles, deep research, templates, and multi-stage pipeline. Supports single articles and series with automatic or checkpoint-based workflows.",
+  "author": {
+    "name": "Bo",
+    "url": "https://github.com/bo"
+  },
+  "keywords": [
+    "writing",
+    "articles",
+    "research",
+    "voice-profiles",
+    "templates",
+    "content-creation",
+    "series"
+  ]
+}
