@@ -10,6 +10,7 @@ Custom plugins for Claude Code.
 | [top-10](./top-10/)                   | Competitive research — top 10 solutions analysis with deep dives and PRD generation                |
 | [test-everything](./test-everything/) | Comprehensive testing toolkit — audit gaps, plan strategy, scaffold infrastructure, review quality |
 | [bo-planner](./bo-planner/)           | File-based planning — scope fences, environment snapshots, verification gates, subagent delegation |
+| [article-writer](./article-writer/)   | Article writing — 6-stage pipeline with voice profiles, 42 templates, research depth levels, series support |
 
 ## Installation
 
@@ -18,6 +19,7 @@ claude plugin install whitepaper --marketplace bo-marketplace
 claude plugin install top-10 --marketplace bo-marketplace
 claude plugin install test-everything --marketplace bo-marketplace
 claude plugin install bo-planner --marketplace bo-marketplace
+claude plugin install article-writer --marketplace bo-marketplace
 ```
 
 <!-- PROOF

@@ -31,6 +31,13 @@
       "version": "0.1.0",
       "description": "File-based planning with scope fences, environment snapshots, verification gates, and subagent delegation tracking. Produces structured artifacts in docs/planning/.",
       "author": {"name": "Bo"}
+    },
+    {
+      "name": "article-writer",
+      "source": "./article-writer",
+      "version": "0.1.0",
+      "description": "Article writing plugin — 6-stage pipeline (research, outline, draft, style critique, content critique, final edit) with voice profiles, 42 built-in templates, 4 research depth levels, series support, and ideas tracking.",
+      "author": {"name": "Bo"}
     }
   ]
 }
