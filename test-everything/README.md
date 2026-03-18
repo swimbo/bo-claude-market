@@ -30,51 +30,66 @@ Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan strateg
 
 * **Gap Analysis** — Proactive agent that identifies missing tests after code changes, including missing outcome assessments and uncovered interactive elements
 
-* **Quality Review** — Agent that finds anti-patterns (fire-and-forget clicks, CSS selectors over accessible locators, missing outcome assessment, incomplete element coverage), flakiness risks, and architecture misalignment
+* **Quality Review** — Agent that finds anti-patterns (fire-and-forget clicks, CSS selectors over accessible locators, missing outcome assessment, incomplete element coverage), flakiness risks, and architecture misalignment; issues a PASS/FAIL verdict with automated grep checks
+
+* **Non-Negotiable Rules** — Banned patterns table (waitForTimeout, CSS selectors, fire-and-forget clicks, test.fixme, vague assertions) with enforcement at every phase; BAD vs GOOD test examples sourced from real failures
+
+* **Mandatory Self-Review (Phase 3.5)** — Blocking checkpoint where all generated tests are grepped for banned patterns before running; prevents the "147 tests passing but testing nothing" failure mode
+
+* **Shallow Test Detection** — Audit and gap-analysis agents now detect "page loads" tests that verify existence instead of feature behavior, and report them as higher priority than missing tests
 
 ## Commands
 
-| Command | Description |
-| ------- | ----------- |
-| `/test-everything:test-audit` | Analyze test coverage across all layers and produce a gap report including interaction verification, exhaustive element coverage, and desired outcome completeness |
-| `/test-everything:test-plan` | Generate a phased testing strategy with user story discovery, outcome definitions, exhaustive crawl planning, and quality gates |
-| `/test-everything:test-scaffold <layer>` | Scaffold test infrastructure for a specific layer |
-| `/test-everything:test-full-suite` | Full workflow: audit → plan → scaffold → write → run → fix until green |
+| Command                                  | Description                                                                                                                                                          |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/test-everything:test-audit`            | Analyze test coverage across all layers and produce a gap report including interaction verification, exhaustive element coverage, and desired outcome completeness   |
+| `/test-everything:test-plan`             | Generate a phased testing strategy with user story discovery, outcome definitions, exhaustive crawl planning, and quality gates                                      |
+| `/test-everything:test-scaffold <layer>` | Scaffold test infrastructure for a specific layer                                                                                                                    |
+| `/test-everything:test-full-suite`       | <span data-proof="authored" data-by="ai:external-agent">Full workflow: audit → plan → scaffold → write → self-review → run → fix → quality review until green</span> |
 
 ### Scaffold Layers
 
-| Layer | What gets created |
-|-------|------------------|
-| `unit` | Vitest config, setup file, example test; Rust test module |
-| `integration` | MSW handlers + server (frontend); SQLx test fixtures (backend) |
-| `component` | React Testing Library tests for complex UI components |
-| `e2e` | Playwright config, browser health fixture, user-story specs with desired outcome assessments, exhaustive interaction crawl, smoke/error/responsive/navigation tests, walkthrough test |
-| `performance` | k6 load, smoke, and stress test scripts |
-| `security` | Semgrep config, dependabot, cargo/npm audit CI steps |
-| `accessibility` | axe-core + Playwright spec, Lighthouse CI config |
-| `ux` | UX audit (Nielsen heuristics, dark patterns, feedback loops) + implement improvements |
-| `ui` | UI visual audit (contrast, typography, spacing, consistency) + implement improvements |
-| `ci` | GitHub Actions or GitLab CI pipeline with staged quality gates |
+| Layer           | What gets created                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `unit`          | Vitest config, setup file, example test; Rust test module                                                                                                                             |
+| `integration`   | MSW handlers + server (frontend); SQLx test fixtures (backend)                                                                                                                        |
+| `component`     | React Testing Library tests for complex UI components                                                                                                                                 |
+| `e2e`           | Playwright config, browser health fixture, user-story specs with desired outcome assessments, exhaustive interaction crawl, smoke/error/responsive/navigation tests, walkthrough test |
+| `performance`   | k6 load, smoke, and stress test scripts                                                                                                                                               |
+| `security`      | Semgrep config, dependabot, cargo/npm audit CI steps                                                                                                                                  |
+| `accessibility` | axe-core + Playwright spec, Lighthouse CI config                                                                                                                                      |
+| `ux`            | UX audit (Nielsen heuristics, dark patterns, feedback loops) + implement improvements                                                                                                 |
+| `ui`            | UI visual audit (contrast, typography, spacing, consistency) + implement improvements                                                                                                 |
+| `ci`            | GitHub Actions or GitLab CI pipeline with staged quality gates                                                                                                                        |
 
 ## Agents
 
-| Agent | Trigger | What it does |
-| ----- | ------- | ------------ |
-| **test-gap-analyzer** | After implementing features or modifying code | Analyzes git changes, categorizes risk, identifies missing unit/integration/E2E tests, flags missing outcome assessments and uncovered interactive elements |
-| **test-quality-reviewer** | "Review my tests", flaky CI, test suite optimization | Finds anti-patterns (no assertions, fire-and-forget clicks, CSS selectors, missing outcome tests), flakiness risks, architecture misalignment, and incomplete element coverage |
+| Agent                     | Trigger                                              | What it does                                                                                                                                                                   |
+| ------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **test-gap-analyzer**     | After implementing features or modifying code        | Analyzes git changes, categorizes risk, identifies missing unit/integration/E2E tests, flags missing outcome assessments and uncovered interactive elements; **detects shallow existing tests** that verify page loads but not features |
+| **test-quality-reviewer** | "Review my tests", flaky CI, test suite optimization | Runs **6 mandatory grep checks** for banned patterns; finds anti-patterns (fire-and-forget clicks, CSS selectors, missing outcome tests), flakiness risks, architecture misalignment; issues **PASS/FAIL verdict** |
 
 ## Skill
 
 The **test-strategy** skill auto-activates when discussing testing strategy, types, architecture models, CI/CD testing, desired outcomes, exhaustive testing, or interaction crawling. Covers:
 
 * All functional testing layers (unit, integration, E2E, component, smoke, regression, contract)
+
 * Interaction verification and exhaustive crawling methodology
+
 * Desired outcome assessment pattern (vs. acceptance criteria)
+
 * Browser health monitoring
+
 * Non-functional layers (performance, security, accessibility, UX, UI)
+
 * Testing architecture models: Pyramid, Diamond, Trophy, Honeycomb
+
 * Quality gates (pre-commit, PR, staging, release)
+
 * CI/CD speed targets
+
+* Common failure modes — "page loads" tests, hardcoded waits, giving up with test.fixme, fire-and-forget clicks, CSS selectors, premature completion claims
 
 ## Workflow
 
