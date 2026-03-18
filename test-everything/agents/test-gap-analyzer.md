@@ -115,6 +115,40 @@ For each change, recommend specific tests:
 
 * Interactive elements exist on pages that have zero E2E test coverage
 
+### Step 3b: Detect Shallow Existing Tests
+
+In addition to finding missing tests, check if EXISTING tests are too shallow to catch real bugs. This is critical — a test suite with 100 shallow tests gives false confidence.
+
+**Shallow test indicators** (grep for these in existing test files):
+
+1. **"Page loads" tests** — tests whose only assertions verify that a page renders:
+
+   * `expect(mainText?.trim().length).toBeGreaterThan(0)` — asserts "something exists"
+
+   * `expect(page).toHaveURL(/\/route/)` as the ONLY assertion — asserts URL didn't change
+
+   * `textContent()` followed by `toContain()` with a generic word — asserts a word is on the page
+
+2. **Hardcoded waits masking issues** — `waitForTimeout(N)` indicates the test isn't waiting for the right thing and may be flaky or hiding a bug
+
+3. **Skipped tests hiding gaps** — `test.fixme`, `test.skip`, `test.todo` count as untested features, not tested ones
+
+4. **Fire-and-forget interactions** — `.click()` or `.fill()` without a following assertion — the interaction may silently fail
+
+**Report shallow tests as HIGH PRIORITY gaps:**
+
+```
+### Shallow Tests (High Priority — Replace These)
+1. **[File:line]**: "page loads" test — only checks page has content, not that features work
+   - Current: `expect(text.length).toBeGreaterThan(0)`
+   - Replace with: tests that exercise the actual feature (create/read/update/delete)
+
+2. **[File:line]**: skipped test — `test.fixme` hides a real coverage gap
+   - Fix: investigate and fix the root cause, then unskip
+```
+
+These are MORE important than missing tests because they create a false sense of coverage. A team that sees "100 tests passing" won't know that 80 of them verify nothing.
+
 ### Step 4: Output Recommendations
 
 ```

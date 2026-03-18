@@ -68,13 +68,21 @@ Test UI components in isolation with various states, props, and interactions.
 **React + Vitest + Testing Library**:
 
 * Create `src/components/__tests__/` directory if not using co-located tests
+
 * For each complex interactive component, create a test file covering:
+
   * Default rendering — component mounts without errors
+
   * All visual states — loading, empty, error, success, disabled
+
   * User interactions — clicks, form input, keyboard navigation, focus management
+
   * Prop variations — required vs optional props, edge case values
+
   * Conditional rendering — permission-gated content, responsive breakpoints
+
 * Example structure:
+
   ```typescript
   // src/components/__tests__/DataTable.test.tsx
   import { render, screen } from '@testing-library/react';
@@ -90,12 +98,15 @@ Test UI components in isolation with various states, props, and interactions.
     it('renders error state on fetch failure', () => { ... });
   });
   ```
+
 * Install deps if missing: `@testing-library/react @testing-library/user-event @testing-library/jest-dom`
 
 **Storybook (optional)**:
 
 * Install Storybook if the team wants visual component documentation: `npx storybook@latest init`
+
 * Create stories alongside components: `ComponentName.stories.tsx`
+
 * Configure Storybook test runner for CI: `@storybook/test-runner`
 
 ### Layer: `e2e`
@@ -200,23 +211,92 @@ Scaffold a shared Playwright fixture that automatically detects silent failures 
 
 E2E specs must be derived from user stories, not invented ad-hoc. Each user story must define **desired outcomes** — the measurable, verifiable end-states that prove the feature works correctly.
 
+**CRITICAL: Tests Must Verify Features, Not Page Loads**
+
+The #1 failure mode is writing tests that check "the page rendered something" instead of "the feature works." Before scaffolding any E2E test, ask: "If this feature broke completely, would this test catch it?"
+
+**BAD scaffolding patterns — NEVER generate these:**
+
+```typescript
+// BAD: "page loads" test — passes even if every feature is broken
+test("page loads and renders content", async ({ page }) => {
+  await page.goto("/knowledge-base");
+  await page.waitForTimeout(3000); // BANNED
+  const mainText = await page.locator("main").textContent(); // BANNED: CSS selector
+  expect(mainText?.trim().length).toBeGreaterThan(0); // BANNED: vague assertion
+});
+
+// BAD: URL-only test — proves the router works, not the feature
+test("url stays on /knowledge-base", async ({ page }) => {
+  await page.goto("/knowledge-base");
+  await page.waitForTimeout(1000); // BANNED
+  await expect(page).toHaveURL(/\/knowledge-base/); // WEAK: only tests URL
+});
+
+// BAD: giving up on a test
+test.fixme("invalid password shows error", async ({ page }) => {
+  // BANNED: test.fixme hides a real gap
+});
+```
+
+**GOOD scaffolding patterns — generate these instead:**
+
+```typescript
+// GOOD: tests the actual feature end-to-end
+test("user can create a KB document and find it", async ({ page }) => {
+  await page.goto("/knowledge-base");
+  await page.getByRole('button', { name: /new|create|add/i }).click();
+  await page.getByLabel('Title').fill('Test Document');
+  await page.getByLabel('Content').fill('Searchable content');
+  const saveResponse = page.waitForResponse(r =>
+    r.url().includes('/api/') && r.request().method() === 'POST'
+  );
+  await page.getByRole('button', { name: /save|submit/i }).click();
+  await saveResponse;
+  await expect(page.getByText('Test Document')).toBeVisible();
+});
+
+// GOOD: tests error handling with specific assertions
+test("invalid password shows descriptive error", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel('Email').fill('user@test.com');
+  await page.getByLabel('Password').fill('WrongPass!');
+  await page.getByRole('button', { name: /sign in/i }).click();
+  await expect(page.getByText(/invalid|incorrect|wrong/i)).toBeVisible();
+  await expect(page).toHaveURL(/\/login/);
+});
+
+// GOOD: tests that data persists (desired outcome)
+test("settings changes persist after reload", async ({ page }) => {
+  await page.goto("/settings");
+  await page.getByLabel('Display Name').fill('New Name');
+  await page.getByRole('button', { name: /save/i }).click();
+  await expect(page.getByText(/saved|updated/i)).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel('Display Name')).toHaveValue('New Name');
+});
+```
+
 **Interaction Verification Rules**:
 
 Every interaction in generated E2E tests MUST be paired with an outcome assertion. A test that clicks a button without verifying the result provides zero confidence. Apply this rule to every `click()`, `fill()`, `check()`, `selectOption()`, and form submission:
 
 * **Navigation verification** — action should change the URL:
+
   ```typescript
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(page).toHaveURL(/\/dashboard/);
   ```
 
 * **DOM change verification** — action should change visible content:
+
   ```typescript
   await page.getByRole('button', { name: 'Save' }).click();
   await expect(page.getByText('Changes saved')).toBeVisible();
   ```
 
 * **Network verification** — action should trigger an API call:
+
   ```typescript
   const responsePromise = page.waitForResponse(resp =>
     resp.url().includes('/api/items') && resp.status() === 200
@@ -226,6 +306,7 @@ Every interaction in generated E2E tests MUST be paired with an outcome assertio
   ```
 
 * **State verification** — action should change element state:
+
   ```typescript
   await page.getByRole('checkbox', { name: 'Accept terms' }).check();
   await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
@@ -236,6 +317,7 @@ If a test step cannot verify an outcome with at least one of these patterns, the
 **User-Story-Driven Test Spec Generation**:
 
 1. **Check for** **`docs/planning/user-stories.md`** in the project root
+
 2. **If found**:
 
    * Parse each user story (`US-XXX`) with its workflow steps, acceptance criteria, and **desired outcomes**
@@ -334,6 +416,7 @@ If a test step cannot verify an outcome with at least one of these patterns, the
        });
      });
      ```
+
 3. **If NOT found**:
 
    * Analyze the codebase to infer user stories:
@@ -366,8 +449,11 @@ If a test step cannot verify an outcome with at least one of these patterns, the
      ```
 
    * For each user story, define 2-5 **desired outcomes** — the measurable end-states that prove the feature works. Outcomes should be:
+
      * **Observable** — verifiable through UI state, API response, URL, or data
+
      * **Specific** — not "it works" but "user sees dashboard with their name"
+
      * **End-to-end** — cover the full result, not just intermediate steps
 
    * Present to the user for approval before creating specs
@@ -375,6 +461,7 @@ If a test step cannot verify an outcome with at least one of these patterns, the
    * After approval, create specs as described above
 
 4. After scaffolding, output a coverage matrix showing which user stories have specs and desired outcome coverage:
+
    ```
    | User Story | E2E Spec File | Steps Covered | Outcomes Defined | Outcomes Tested | Status |
    |------------|---------------|---------------|------------------|-----------------|--------|
@@ -387,31 +474,57 @@ If a test step cannot verify an outcome with at least one of these patterns, the
 In addition to user-story specs, scaffold these cross-cutting E2E tests that aren't tied to any single story:
 
 * `e2e/smoke.spec.ts` — Quick post-deployment sanity checks:
+
   * Homepage loads successfully
+
   * Login/auth flow works
+
   * Main navigation links resolve
+
   * API health endpoint responds
+
 * `e2e/error-pages.spec.ts` — Error handling:
+
   * 404 page renders for unknown routes
+
   * Unauthorized redirect for protected routes
+
   * Graceful handling of API errors (500, timeout)
+
   * Empty states render correctly (no data scenarios)
+
 * `e2e/responsive.spec.ts` — Viewport/responsive tests:
+
   * Mobile viewport (375px) — navigation collapses, layout adapts
+
   * Tablet viewport (768px) — intermediate layout
+
   * Desktop viewport (1280px) — full layout
+
   * Test critical pages at each breakpoint
+
 * `e2e/navigation.spec.ts` — Routing and navigation:
+
   * Deep links load correctly (direct URL access)
+
   * Browser back/forward works after navigation
+
   * Redirects work (e.g., `/` → `/dashboard` when authenticated)
+
   * Query parameters and URL state preserved
+
 * `e2e/visual-regression.spec.ts` (optional) — Visual regression testing:
+
   * Capture screenshots at key workflow completion points (not just static pages)
+
   * Use `expect(page).toHaveScreenshot('descriptive-name.png')` with meaningful names
+
   * Focus on top 3-5 critical page states — not every page
+
   * Include interaction before screenshot (e.g., complete a workflow, then screenshot the result)
+
   * Only scaffold if user opts in (baselines require maintenance)
+
   * Template:
 
     ```typescript
@@ -436,6 +549,7 @@ In addition to user-story specs, scaffold these cross-cutting E2E tests that are
     ```
 
   * To update baselines: `npx playwright test --update-snapshots`
+
   * Note: baselines are OS-dependent — generate in the same environment as CI
 
 **Post-Suite Walkthrough**:
@@ -485,8 +599,11 @@ Scaffold a single end-to-end walkthrough test that chains the top user story wor
   ```
 
 * This test should run AFTER all individual E2E tests pass
+
 * Derive the walkthrough steps from the top 3-5 user stories in `docs/planning/user-stories.md`
+
 * Do NOT use separate `test()` blocks — maintain session state in one continuous test
+
 * Add script: `"test:e2e:walkthrough": "playwright test walkthrough.spec.ts"`
 
 **Exhaustive Interaction Crawl**:
@@ -699,8 +816,11 @@ User-story tests cover the happy paths. The exhaustive crawl covers everything e
   ```
 
 * The ROUTES list should be generated by analyzing the project's router config (React Router routes, Next.js pages, etc.)
+
 * Add script: `"test:e2e:exhaustive": "playwright test exhaustive-interactions.spec.ts"`
+
 * This test runs AFTER user-story and common E2E tests — it's a safety net, not a replacement
+
 * **IMPORTANT**: The browser health fixture is what makes this powerful — every click that triggers a JS error or failed API request automatically fails the test, even if the test doesn't explicitly check for it
 
 ### Layer: `performance`
@@ -751,44 +871,59 @@ Use Playwright to crawl the running application and evaluate against these frame
 
 1. **Nielsen's 10 Usability Heuristics** — For each, score the app 1-5:
 
-   | Heuristic | What to Check |
-   |-----------|--------------|
-   | Visibility of system status | Loading indicators, progress bars, submission confirmations. Does the app go silent during async operations? |
-   | Match system and real world | Jargon-free labels, familiar icons, logical menu ordering. Are technical terms exposed to non-technical users? |
-   | User control and freedom | Undo/redo support, cancel buttons, back navigation. Can users escape from any state without data loss? |
-   | Consistency and standards | Same styling for same actions across all pages. Are warning colors consistent? Are button positions predictable? |
-   | Error prevention | Confirmation dialogs for destructive actions, input constraints, dry-run options. Can users accidentally delete data? |
-   | Recognition over recall | Autocomplete, recent items, contextual hints. Are users forced to memorize values from previous screens? |
-   | Flexibility and efficiency | Keyboard shortcuts, power-user features, customizable workflows. Is the app equally efficient for novice and expert? |
-   | Aesthetic and minimalist design | Information density, whitespace usage, visual noise. Does irrelevant content compete with primary tasks? |
-   | Help users recover from errors | Error message quality (plain language + resolution steps). Are errors actionable or cryptic? |
-   | Help and documentation | Searchable docs, contextual tooltips, onboarding. Can a new user complete core tasks without external guidance? |
+   | Heuristic                       | What to Check                                                                                                         |
+   | ------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+   | Visibility of system status     | Loading indicators, progress bars, submission confirmations. Does the app go silent during async operations?          |
+   | Match system and real world     | Jargon-free labels, familiar icons, logical menu ordering. Are technical terms exposed to non-technical users?        |
+   | User control and freedom        | Undo/redo support, cancel buttons, back navigation. Can users escape from any state without data loss?                |
+   | Consistency and standards       | Same styling for same actions across all pages. Are warning colors consistent? Are button positions predictable?      |
+   | Error prevention                | Confirmation dialogs for destructive actions, input constraints, dry-run options. Can users accidentally delete data? |
+   | Recognition over recall         | Autocomplete, recent items, contextual hints. Are users forced to memorize values from previous screens?              |
+   | Flexibility and efficiency      | Keyboard shortcuts, power-user features, customizable workflows. Is the app equally efficient for novice and expert?  |
+   | Aesthetic and minimalist design | Information density, whitespace usage, visual noise. Does irrelevant content compete with primary tasks?              |
+   | Help users recover from errors  | Error message quality (plain language + resolution steps). Are errors actionable or cryptic?                          |
+   | Help and documentation          | Searchable docs, contextual tooltips, onboarding. Can a new user complete core tasks without external guidance?       |
 
 2. **Dark Pattern Detection** — Scan for manipulative UI patterns:
 
    * Trick questions (confusing double negatives in settings/checkboxes)
+
    * Hidden costs (dependencies or requirements revealed late in workflows)
+
    * Forced continuity (difficult-to-find cancellation or opt-out paths)
+
    * Confirmshaming (guilt-tripping language on decline buttons)
+
    * Misdirection (visual hierarchy that draws attention away from user-beneficial options)
+
    * Bad defaults (settings that optimize for data collection over user privacy/safety)
+
    * Roach motel (easy to start, hard to exit — check account deletion, subscription management)
 
 3. **Feedback Loop Quality** — Evaluate interactive responsiveness:
 
    * Every button click produces visible feedback within 100ms
+
    * Form submissions show loading state, then success/error
+
    * Long-running operations display progress (not just a spinner)
+
    * Error states provide recovery paths (not dead ends)
+
    * Success states confirm what happened (not just "Done")
 
 4. **CLI/Terminal UX** (if applicable):
 
    * Help available via `--help`, `-h`, and `help` subcommand
+
    * Consistent command structure: `tool [noun] [verb] [flags]`
+
    * Flags preferred over positional arguments (self-documenting)
+
    * `stdout` for data, `stderr` for messages/progress (pipeable output)
+
    * Error messages include: error code, description, resolution steps, docs URL
+
    * Non-destructive by default (require `--force` for dangerous operations)
 
 **Phase 2: Audit Report**
@@ -822,11 +957,17 @@ Output a structured report:
 After presenting the audit, implement the top prioritized improvements:
 
 * Add missing loading states and progress indicators
+
 * Add confirmation dialogs for destructive actions
+
 * Improve error messages (plain language + resolution steps)
+
 * Fix feedback gaps (buttons that produce no visible response)
+
 * Remove or fix any detected dark patterns
+
 * Add keyboard shortcuts for common actions
+
 * Improve form validation (inline, real-time, not just on submit)
 
 Use the browser health fixture from the e2e layer to verify improvements don't introduce console errors.
@@ -841,57 +982,80 @@ Use Playwright to screenshot and analyze each page/route, evaluating against the
 
 1. **Color & Contrast Compliance** — WCAG 2.2 standards:
 
-   | Check | Standard | How to Verify |
-   |-------|----------|--------------|
-   | Body text contrast | ≥ 4.5:1 ratio | Use axe-core or Lighthouse to check all text elements |
-   | Large text contrast (≥18pt or 14pt bold) | ≥ 3.0:1 ratio | Check headings, buttons, nav items |
-   | Non-text contrast (icons, borders, focus rings) | ≥ 3.0:1 ratio | Check interactive element boundaries |
-   | Color not sole indicator | N/A | Error states must use icon + text + color (not just red) |
-   | Dark/light theme parity | Same ratios in both themes | Run audit in both themes if available |
+   | Check                                           | Standard                   | How to Verify                                            |
+   | ----------------------------------------------- | -------------------------- | -------------------------------------------------------- |
+   | Body text contrast                              | ≥ 4.5:1 ratio              | Use axe-core or Lighthouse to check all text elements    |
+   | Large text contrast (≥18pt or 14pt bold)        | ≥ 3.0:1 ratio              | Check headings, buttons, nav items                       |
+   | Non-text contrast (icons, borders, focus rings) | ≥ 3.0:1 ratio              | Check interactive element boundaries                     |
+   | Color not sole indicator                        | N/A                        | Error states must use icon + text + color (not just red) |
+   | Dark/light theme parity                         | Same ratios in both themes | Run audit in both themes if available                    |
 
    Use `@axe-core/playwright` for automated contrast checking. Flag every failure with the specific element, current ratio, and required ratio.
 
 2. **Typography Audit**:
 
    * Count distinct font families in use — flag if more than 3
+
    * Check for consistent heading hierarchy (h1 > h2 > h3, no skipped levels)
+
    * Verify monospaced font used for code elements
+
    * Check line height (body: 1.4-1.6, code: 1.3-1.5)
+
    * Check max line length (prose: 60-80 characters, code: 80-120)
+
    * Flag excessively small text (< 12px body, < 11px labels)
+
    * Verify font loading fallbacks (no FOUT/FOIT flashes)
 
 3. **Spacing & Layout Consistency**:
 
    * Check for consistent spacing scale (e.g., 4px/8px grid system)
+
    * Verify alignment — elements within groups should share a common edge
+
    * Check padding consistency on similar components (all cards have same padding)
+
    * Verify responsive behavior at mobile (375px), tablet (768px), desktop (1280px)
+
    * Flag horizontal scrolling on any viewport
+
    * Check whitespace between sections (adequate breathing room)
 
 4. **Component Visual Consistency**:
 
    * All buttons of same type share identical styling (border-radius, padding, font-size)
+
    * All form inputs share identical styling (height, border, focus ring)
+
    * Consistent icon sizing and weight throughout
+
    * Hover/focus/active/disabled states defined for all interactive elements
+
    * No "Frankenstein layouts" — components from different design systems mixed inconsistently
 
 5. **Visual Hierarchy & Gestalt Principles**:
 
    * Primary CTA is visually dominant on each page (largest, most contrasted)
+
    * Related elements are grouped with proximity (tight spacing)
+
    * Unrelated sections are separated with whitespace or borders
+
    * Reading flow follows predictable F-pattern or Z-pattern
+
    * No competing visual elements fighting for attention at the same level
 
 6. **Semantic Color Usage**:
 
    * Red/destructive styling used ONLY for destructive actions and errors
+
    * Green/success styling used ONLY for success states and confirmations
+
    * Yellow/warning styling used ONLY for warnings and caution states
+
    * Primary brand color used consistently for primary actions
+
    * Neutral colors used for secondary UI elements and borders
 
 **Phase 2: Visual Audit Report**
@@ -936,12 +1100,19 @@ Output a structured report with screenshots:
 After presenting the audit, implement the top prioritized improvements:
 
 * Fix all contrast ratio failures (adjust text color, background, or both)
+
 * Standardize component styling (consolidate button/input variants)
+
 * Fix typography hierarchy (correct heading levels, consistent sizing)
+
 * Add missing interactive states (hover, focus, active, disabled)
+
 * Normalize spacing to a consistent grid (4px or 8px increments)
+
 * Fix visual hierarchy (make primary CTAs dominant, separate sections)
+
 * Fix semantic color misuse (red only for errors/destructive, etc.)
+
 * Add focus-visible rings for keyboard navigation
 
 Take before/after screenshots using `expect(page).toHaveScreenshot()` to verify visual improvements.

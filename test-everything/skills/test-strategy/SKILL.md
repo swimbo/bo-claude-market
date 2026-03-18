@@ -57,14 +57,23 @@ Testing divides along three axes:
 Every E2E test interaction must be paired with an outcome assertion. A test that clicks without verifying the result is the #1 cause of "tests pass but app is broken."
 
 * **Principle**: Every `click()`, `fill()`, `check()`, `selectOption()` MUST be followed by an assertion verifying the outcome
+
 * **Three verification patterns**:
+
   * Navigation: `await expect(page).toHaveURL(...)` — action changed the URL
+
   * DOM change: `await expect(page.getByText(...)).toBeVisible()` — action changed visible content
+
   * Network: `await page.waitForResponse(...)` — action triggered an API call
+
 * **Browser health monitoring**: Use a shared Playwright fixture that automatically fails tests on:
+
   * Uncaught JS exceptions (`pageerror` events)
+
   * Console errors (`console.error` messages)
+
   * Failed API requests (4xx/5xx responses, `requestfailed` events)
+
 * **Selector strategy**: Use accessible locators — `getByRole` > `getByLabel` > `getByText` > `data-testid` (last resort). Accessible selectors verify the element is functional, not just present in the DOM.
 
 ### Desired Outcome Assessment
@@ -72,18 +81,29 @@ Every E2E test interaction must be paired with an outcome assertion. A test that
 User-story tests verify individual steps work. Desired outcome assessment verifies the feature achieves its purpose.
 
 * **Concept**: For each user story, define 2-5 **desired outcomes** — the measurable end-states that prove the feature works correctly
+
 * **Desired outcomes are**:
+
   * **Observable** — verifiable through UI state, API response, URL, or data
+
   * **Specific** — not "it works" but "user sees dashboard with their name displayed"
+
   * **End-to-end** — cover the full result, not just intermediate steps
+
 * **Assessment pattern**: Each user story spec includes a final test that executes the full workflow and then explicitly assesses every desired outcome:
+
   1. Execute the complete workflow (registration, purchase, configuration, etc.)
   2. For each desired outcome, verify actual result matches expected result
   3. Report pass/fail per outcome with evidence
+
 * **Example outcomes**:
+
   * Registration: "Account is created" → API returns 201 + user can log in
+
   * Purchase: "Order is placed" → confirmation page shows order ID + email received
+
   * Settings: "Preference is saved" → page reload preserves the setting
+
 * **vs. acceptance criteria**: Acceptance criteria define what to test; desired outcomes define what success looks like. "User can fill the form" is a criterion. "User account is created and immediately usable" is a desired outcome.
 
 ### Exhaustive Interaction Crawling
@@ -91,20 +111,31 @@ User-story tests verify individual steps work. Desired outcome assessment verifi
 User-story tests cover the happy paths. The exhaustive crawl covers everything else — the settings tab nobody tested, the admin dropdown behind a sub-menu, the modal with a broken close button.
 
 * **Concept**: Systematically discover and interact with EVERY interactive element on every page, including elements hidden behind tabs, accordions, modals, and dropdowns
+
 * **What it catches**:
+
   * Dead buttons (click produces no response and no error)
+
   * Broken links (empty or `"#"` href)
+
   * Non-functional form fields (input doesn't accept text)
+
   * JavaScript errors triggered by clicking elements nobody usually clicks
+
   * Failed API requests triggered by forgotten/untested features
+
   * Empty dropdowns (trigger opens but no menu items inside)
+
 * **How it works**:
+
   1. Visit every route in the application
   2. **Reveal hidden content**: Click unselected tabs, expand collapsed accordions, open `<details>` elements, expand `aria-expanded="false"` sections
   3. **Discover all interactive elements**: query for buttons, links, inputs, textareas, selects, checkboxes, radios, switches, menu items
   4. **Test each element**: click buttons, validate link hrefs, fill inputs, open dropdowns
   5. **Browser health fixture catches errors**: every click that triggers a JS error or failed API request automatically fails the test
+
 * **Runs AFTER** user-story and common E2E tests — it's a safety net, not a replacement
+
 * **Not a substitute for user-story tests**: Exhaustive crawling verifies elements don't break. User-story tests verify features work correctly. Both are needed.
 
 ### Other Functional Types
@@ -155,17 +186,25 @@ User-story tests cover the happy paths. The exhaustive crawl covers everything e
 ### UX Quality Testing
 
 * **Scope**: Heuristic evaluation, feedback loops, error messages, dark pattern detection
+
 * **Framework**: Nielsen's 10 usability heuristics scored 1-5
+
 * **Tools**: Playwright (crawl and interact), manual checklist, axe-core
+
 * **Target**: All heuristics score ≥ 3, no dark patterns, all destructive actions confirmed
+
 * **Approach**: Audit → Report → Implement top improvements → Verify
 
 ### UI Visual Quality Testing
 
 * **Scope**: Color contrast, typography, spacing, component consistency, visual hierarchy
+
 * **Framework**: WCAG 2.2 contrast ratios, Gestalt principles, design system auditing
+
 * **Tools**: axe-core (contrast), Playwright screenshots, Lighthouse
+
 * **Target**: Zero WCAG contrast failures, ≤ 3 font families, consistent component styling
+
 * **Approach**: Audit → Report with screenshots → Implement fixes → Before/after comparison
 
 ### Other Non-Functional Types
@@ -194,29 +233,29 @@ Choose based on project type:
 
 For a typical React + Rust + PostgreSQL project:
 
-| Layer                               | Target                | Automation                  |
-| ----------------------------------- | --------------------- | --------------------------- |
-| Static analysis (lint, types, SAST) | 100% of code          | Fully automated             |
-| Unit tests                          | 80%+ business logic   | Fully automated             |
-| Integration tests                   | All critical paths    | Fully automated             |
-| Component tests                     | Key UI components     | Fully automated             |
-| E2E tests (user stories)            | All user story workflows + interaction verification + desired outcome assessment | Fully automated          |
-| E2E tests (common)                  | Smoke, errors, responsive, navigation, walkthrough | Fully automated    |
-| E2E tests (exhaustive crawl)        | Every interactive element on every page, including sub-tabs and dropdowns | Fully automated    |
-| Performance                         | Key API endpoints     | Automated in CI             |
-| Security                            | All code + deps       | Automated + periodic manual |
-| Accessibility                       | All user-facing pages | Automated + manual audit    |
-| UX quality                          | All user flows        | Audit + implement           |
-| UI visual quality                   | All pages             | Automated contrast + audit  |
+| Layer                               | Target                                                                           | Automation                  |
+| ----------------------------------- | -------------------------------------------------------------------------------- | --------------------------- |
+| Static analysis (lint, types, SAST) | 100% of code                                                                     | Fully automated             |
+| Unit tests                          | 80%+ business logic                                                              | Fully automated             |
+| Integration tests                   | All critical paths                                                               | Fully automated             |
+| Component tests                     | Key UI components                                                                | Fully automated             |
+| E2E tests (user stories)            | All user story workflows + interaction verification + desired outcome assessment | Fully automated             |
+| E2E tests (common)                  | Smoke, errors, responsive, navigation, walkthrough                               | Fully automated             |
+| E2E tests (exhaustive crawl)        | Every interactive element on every page, including sub-tabs and dropdowns        | Fully automated             |
+| Performance                         | Key API endpoints                                                                | Automated in CI             |
+| Security                            | All code + deps                                                                  | Automated + periodic manual |
+| Accessibility                       | All user-facing pages                                                            | Automated + manual audit    |
+| UX quality                          | All user flows                                                                   | Audit + implement           |
+| UI visual quality                   | All pages                                                                        | Automated contrast + audit  |
 
 ## Quality Gates
 
-| Gate       | When              | Must Pass                                        |
-| ---------- | ----------------- | ------------------------------------------------ |
-| Pre-commit | Before push       | Lint, type-check, unit tests                     |
-| PR/MR      | Before merge      | All unit + integration, SAST, coverage threshold |
+| Gate       | When              | Must Pass                                                        |
+| ---------- | ----------------- | ---------------------------------------------------------------- |
+| Pre-commit | Before push       | Lint, type-check, unit tests                                     |
+| PR/MR      | Before merge      | All unit + integration, SAST, coverage threshold                 |
 | Staging    | Before production | E2E smoke suite + interaction verification, performance baseline |
-| Release    | Before go-live    | Full regression, security scan, accessibility    |
+| Release    | Before go-live    | Full regression, security scan, accessibility                    |
 
 ## CI/CD Pipeline Speed Targets
 
@@ -235,6 +274,34 @@ For a typical React + Rust + PostgreSQL project:
 
 **Automate when**: Runs >3 times, data-driven, critical path, needs CI/CD
 **Keep manual when**: Requires human judgment, run rarely, unstable requirements, exploratory
+
+## Common Failure Modes (Learn From Past Mistakes)
+
+These patterns have caused test suites to pass while catching zero real bugs. They are the #1 reason test-everything runs fail to deliver confidence.
+
+### 1. "Page Loads" Tests
+
+Tests that only verify a page renders content — NOT that features work. Example: `expect(mainText.length).toBeGreaterThan(0)`. These pass even if every feature on the page is completely broken. **Fix**: Test actual features — create, read, update, delete operations with specific assertions.
+
+### 2. Hardcoded Waits (`waitForTimeout`)
+
+Using `waitForTimeout(3000)` hides real timing bugs and makes tests flaky. Tests pass on fast machines, fail on slow CI. **Fix**: Use Playwright's auto-waiting: `toBeVisible()`, `waitForURL()`, `waitForResponse()`.
+
+### 3. Giving Up on Hard Tests (`test.fixme`)
+
+Marking a test as `test.fixme` or `test.skip` to get a green suite hides real coverage gaps. A skipped test is worse than no test — it creates false confidence. **Fix**: Diagnose root cause (race condition? auth state leak? React re-renders?) and fix it.
+
+### 4. Fire-and-Forget Clicks
+
+Clicking a button without asserting the outcome. The click may silently fail, navigate nowhere, or trigger a 500 error. **Fix**: Every `.click()` must be followed by `expect()` or `waitForResponse()` within 3 lines.
+
+### 5. CSS Selectors Instead of Accessible Locators
+
+Using `page.locator('.text-red-400')` or `page.locator('#email')` instead of `page.getByRole()` or `page.getByLabel()`. CSS selectors don't verify accessibility and match non-functional elements. **Fix**: Use `getByRole` > `getByLabel` > `getByText`.
+
+### 6. Premature Completion Claims
+
+Declaring "147 tests passing!" when the tests verify nothing meaningful. **Fix**: Always ask "If every feature broke, would these tests catch it?" before claiming done.
 
 ## Additional Resources
 
