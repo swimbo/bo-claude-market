@@ -38,6 +38,13 @@
       "version": "0.1.0",
       "description": "Article writing plugin — 6-stage pipeline (research, outline, draft, style critique, content critique, final edit) with voice profiles, 42 built-in templates, 4 research depth levels, series support, and ideas tracking.",
       "author": {"name": "Bo"}
+    },
+    {
+      "name": "incident-postmortem",
+      "source": "./incident-postmortem",
+      "version": "0.1.0",
+      "description": "Incident postmortem builder — intake artifacts (logs, chat threads, screenshots, configs, monitoring data) and produce structured 8-section postmortems with gap detection and parallel artifact analysis.",
+      "author": {"name": "Bo"}
     }
   ]
 }

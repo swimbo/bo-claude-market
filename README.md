@@ -11,6 +11,7 @@ Custom plugins for Claude Code.
 | [test-everything](./test-everything/) | Comprehensive testing toolkit — audit gaps, plan strategy, scaffold infrastructure, review quality |
 | [bo-planner](./bo-planner/)           | File-based planning — scope fences, environment snapshots, verification gates, subagent delegation |
 | [article-writer](./article-writer/)   | Article writing — 6-stage pipeline with voice profiles, 42 templates, research depth levels, series support |
+| [incident-postmortem](./incident-postmortem/) | Incident postmortem builder — intake artifacts (logs, chat threads, screenshots), produce structured 8-section postmortems |
 
 ## Installation
 
@@ -20,6 +21,7 @@ claude plugin install top-10 --marketplace bo-marketplace
 claude plugin install test-everything --marketplace bo-marketplace
 claude plugin install bo-planner --marketplace bo-marketplace
 claude plugin install article-writer --marketplace bo-marketplace
+claude plugin install incident-postmortem --marketplace bo-marketplace
 ```
 
 <!-- PROOF
