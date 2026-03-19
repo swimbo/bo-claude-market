@@ -38,6 +38,8 @@ Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan strateg
 
 * **Shallow Test Detection** — Audit and gap-analysis agents now detect "page loads" tests that verify existence instead of feature behavior, and report them as higher priority than missing tests
 
+* **Sandbox-Safe E2E Setup** — Proven patterns for running Playwright reliably in macOS Sandbox (Claude Code): writable browser cache (`PLAYWRIGHT_BROWSERS_PATH`), no `webServer` config (pre-start servers), API-first user registration (immune to React re-render issues), React hydration waits, strict mode handling, and increased timeouts. Every pattern battle-tested through real failures.
+
 ## Commands
 
 | Command                                  | Description                                                                                                                                                          |
@@ -64,10 +66,10 @@ Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan strateg
 
 ## Agents
 
-| Agent                     | Trigger                                              | What it does                                                                                                                                                                   |
-| ------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **test-gap-analyzer**     | After implementing features or modifying code        | Analyzes git changes, categorizes risk, identifies missing unit/integration/E2E tests, flags missing outcome assessments and uncovered interactive elements; **detects shallow existing tests** that verify page loads but not features |
-| **test-quality-reviewer** | "Review my tests", flaky CI, test suite optimization | Runs **6 mandatory grep checks** for banned patterns; finds anti-patterns (fire-and-forget clicks, CSS selectors, missing outcome tests), flakiness risks, architecture misalignment; issues **PASS/FAIL verdict** |
+| Agent                     | Trigger                                              | What it does                                                                                                                                                                                                                                                                                   |
+| ------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **test-gap-analyzer**     | After implementing features or modifying code        | <span data-proof="suggestion" data-id="m1773844771186_6" data-by="ai:external-agent" data-kind="replace">Analyzes git changes, categorizes risk, identifies missing unit/integration/E2E tests, flags missing outcome assessments and uncovered interactive elements</span>                    |
+| **test-quality-reviewer** | "Review my tests", flaky CI, test suite optimization | <span data-proof="suggestion" data-id="m1773844771184_5" data-by="ai:external-agent" data-kind="replace">Finds anti-patterns (no assertions, fire-and-forget clicks, CSS selectors, missing outcome tests), flakiness risks, architecture misalignment, and incomplete element coverage</span> |
 
 ## Skill
 
@@ -87,9 +89,8 @@ The **test-strategy** skill auto-activates when discussing testing strategy, typ
 
 * Quality gates (pre-commit, PR, staging, release)
 
-* CI/CD speed targets
-
-* Common failure modes — "page loads" tests, hardcoded waits, giving up with test.fixme, fire-and-forget clicks, CSS selectors, premature completion claims
+* CI/CD speed targets<span data-proof="suggestion" data-id="m1773844771181_4" data-by="ai:external-agent" data-kind="insert">
+  Common failure modes — "page loads" tests, hardcoded waits, giving up with test.fixme, fire-and-forget clicks, CSS selectors, premature completion claims</span>
 
 ## Workflow
 
@@ -109,3 +110,46 @@ Tailored to: React + Vitest + Testing Library, Rust `#[test]`, Playwright, k6, S
 ```bash
 claude --plugin-dir ~/.claude/plugins/test-everything
 ```
+
+<!-- PROOF
+{
+  "version": 2,
+  "marks": {
+    "m1773844771186_6": {
+      "kind": "replace",
+      "by": "ai:external-agent",
+      "createdAt": "2026-03-18T14:39:31.186Z",
+      "range": {
+        "from": 5450,
+        "to": 5605
+      },
+      "content": "Analyzes git changes, categorizes risk, identifies missing unit/integration/E2E tests, flags missing outcome assessments and uncovered interactive elements; detects shallow existing tests that verify page loads but not features",
+      "status": "pending"
+    },
+    "m1773844771184_5": {
+      "kind": "replace",
+      "by": "ai:external-agent",
+      "createdAt": "2026-03-18T14:39:31.184Z",
+      "range": {
+        "from": 5692,
+        "to": 5866
+      },
+      "content": "Runs 6 mandatory grep checks for banned patterns; finds anti-patterns (fire-and-forget clicks, CSS selectors, missing outcome tests), flakiness risks, architecture misalignment; issues PASS/FAIL verdict",
+      "status": "pending"
+    },
+    "m1773844771181_4": {
+      "kind": "insert",
+      "by": "ai:external-agent",
+      "createdAt": "2026-03-18T14:39:31.181Z",
+      "range": {
+        "from": 6534,
+        "to": 6688
+      },
+      "content": "\nCommon failure modes — \"page loads\" tests, hardcoded waits, giving up with test.fixme, fire-and-forget clicks, CSS selectors, premature completion claims",
+      "status": "pending"
+    }
+  }
+}
+-->
+
+<!-- PROOF:END -->

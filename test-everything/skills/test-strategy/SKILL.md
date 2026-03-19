@@ -303,6 +303,24 @@ Using `page.locator('.text-red-400')` or `page.locator('#email')` instead of `pa
 
 Declaring "147 tests passing!" when the tests verify nothing meaningful. **Fix**: Always ask "If every feature broke, would these tests catch it?" before claiming done.
 
+### 7. Sandbox Environment Failures (E2E-Specific)
+
+E2E tests that work locally but fail in sandbox environments (Claude Code, CI) due to:
+
+* **Browser cache permission denied** — Playwright tries to use `~/Library/Caches/ms-playwright/` which is blocked. **Fix**: Set `PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers` in all npm scripts.
+
+* **`webServer` timeout** — Playwright's `config.webServer` tries to start dev servers as child processes, which times out because `nice()` fails in sandbox. **Fix**: Remove `webServer` from config entirely. Pre-start servers before running tests and verify they're ready with `curl`.
+
+* **React form fills lost** — `page.fill()` gets swallowed during React hydration re-renders, leaving form fields empty. **Fix**: Register users via API instead of UI forms. Wait for a specific interactive element (`getByRole('button')`) before filling forms. Verify fills with `toHaveValue()`.
+
+* **Auth state bleeding** — localStorage persists between tests in the same context, causing later tests to see stale auth. **Fix**: Use fresh browser contexts (`browser.newContext()`) for tests that need clean auth state.
+
+* **Port mismatches** — Playwright config expects one port, dev server runs on another. **Fix**: Use `process.env.BASE_URL` in config with a sensible default. Verify the port with `curl` before running tests.
+
+* **Strict mode violations** — Playwright finds multiple elements matching a locator. **Fix**: Use `.first()` or scope locators to specific containers (`page.getByRole('list').getByText(...)`)
+
+See `references/e2e-sandbox-patterns.md` for the complete playbook with code examples.
+
 ## Additional Resources
 
 ### Reference Files
@@ -312,3 +330,5 @@ For detailed information on each testing type, tools, and implementation:
 * **`references/testing-types-detail.md`** — Complete breakdown of all testing types with examples, tools, and when to use each
 
 * **`references/implementation-roadmap.md`** — Phased 10-week implementation plan with checklists for building comprehensive testing from scratch
+
+* **`references/e2e-sandbox-patterns.md`** — Battle-tested patterns for running Playwright E2E tests reliably in macOS Sandbox (Claude Code): browser installation, server management, API-first auth, React hydration waits, strict mode handling, and debugging guide

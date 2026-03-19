@@ -149,6 +149,20 @@ In addition to finding missing tests, check if EXISTING tests are too shallow to
 
 These are MORE important than missing tests because they create a false sense of coverage. A team that sees "100 tests passing" won't know that 80 of them verify nothing.
 
+### Step 3c: Check E2E Infrastructure for Sandbox Safety
+
+If the project has E2E tests, verify the infrastructure will work in sandbox environments (Claude Code). These checks prevent the most common E2E failures:
+
+1. **Browser path**: Check if `PLAYWRIGHT_BROWSERS_PATH` is set in npm scripts. If missing, tests will fail with `EPERM` or `Could not find ICU data`.
+
+2. **No webServer block**: Check `playwright.config.ts` for a `webServer` property. If present, tests will timeout because sandbox blocks `nice()` and server startup.
+
+3. **API-first auth**: Check test fixtures/helpers for UI-based registration (`page.goto('/register')`, `page.fill()` for registration forms). If found, recommend switching to API-first registration — `page.fill()` gets lost during React re-renders.
+
+4. **Timeout config**: Check `playwright.config.ts` for `timeout`. If default (30000) or lower, recommend 60000 for sandbox environments.
+
+Report sandbox-unsafe patterns as **HIGH PRIORITY** — they cause 100% test failure, not flakiness.
+
 ### Step 4: Output Recommendations
 
 ```

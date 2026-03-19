@@ -75,6 +75,12 @@ grep -rn 'textContent()' e2e/ --include='*.spec.*'
 # Check 6: Missing browser health fixture
 grep -rn "from '@playwright/test'" e2e/ --include='*.spec.*'
 # If ANY spec imports from @playwright/test instead of ./fixtures/browser-health, flag it
+
+# Check 7: Sandbox-unsafe patterns (CRITICAL — will fail in Claude Code)
+grep -rn 'webServer' playwright.config.* --include='*.ts' --include='*.js'
+# If webServer block exists, flag it — times out in sandbox
+grep -rn 'PLAYWRIGHT_BROWSERS_PATH' package.json
+# If NOT found in test:e2e scripts, flag it — browsers won't be found in sandbox
 ```
 
 **Critical violations (MUST be fixed — review cannot pass with these):**
@@ -86,6 +92,12 @@ grep -rn "from '@playwright/test'" e2e/ --include='*.spec.*'
 * Fire-and-forget clicks — `.click()` without a following assertion
 
 * Imports from `@playwright/test` instead of `./fixtures/browser-health` — bypasses health monitoring
+
+* `webServer` block in `playwright.config.ts` — times out in sandbox environments; servers must be pre-started
+
+* Missing `PLAYWRIGHT_BROWSERS_PATH` in npm scripts — browsers won't be found in sandbox
+
+* UI-based user registration in test helpers — `page.fill()` gets lost during React re-renders; use API-first registration
 
 **Structural anti-patterns**:
 
@@ -227,6 +239,9 @@ Tests that verify page loads but not feature behavior:
 - Any E2E spec importing from `@playwright/test` instead of browser health fixture
 - Any E2E test that only verifies "page loads" without testing feature behavior
 - More than 3 vague assertions on page content
+- `webServer` block present in `playwright.config.ts` (sandbox-unsafe)
+- `PLAYWRIGHT_BROWSERS_PATH` missing from npm test scripts (sandbox-unsafe)
+- Test helpers that register users through UI forms instead of API calls (React re-render fragile)
 
 ## Quality Standards
 

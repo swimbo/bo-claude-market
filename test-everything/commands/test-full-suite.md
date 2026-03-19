@@ -41,9 +41,15 @@ If you find yourself wanting to use `waitForTimeout`, `test.fixme`, or weaker as
 
 * **Element not found?** → The page may have a loading state. Use `await expect(locator).toBeVisible({ timeout: 10000 })` — Playwright will retry automatically.
 
-* **Form fill gets lost?** → React may be re-rendering. Wait for a stable element first: `await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible()` before filling.
+* **Form fill gets lost?** → React is re-rendering during hydration. Wait for a SPECIFIC interactive element first: `await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible()` before filling. Then verify the fill stuck: `await expect(page.getByLabel('Email')).toHaveValue(email)`. If fills still get lost, use API-first registration instead of UI forms (see Phase 0 Step 6).
 
-* **Auth state bleeds between tests?** → Use `test.describe.configure({ mode: 'serial' })` or create a fresh browser context per test.
+* **Auth state bleeds between tests?** → Use `test.describe.configure({ mode: 'serial' })` or create a fresh browser context per test: `const context = await browser.newContext(); const page = await context.newPage();` — don't forget `await context.close()` in a finally block.
+
+* **Browser install fails with EPERM?** → Sandbox blocks the default Playwright cache dir. Set `PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers` or `PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers` (see Phase 0 Step 1).
+
+* **`webServer` config times out?** → Sandbox blocks `nice()` and process spawning is slow. Remove the `webServer` block entirely and pre-start servers before running tests (see Phase 0 Step 3).
+
+* **Strict mode violation (multiple elements match)?** → Use `.first()` or scope the locator to a specific container: `page.getByRole('list').getByText('item')` instead of `page.getByText('item')`.
 
 * **Test is flaky?** → The app has a real bug (race condition, missing loading state). Fix the app, not the test.
 
@@ -116,6 +122,74 @@ test("profile changes persist after page reload", async ({ page }) => {
 ## Instructions
 
 Execute the full testing lifecycle for the project at the given path (or cwd).
+
+### Phase 0: E2E Environment Setup (MANDATORY — Do Not Skip)
+
+Before writing or running ANY E2E test, you MUST set up the environment to work reliably in sandbox. This phase exists because E2E tests consistently fail in Claude Code's macOS sandbox due to permission restrictions, browser cache issues, and server startup timeouts. Every step here was learned from real failures.
+
+See `references/e2e-sandbox-patterns.md` for full details and rationale. Execute these steps:
+
+1. **Install Playwright browsers to a writable path** — the default `~/Library/Caches/ms-playwright/` is blocked by sandbox:
+   ```bash
+   # Use project-local path (add .playwright-browsers/ to .gitignore)
+   PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers npx playwright install chromium
+   ```
+   If this fails with EPERM, fall back to `/tmp/pw-browsers`.
+
+2. **Set `PLAYWRIGHT_BROWSERS_PATH` in ALL npm scripts** that run Playwright:
+   ```json
+   {
+     "test:e2e": "PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test",
+     "test:e2e:ui": "PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test --ui"
+   }
+   ```
+
+3. **Remove or never add `webServer` in `playwright.config.ts`** — it times out in sandbox because `nice()` fails and server startup is blocked. Instead, configure the Playwright config with just `baseURL` and no `webServer` block.
+
+4. **Verify dev servers are running** before running tests — use `curl` to check:
+   ```bash
+   curl -sf http://localhost:5173 > /dev/null && echo "Frontend OK" || echo "Frontend NOT running"
+   curl -sf http://localhost:3000/api/health > /dev/null && echo "Backend OK" || echo "Backend NOT running"
+   ```
+   If servers aren't running, start them in background and poll until ready (do NOT sleep a fixed duration).
+
+5. **Configure sandbox-safe timeouts** in `playwright.config.ts`:
+   ```typescript
+   export default defineConfig({
+     timeout: 60000,           // 60s per test (sandbox is slower)
+     expect: { timeout: 10000 }, // 10s for expect assertions
+     retries: 1,
+     fullyParallel: false,     // Avoid resource contention in sandbox
+   });
+   ```
+
+6. **Create API-first auth helpers** — NEVER register test users through UI forms. React re-renders during hydration swallow `page.fill()` calls. Always register and authenticate via API, then inject the auth token into browser localStorage before navigating:
+   ```typescript
+   // Register via API (always works)
+   const response = await fetch(`${baseURL}/api/auth/register`, {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({ email, password, fullName: 'E2E Test User' }),
+   });
+   // Inject token into browser
+   await page.goto(baseURL);
+   await page.evaluate((token) => localStorage.setItem('token', token), token);
+   await page.reload();
+   ```
+
+7. **Wait for React hydration** before interacting with forms — wait for a specific interactive element (like a submit button) to be visible before filling inputs:
+   ```typescript
+   await page.goto('/login');
+   await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible();
+   // NOW fill the form — React is done rendering
+   await page.getByLabel('Email').fill(email);
+   ```
+
+**Phase 0 verification**: Before proceeding to Phase 1, confirm:
+- [ ] Playwright browsers installed (run `PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers npx playwright --version`)
+- [ ] Dev servers responding (curl both frontend and backend)
+- [ ] `playwright.config.ts` has NO `webServer` block
+- [ ] `playwright.config.ts` has `timeout: 60000`
 
 ### Phase 1: Audit
 

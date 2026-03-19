@@ -1,0 +1,11 @@
+{
+  "name": "incident-postmortem",
+  "version": "0.1.0",
+  "description": "Build comprehensive incident postmortems from raw artifacts — chat threads, logs, screenshots, configs, and monitoring data",
+  "author": {
+    "name": "Bo",
+    "url": "https://github.com/bo"
+  },
+  "license": "MIT",
+  "keywords": ["incident", "postmortem", "sre", "reliability", "incident-response"]
+}

@@ -49,6 +49,7 @@ For each testing layer, specify:
 
 Create an implementation plan organized in 2-week phases:
 
+**Phase 0 (E2E Environment)**: Sandbox-safe Playwright setup (browser path, no webServer, API-first auth, timeouts)
 **Phase 1 (Foundation)**: Static analysis + unit testing framework
 **Phase 2 (Integration)**: Integration tests + test database setup
 **Phase 3 (E2E)**: User-story-driven Playwright tests with desired outcome assessment + exhaustive interaction crawl
@@ -66,6 +67,23 @@ For each phase, provide:
 * Estimated effort (hours/days)
 
 * Dependencies on previous phases
+
+#### Phase 0 — E2E Environment Setup (MANDATORY for Phase 3)
+
+Before planning E2E tests, ensure the environment will work reliably in sandbox (Claude Code). These steps prevent the most common E2E failures — not test bugs, but environment bugs that cause 100% failure rates.
+
+Plan these tasks:
+- [ ] Install Playwright browsers to writable path: `PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers npx playwright install chromium`
+- [ ] Add `.playwright-browsers/` to `.gitignore`
+- [ ] Create `playwright.config.ts` with NO `webServer` block, `timeout: 60000`, `expect.timeout: 10000`
+- [ ] Set `PLAYWRIGHT_BROWSERS_PATH` in ALL npm scripts: `"test:e2e": "PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test"`
+- [ ] Create API-first auth fixture (`e2e/fixtures/auth.ts`) — register users via API, not UI forms
+- [ ] Create browser health fixture (`e2e/fixtures/browser-health.ts`)
+- [ ] Create server startup/readiness verification script or instructions
+
+**Why**: In all observed failure sessions, these environment issues caused more test failures than actual test bugs. `webServer` timeouts, `EPERM` on browser install, and React re-render swallowing `page.fill()` were the top 3 failure causes.
+
+See `references/e2e-sandbox-patterns.md` for full patterns and rationale.
 
 #### Phase 3 — User Story Discovery
 

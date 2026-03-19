@@ -115,6 +115,41 @@ Evaluate whether E2E tests cover actual user workflows:
 
    * If E2E tests exist, check whether they appear to cover coherent workflows or just isolated page checks
 
+### Step 3b2: Assess E2E Infrastructure for Sandbox Safety
+
+Check if the E2E test infrastructure will work reliably in sandbox environments (Claude Code). These are the most common causes of E2E test failure — not test bugs, but environment bugs.
+
+```bash
+# Check 1: PLAYWRIGHT_BROWSERS_PATH in npm scripts
+grep -n 'PLAYWRIGHT_BROWSERS_PATH' package.json
+# If missing from test:e2e scripts → CRITICAL: browsers won't be found in sandbox
+
+# Check 2: webServer block in Playwright config (MUST NOT EXIST)
+grep -n 'webServer' playwright.config.* 2>/dev/null
+# If found → CRITICAL: will timeout in sandbox because nice() fails
+
+# Check 3: UI-based registration in test helpers
+grep -rn 'page.goto.*register\|page.fill.*password' e2e/ --include='*.ts' --include='*.js'
+# If test helpers register users through UI → HIGH: page.fill() gets lost during React re-renders
+
+# Check 4: Timeout configuration
+grep -n 'timeout' playwright.config.* 2>/dev/null
+# If default (30000) or missing → MEDIUM: sandbox is slower, needs 60000
+```
+
+Report:
+```
+### E2E Sandbox Safety
+| Check | Result | Status |
+|-------|--------|--------|
+| PLAYWRIGHT_BROWSERS_PATH in npm scripts | Set / Missing | ✅/❌ |
+| No webServer in playwright.config | Absent / Present | ✅/❌ |
+| API-first auth (not UI-based registration) | Yes / No | ✅/⚠️ |
+| Timeout ≥ 60000 | Yes / No | ✅/⚠️ |
+```
+
+**CRITICAL**: If `PLAYWRIGHT_BROWSERS_PATH` is missing or `webServer` is present, E2E tests WILL fail 100% of the time in sandbox. Flag these as highest priority.
+
 ### Step 3c: Assess Test Quality and Interaction Verification
 
 Evaluate whether existing tests actually verify features work, or just verify pages load. This is the most common failure mode — a test suite with many tests that all pass but catch zero real bugs.

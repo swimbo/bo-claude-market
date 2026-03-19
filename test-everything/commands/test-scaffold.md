@@ -111,27 +111,128 @@ Test UI components in isolation with various states, props, and interactions.
 
 ### Layer: `e2e`
 
-**Playwright**:
+**CRITICAL: Sandbox-Safe Setup**
 
-* Create `playwright.config.ts` with:
+E2E tests run inside macOS Sandbox (Claude Code), which blocks the default Playwright browser cache, server startup via `config.webServer`, and `nice()` syscalls. You MUST follow the sandbox-safe patterns below. See `references/e2e-sandbox-patterns.md` for full rationale.
 
-  * Multi-browser projects (Chromium, Firefox, WebKit)
+**Step 1: Install Playwright with writable browser path**:
 
-  * Base URL from env var
+```bash
+# Install Playwright
+npm install -D @playwright/test
 
-  * Screenshot on failure
+# Install browsers to a WRITABLE path (default cache is blocked by sandbox)
+PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers npx playwright install chromium
 
-  * HTML reporter
+# Add to .gitignore
+echo ".playwright-browsers/" >> .gitignore
+```
 
-  * Reasonable timeouts
+If the install fails with `EPERM`, fall back to: `PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers npx playwright install chromium`
 
-* Create `e2e/` directory structure:
+**Step 2: Create sandbox-safe `playwright.config.ts`** — NO `webServer` block (times out in sandbox):
 
-  * `e2e/fixtures/` — test data and auth state
+```typescript
+import { defineConfig, devices } from '@playwright/test';
 
-* Add scripts to `package.json`: `"test:e2e"`, `"test:e2e:ui"`
+export default defineConfig({
+  testDir: './e2e/tests',
+  timeout: 60000,           // 60s per test (sandbox is slower than native)
+  expect: { timeout: 10000 }, // 10s for expect() assertions
+  fullyParallel: false,     // Sequential — avoids resource contention in sandbox
+  retries: 1,               // One retry for transient sandbox issues
+  reporter: 'html',
+  use: {
+    baseURL: process.env.BASE_URL || 'http://localhost:5173',
+    screenshot: 'only-on-failure',
+    trace: 'on-first-retry',
+  },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+  ],
+  // DO NOT add webServer — it times out in sandbox.
+  // Start dev servers BEFORE running tests (see run-e2e.sh).
+});
+```
 
-* Install: `@playwright/test` + browsers
+**Step 3: Add npm scripts with `PLAYWRIGHT_BROWSERS_PATH`** — MUST be set in every script:
+
+```json
+{
+  "scripts": {
+    "test:e2e": "PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test",
+    "test:e2e:ui": "PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test --ui",
+    "test:e2e:headed": "PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test --headed"
+  }
+}
+```
+
+**Step 4: Create `e2e/` directory structure**:
+
+  * `e2e/tests/` — test spec files
+  * `e2e/fixtures/` — auth helpers, browser health fixture
+
+**Step 5: Create API-first auth fixture** — NEVER register users through UI forms (React re-renders swallow `page.fill()` calls):
+
+```typescript
+// e2e/fixtures/auth.ts
+import { test as healthTest, expect } from './browser-health';
+import type { Page } from '@playwright/test';
+
+interface TestUser {
+  email: string;
+  password: string;
+  token: string;
+}
+
+async function createTestUser(baseURL: string): Promise<TestUser> {
+  const email = `e2e-${crypto.randomUUID().slice(0, 8)}@test.com`;
+  const password = 'TestPass123!';
+
+  // Register via API — immune to React re-render issues
+  const regRes = await fetch(`${baseURL}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, fullName: 'E2E Test User' }),
+  });
+  if (!regRes.ok && regRes.status !== 409) {
+    throw new Error(`Registration failed: ${regRes.status} ${await regRes.text()}`);
+  }
+
+  // Login via API to get token
+  const loginRes = await fetch(`${baseURL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!loginRes.ok) {
+    throw new Error(`Login failed: ${loginRes.status} ${await loginRes.text()}`);
+  }
+  const data = await loginRes.json();
+  return { email, password, token: data.token || data.accessToken };
+}
+
+// Fixture providing an authenticated page
+export const test = healthTest.extend<{ authedPage: Page; testUser: TestUser }>({
+  testUser: async ({ baseURL }, use) => {
+    const user = await createTestUser(baseURL!);
+    await use(user);
+  },
+  authedPage: async ({ page, baseURL, testUser }, use) => {
+    // Inject auth token into browser BEFORE navigating to app
+    await page.goto(baseURL!);
+    await page.evaluate((token) => {
+      localStorage.setItem('token', token);
+    }, testUser.token);
+    await page.reload();
+    await use(page);
+  },
+});
+
+export { expect } from '@playwright/test';
+```
+
+**Why API-first auth?**: In all three failure sessions, `page.fill()` was lost during React re-renders when registering through the UI. The form fields appeared empty in Playwright snapshots even after `fill()` was called. API registration never has this problem because it bypasses the browser entirely.
 
 **Browser Health Monitoring**:
 
@@ -188,13 +289,18 @@ Scaffold a shared Playwright fixture that automatically detects silent failures 
   export { expect } from '@playwright/test';
   ```
 
-* All generated E2E test files should import from this fixture instead of `@playwright/test`:
+* All generated E2E test files should import from the appropriate fixture instead of `@playwright/test`:
 
   ```typescript
-  // Use this:
+  // For tests that need authentication (most tests):
+  import { test, expect } from './fixtures/auth';
+  // The auth fixture extends browser-health AND provides authedPage + testUser
+
+  // For tests that DON'T need authentication (login, register, public pages):
   import { test, expect } from './fixtures/browser-health';
-  // NOT this:
-  // import { test, expect } from '@playwright/test';
+
+  // NEVER import directly from @playwright/test:
+  // import { test, expect } from '@playwright/test';  // ← WRONG
   ```
 
 * For tests that intentionally trigger errors (e.g., error page tests), opt out per-test:
@@ -205,6 +311,30 @@ Scaffold a shared Playwright fixture that automatically detects silent failures 
     page.removeAllListeners('pageerror');
     // ... test error handling ...
   });
+  ```
+
+* **React hydration wait pattern** — before filling ANY form, wait for a specific interactive element that proves React has finished rendering:
+
+  ```typescript
+  await page.goto('/some-page');
+  // Wait for React to finish rendering — use a SPECIFIC visible element
+  await expect(page.getByRole('button', { name: /submit|save|sign in/i })).toBeVisible();
+  // NOW interact with the form — React is stable
+  await page.getByLabel('Email').fill('user@test.com');
+  // Optionally verify the fill stuck (catches re-render issues)
+  await expect(page.getByLabel('Email')).toHaveValue('user@test.com');
+  ```
+
+* **Strict mode violations** — when Playwright finds multiple elements matching a locator:
+
+  ```typescript
+  // WRONG — fails if text appears in multiple elements
+  await expect(page.getByText('document.pdf')).toBeVisible();
+
+  // RIGHT — use .first() or scope to a container
+  await expect(page.getByText('document.pdf').first()).toBeVisible();
+  // OR scope to a specific container
+  await expect(page.getByRole('list').getByText('document.pdf')).toBeVisible();
   ```
 
 **User-Story-Driven Test Generation with Desired Outcomes**:

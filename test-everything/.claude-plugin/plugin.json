@@ -1,7 +1,7 @@
 {
   "name": "test-everything",
-  "version": "0.8.0",
-  "description": "Comprehensive testing toolkit: audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers — with user-story-driven E2E testing, interaction verification, exhaustive interaction crawling, desired outcome assessment, and UX/UI quality auditing",
+  "version": "0.9.0",
+  "description": "Comprehensive testing toolkit: audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers — with user-story-driven E2E testing, interaction verification, exhaustive interaction crawling, desired outcome assessment, UX/UI quality auditing, and sandbox-safe E2E patterns for reliable Playwright execution in Claude Code",
   "author": {
     "name": "Bo"
   },
