@@ -1,0 +1,10 @@
+{
+  "name": "article-publisher",
+  "version": "0.1.0",
+  "description": "Publish articles to Substack, Reddit, and LinkedIn with browser automation, screenshot verification, and auto-formatting fixes.",
+  "author": {
+    "name": "Bo Bergstrom",
+    "email": "bo.bergstrom@gmail.com"
+  },
+  "keywords": ["publishing", "substack", "linkedin", "reddit", "browser-automation"]
+}
