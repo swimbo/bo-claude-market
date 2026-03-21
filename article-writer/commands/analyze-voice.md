@@ -33,6 +33,7 @@ If the user provides fewer than 3 samples, inform them: "Voice profiles work bes
 
 Analyze all samples collectively, looking for consistent patterns across the body of work. Evaluate each of the following dimensions:
 
+**Style dimensions:**
 1. **Sentence Structure** — Average sentence length, variation patterns, use of simple vs. compound vs. complex sentences, fragment usage, rhetorical questions
 2. **Vocabulary Level** — Reading level estimate, jargon usage, preferred word choices, words/phrases that recur, avoidance patterns
 3. **Tone and Register** — Formal/informal spectrum, authoritative vs. conversational, humor usage, sarcasm/irony, emotional register
@@ -44,6 +45,18 @@ Analyze all samples collectively, looking for consistent patterns across the bod
 9. **Use of Examples and Analogies** — Frequency, source domains (tech, nature, sports, etc.), complexity
 10. **Formality Level** — Contractions, first/second/third person usage, passive vs. active voice ratio, colloquialisms
 11. **Unique Stylistic Signatures** — Anything distinctive that doesn't fit the above categories: catchphrases, structural quirks, punctuation habits (em dashes, semicolons, ellipses), list usage patterns
+
+**Higher-value dimensions (these most distinguish a real style guide from a generic one):**
+
+12. **Sentence-Level Preferences** — Extract 3-5 concrete DO/DON'T pairs from the samples. Look for patterns the writer consistently chooses vs. avoids: abstract nouns vs. concrete verbs, symmetrical constructions vs. direct statements, specific numbers vs. vague quantifiers. Quote actual examples from the samples.
+
+13. **Signature Moves** — Named, reusable structural patterns this voice uses especially well. Look for: how the writer opens arguments, how they introduce ideas (borrowed lens? personal friction? bold claim?), recurring arcs (e.g., start concrete → zoom out → framework; anecdote → pattern → takeaway). Give each move a short name and description.
+
+14. **Anti-Patterns** — This is the highest-value section. Identify what this voice consistently avoids. Look for: correlative constructions ("not X, but Y"), hedge words ("actually," "essentially," "just," "simply"), rhetorical questions used as filler, abstract industry analysis without personal stakes, tidy summary endings that recap rather than extend, meandering introductions. For each, note the pattern, why it fails in this voice, and what to do instead.
+
+15. **Positive Examples** — Pull 2-3 sentences or short paragraphs that best capture this voice working at full strength. For each, add a brief explanation of what makes it work.
+
+16. **Negative Examples** — Identify moments in the samples where the voice falters or sounds generic (these often occur in transitions, introductions, and conclusions). For each, explain what went wrong.
 
 ### Step 3: Check for Existing Profile
 
@@ -65,6 +78,7 @@ Write the profile to `~/.claude/article-writer/profiles/<profile-name>.md` with 
 name: <profile-name>
 created: <YYYY-MM-DD>
 updated: <YYYY-MM-DD>
+method: sample-analysis
 sample_count: <number>
 sources:
   - <source description or filename for each sample>
@@ -73,16 +87,19 @@ sources:
 # Voice Profile: <profile-name>
 
 ## Summary
-<2-3 sentence overview of this voice — what makes it distinctive>
+<2-3 sentence overview of this voice — what makes it distinctive, including the tensions that define it>
+
+## Voice and Tone
+<How the writing should feel. Include specific tensions (e.g., "rigorous but not academic"). Include what tone is completely wrong for this voice.>
+
+## Structure
+<How pieces open, how quickly they arrive at their argument, how they move between ideas, how they end. Name any recurring structural arc.>
 
 ## Sentence Structure
 <analysis>
 
 ## Vocabulary
 <analysis with specific examples from the samples>
-
-## Tone and Register
-<analysis>
 
 ## Paragraph Structure
 <analysis>
@@ -99,17 +116,75 @@ sources:
 ## Closings
 <analysis with examples of closing patterns>
 
-## Examples and Analogies
-<analysis>
-
 ## Formality
 <analysis>
 
 ## Unique Signatures
 <analysis of distinctive quirks>
 
-## Usage Guide
-<Concise instructions for an AI writing in this voice. Include DO and DON'T lists. This section should be directly actionable — it's what gets passed to the draft-writer and final-editor agents.>
+## Sentence-Level Preferences
+
+**Do:**
+- <specific preference with quoted example from samples>
+- <specific preference with quoted example>
+
+**Avoid:**
+- <specific pattern to avoid with quoted example of the bad version>
+- <specific pattern to avoid>
+
+## Signature Moves
+
+Named patterns this voice uses especially well:
+
+1. **[Move Name]**: <description of what it does, when it appears, and why it works for this voice>
+2. **[Move Name]**: <description>
+
+## Anti-Patterns (Blacklist)
+
+These patterns must be avoided regardless of how natural they seem to an AI model. This is the most important section for producing writing that sounds like this voice.
+
+| Pattern | Why It Fails Here | Fix |
+|---------|------------------|-----|
+| <specific pattern with example> | <why this voice rejects it> | <what to do instead> |
+| Correlative constructions ("not X, but Y") | Creates false balance, padding | State Y directly |
+| Hedge words ("actually," "essentially," "just") | Weakens authority | Delete unless doing real work |
+| Tidy summary ending that recaps | Deflates the piece | End by extending or reframing |
+| Rhetorical questions as filler | Stalls momentum | Cut or convert to statement |
+| <voice-specific pattern> | <reason> | <fix> |
+
+## Positive Examples
+
+Sentences or paragraphs that capture this voice working at its best:
+
+**Example 1:**
+> <quoted text from samples>
+*Why it works: <explanation>*
+
+**Example 2:**
+> <quoted text from samples>
+*Why it works: <explanation>*
+
+## Negative Examples
+
+Moments where the voice falters or sounds generic:
+
+**Example 1 (what to avoid):**
+> <quoted text — or a reconstructed AI-style version of a weak moment>
+*Why it fails: <explanation>*
+
+## Revision Checklist
+
+Run before every final edit:
+
+- [ ] <question specific to this voice — e.g., "Does the opening have friction?">
+- [ ] <question — e.g., "Are there correlative constructions left?">
+- [ ] <question — e.g., "Does the ending extend or reframe rather than summarize?">
+- [ ] Does this sound like a real person or a polished summary machine?
+- [ ] Is the language specific enough, or has abstraction crept in?
+- [ ] Are there entries from the anti-patterns table still in the draft?
+
+## Usage Notes
+<Concise instructions for the draft writer — read this section first. The most important patterns to apply, the signature moves to deploy, and the anti-patterns to actively hunt for. This is directly actionable.>
 ```
 
 ### Step 5: Confirm

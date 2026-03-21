@@ -12,6 +12,8 @@ A voice profile is a structured document that captures the distinctive character
 
 ## What a Voice Profile Captures
 
+A voice profile must go beyond describing what a writer does — it must also specify what they never do, what they do especially well (named moves), and provide concrete examples of both success and failure. The sections that most distinguish a useful profile from a generic one are Anti-Patterns, Signature Moves, and the Revision Checklist.
+
 Analyze and document each of the following dimensions:
 
 ### Sentence Structure Patterns
@@ -21,7 +23,7 @@ Identify the writer's typical sentence lengths (short, medium, long, mixed). Not
 Note the general vocabulary level (plain, moderate, elevated). Identify recurring words or phrases the writer favors. Document whether they use jargon freely or explain technical terms. Record preferences for concrete vs. abstract language. Note any verbal tics or filler phrases that recur (e.g., "essentially", "in other words", "the thing is"). Document whether the writer uses first person ("I"), second person ("you"), or third person, and how frequently they shift between them.
 
 ### Tone and Register
-Characterize the overall tone (formal, conversational, academic, irreverent, etc.). Note how the tone shifts between sections (e.g., casual in intros, precise in analysis). Document the writer's relationship with the reader (peer-to-peer, teacher-student, authority-to-audience).
+Characterize the overall tone (formal, conversational, academic, irreverent, etc.). Note how the tone shifts between sections (e.g., casual in intros, precise in analysis). Document the writer's relationship with the reader (peer-to-peer, teacher-student, authority-to-audience). Also note what tone is *wrong* for this voice — the opposite of the target is often more useful than the target itself.
 
 ### Paragraph Structure
 Record typical paragraph length (in sentences and approximate word count). Note whether paragraphs tend to lead with topic sentences or build to a point. Document the use of single-sentence paragraphs for emphasis. Record whether the writer uses subheadings frequently, sparingly, or never. Note the typical number of paragraphs per section and whether section length is consistent or varied.
@@ -33,7 +35,7 @@ Identify frequently used devices: repetition, parallelism, rule-of-three, rhetor
 Document how the writer moves between ideas. Note whether transitions are explicit ("However," "Moreover,") or implicit (juxtaposition, thematic links). Record the use of transitional paragraphs vs. transitional phrases.
 
 ### Opening and Closing Patterns
-Characterize how the writer begins pieces (anecdote, bold claim, question, scene-setting, statistic). Document closing patterns (call to action, summary, provocative question, callback to opening, future-looking statement).
+Characterize how the writer begins pieces (anecdote, bold claim, question, scene-setting, statistic). Document closing patterns (call to action, summary, provocative question, callback to opening, future-looking statement). Note specifically: does the writer earn the thesis slowly or state it upfront? Does the closing preserve energy or deflate into recap?
 
 ### Use of Metaphors and Analogies
 Note frequency and type of figurative language. Document whether metaphors are drawn from specific domains (sports, science, everyday life). Record extended vs. brief metaphor usage.
@@ -43,6 +45,62 @@ Rate on a scale from 1 (highly informal) to 10 (highly formal). Note use of cont
 
 ### Unique Signatures
 Capture anything distinctive that does not fit the above categories. Examples: consistent use of numbered lists, a habit of citing historical parallels, always ending with a one-word sentence, opening every section with a question.
+
+### Sentence-Level Preferences (DO/DON'T Pairs)
+Extract 3-5 concrete DO/DON'T pairs from the samples. Look for patterns the writer consistently chooses vs. avoids. Quote actual examples from the samples.
+
+Examples of what to look for:
+- Concrete nouns + active verbs vs. abstract nouns + passive constructions
+- Direct statement vs. correlative scaffolding ("not X, but Y")
+- Specific numbers/names vs. vague quantifiers ("many," "some," "various")
+- Embodied/sensory language vs. purely cognitive description
+- Short declarative sentences for emphasis vs. qualifications and hedges
+
+### Signature Moves
+Named, reusable structural or rhetorical patterns this voice uses especially well. These are the things the voice does that other voices don't, or does distinctively.
+
+Look for:
+- A recurring structural arc (e.g., start with personal friction → zoom out to cultural context → deliver usable framework)
+- A characteristic way of introducing arguments (borrowed lens from an unexpected domain, confession, bold claim)
+- A signature pivot or turn (e.g., a wry observation that reframes what came before)
+- A recurring closing gesture
+
+Give each move a short name (like "The Friction Zoom-Out" or "The Borrowed Lens") and a 1-2 sentence description. Document where it appears in the samples.
+
+### Anti-Patterns (Blacklist)
+This is the highest-value section in a voice profile. AI models have strong tendencies toward patterns that the writer may find intolerable — identifying these specifically is what separates a useful profile from a flattering description.
+
+Look for patterns the writer consistently avoids. Also note which common AI writing tics are most at odds with this voice:
+
+- **Correlative constructions** ("not X, but Y") — Creates padding; state Y directly
+- **Hedge words** ("actually," "essentially," "just," "simply") — Weakens authority unless doing real work
+- **Rhetorical questions as filler** — Stalls momentum; cut or convert to statement
+- **Tidy summary endings** that recap rather than extend or reframe
+- **Meandering introductions** that take more than 2-3 paragraphs to reach the stakes
+- **Abstract industry analysis** without personal stakes or concrete examples
+- **Fake profundity** — vague philosophical endings, "at the end of the day" constructions
+- **Generic transitions** ("Furthermore," "Moreover," "In conclusion")
+- **Voice-specific anti-patterns** found in the samples — these are the most important
+
+For each anti-pattern: state the pattern specifically, explain why it's particularly wrong for this voice, and give the fix.
+
+### Positive Examples
+Pull 2-3 sentences or short paragraphs from the samples that best capture this voice working at full strength. For each, add a brief explanation of what makes it work — rhythm, specificity, the particular move it makes. These are reference points for the draft writer.
+
+### Negative Examples
+Identify 1-2 moments in the samples where the writing falters (often in transitions, section openings, or conclusions), or construct what a generic AI version of a key passage would sound like and explain why it fails. These are as instructive as the positive examples.
+
+### Revision Checklist
+A per-draft checklist built from this voice's specific requirements. Each item should be answerable yes/no by looking at the draft. Start with questions derived from the anti-patterns and signature moves, then add general quality checks.
+
+Examples:
+- Does the opening have friction, a bold claim, or a charged scene — not a contextual warm-up?
+- Is the ending extending or reframing, not summarizing?
+- Are there any correlative constructions left in the draft?
+- Are there hedge words that can be deleted?
+- Did the draft deploy at least one of the voice's signature moves?
+- Does this sound like a real person or a polished summary machine?
+- Is the language specific enough throughout, or has abstraction crept into any section?
 
 ## Sample Requirements
 
@@ -88,6 +146,7 @@ Each profile file uses the following format:
 name: Display Name
 created: 2026-03-15T10:30:00Z
 updated: 2026-03-15T10:30:00Z
+method: sample-analysis  # or: interview, hybrid
 sample_count: 5
 sources:
   - path/to/sample1.md
@@ -97,14 +156,20 @@ sources:
 
 # Voice Profile: Display Name
 
+## Summary
+[2-3 sentences on what makes this voice distinctive — the tensions, the qualities that set it apart]
+
+## Voice and Tone
+[How the writing should feel. Include tensions (e.g., "rigorous but not academic"). Include what tone is wrong.]
+
+## Structure
+[How pieces open, how quickly they arrive at their argument, how they move, how they end. Name any recurring structural arc.]
+
 ## Sentence Structure
 [Analysis of sentence patterns]
 
 ## Vocabulary
 [Analysis of vocabulary preferences]
-
-## Tone and Register
-[Analysis of tone characteristics]
 
 ## Paragraph Structure
 [Analysis of paragraph patterns]
@@ -127,8 +192,63 @@ sources:
 ## Unique Signatures
 [Distinctive characteristics]
 
+## Sentence-Level Preferences
+
+**Do:**
+- [specific preference with quoted example]
+- [specific preference with quoted example]
+
+**Avoid:**
+- [specific pattern to avoid with example]
+- [specific pattern to avoid with example]
+
+## Signature Moves
+
+Named patterns this voice uses especially well:
+
+1. **[Move Name]**: [description of what it does, when it appears, why it works]
+2. **[Move Name]**: [description]
+
+## Anti-Patterns (Blacklist)
+
+These patterns must be avoided regardless of how natural they seem. This is the most important section for producing writing that sounds like this voice.
+
+| Pattern | Why It Fails Here | Fix |
+|---------|------------------|-----|
+| [specific pattern] | [why this voice rejects it] | [what to do instead] |
+
+## Positive Examples
+
+**Example 1:**
+> [quoted text from samples]
+*Why it works: [explanation]*
+
+**Example 2:**
+> [quoted text from samples]
+*Why it works: [explanation]*
+
+## Negative Examples
+
+**Example 1 (what to avoid):**
+> [quoted text or reconstructed AI-style version]
+*Why it fails: [explanation]*
+
+## Revision Checklist
+
+- [ ] [question specific to this voice]
+- [ ] [question specific to this voice]
+- [ ] Does this sound like a real person or a polished summary machine?
+- [ ] Is the language specific enough, or has abstraction crept in?
+- [ ] Are there entries from the anti-patterns table still in the draft?
+
 ## Usage Notes
-[Guidance for the draft writer on how to apply this profile]
+[Direct instructions for the draft writer — read this section first. Most important patterns to apply, signature moves to deploy, anti-patterns to hunt for.]
+
+## Refinement Log
+
+| Date | Source | Change |
+|------|--------|--------|
+| [date] | [source] | [what was added/changed] |
 ```
 
 ## Updating Profiles
@@ -149,12 +269,23 @@ If new samples significantly contradict established patterns, note the conflict 
 
 ## How Profiles Are Used in the Pipeline
 
-- **Draft Writer (Stage 3)**: Load the active profile before writing. Adopt the documented patterns for sentence structure, vocabulary, tone, transitions, and all other dimensions. The profile is a target to match, not a rigid template. Prioritize naturalness over mechanical pattern matching.
-- **Style Critic (Stage 4)**: Load the active profile and evaluate the draft against each dimension. Flag significant deviations. Score voice consistency on a 1-10 scale. Provide specific examples of both successful voice matching and deviations.
+- **Draft Writer (Stage 3)**: Read Usage Notes first. Then internalize Anti-Patterns (treat as hard constraints), Signature Moves (deploy where they fit), Positive Examples (use as the quality target), and Sentence-Level Preferences. Keep the Revision Checklist in mind while writing.
+- **Style Critic (Stage 4)**: Lead with an anti-pattern audit — scan the entire draft against the Blacklist table. Then run the Revision Checklist item by item. Then evaluate signature move deployment. Score voice consistency based on anti-pattern hits and checklist failures.
+- **Final Editor (Stage 6)**: Sweep the draft for remaining anti-pattern hits. Run the Revision Checklist as a final gate before writing output.
 
 ## Setting a Default Profile
 
 Set the default voice profile using the manage-profiles command. The default profile name is stored in the article-writer configuration. When no `--voice` flag is passed to the pipeline, the default profile is used. If no default is set and no flag is provided, the pipeline runs without voice profiling.
+
+## Profile Maturity Levels
+
+Profiles improve over time. Treat them as living documents, not one-time artifacts.
+
+**Starter profile** (interview or 3 samples): Voice/tone, basic structure, initial anti-patterns from common AI tics. Enough to reduce generic output. Create with `/interview-voice` or `/analyze-voice`.
+
+**Working profile** (5-10 samples + editorial feedback): Full anti-patterns table built from real draft corrections, named signature moves, positive/negative examples, revision checklist derived from actual problems. Requires several rounds of `/refine-voice` after real articles. This is where profiles become genuinely useful.
+
+**Compound profile** (ongoing refinement): Anti-patterns table has 10+ entries, each added from a real draft. Revision checklist catches the specific ways *this voice's* AI drafts fail. Profile is the first thing loaded and the last thing checked. Gets better with every article.
 
 ## Tips for Better Profiles
 
@@ -163,6 +294,8 @@ Set the default voice profile using the manage-profiles command. The default pro
 - Include both the writer's best work and their everyday writing. Published pieces may be heavily edited; informal writing reveals natural voice.
 - Revisit profiles after 6-12 months of writing. Voices evolve, and profiles should reflect current style.
 - When the writer has multiple distinct registers (e.g., technical blog vs. social media), consider creating separate profiles for each register rather than one blended profile.
+- Run `/refine-voice <name> --article <path>` after every article. The anti-patterns table should grow with every use.
+- If you keep making the same correction to AI drafts, that correction belongs in the profile — not just your head.
 
 ## Profile Comparison
 
