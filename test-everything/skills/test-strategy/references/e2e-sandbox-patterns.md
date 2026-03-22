@@ -312,3 +312,76 @@ When a test fails, diagnose in this order:
 - [ ] `timeout: 60000` in playwright config
 - [ ] Auth helpers use API registration, not UI forms
 - [ ] All test files import from `./fixtures/browser-health`, not `@playwright/test`
+- [ ] File uploads tested via `waitForEvent('filechooser')`, not `page.request.post()`
+- [ ] Form submissions tested via real `fill()` + `click()`, not API calls
+- [ ] Every interactive element tested through the rendered DOM, not programmatic shortcuts
+
+## Case Study: The File Upload That Passed Tests But Never Worked (failure4)
+
+This is the canonical example of API-shortcut testing — the most dangerous E2E anti-pattern, because it produces a green suite while the feature is completely broken.
+
+### What Happened
+
+A file upload feature on a Documents page used a `<label>` wrapping a hidden `<input type="file">`. The E2E test for upload used `page.request.post('/api/documents/upload', formData)` — testing the upload API directly. The test passed.
+
+The actual "Select Files" button was completely broken. The `hidden` Tailwind class used `display: none`, which prevented the `<label>` click from reaching the `<input>`. The `onChange` handler never fired. No file was ever uploaded through the browser.
+
+The user discovered this manually after the test suite reported full coverage.
+
+### The Debugging Spiral
+
+Once discovered, Claude attempted 5 fixes over ~20 minutes:
+
+1. Changed `hidden` to `sr-only` — still broken (input was clipped, onChange didn't fire)
+2. Replaced `<label>` with `<button>` + `ref.click()` — still broken (React re-render cleared the FileList)
+3. Moved input to `position: absolute` off-screen — still broken
+4. Added native `input.onchange` listener — still broken (stale closure, files cleared before mutation read them)
+5. Added `setTimeout(() => { input.value = ""; }, 100)` to delay clearing — **finally worked**
+
+The root cause was that `input.value = ""` was clearing the FileList synchronously before the React mutation could read it. This bug would have been caught immediately if the E2E test had clicked the real button.
+
+### The Root Cause
+
+The E2E test used the API-shortcut pattern:
+
+```typescript
+// WHAT THE TEST DID (wrong — API shortcut)
+const response = await page.request.post('/api/documents/upload', {
+  multipart: { file: fs.createReadStream('test.pdf') }
+});
+expect(response.ok()).toBeTruthy();
+```
+
+This tested that the upload API worked. It told us nothing about:
+- Whether the "Select Files" button was clickable
+- Whether the file input's `onChange` handler fired
+- Whether the `hidden` class prevented label click propagation
+- Whether `input.value = ""` cleared files before the mutation read them
+
+### What The Test Should Have Done
+
+```typescript
+// WHAT THE TEST SHOULD HAVE DONE (right — real user interaction)
+test('user can upload a document via Select Files button', async ({ authedPage: page }) => {
+  await page.goto('/documents');
+
+  // Click the REAL button — tests the full click → input → onChange chain
+  const fileChooserPromise = page.waitForEvent('filechooser');
+  await page.getByRole('button', { name: /select files/i }).click();
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles('test-fixtures/sample.pdf');
+
+  // Verify the upload completed through the UI
+  await expect(page.getByText('sample.pdf')).toBeVisible();
+});
+```
+
+This test would have caught the bug immediately — the `fileChooser` event would never fire because the hidden input wasn't reachable.
+
+### The Lesson
+
+**API-first is correct for test SETUP (auth, data seeding). API-first is disastrous for test VERIFICATION.**
+
+The test should exercise the same path the user takes. If the user clicks a button, the test clicks the button. If the user drags a file, the test drags a file. If the user fills a form and clicks submit, the test fills the form and clicks submit.
+
+Every API shortcut in a feature test is a lie about whether the feature works.

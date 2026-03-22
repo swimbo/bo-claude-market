@@ -138,6 +138,177 @@ User-story tests cover the happy paths. The exhaustive crawl covers everything e
 
 * **Not a substitute for user-story tests**: Exhaustive crawling verifies elements don't break. User-story tests verify features work correctly. Both are needed.
 
+### Real-User Interaction Testing (Click-Through Verification)
+
+API-first auth is correct for test setup. API-first *everything* is a test-quality disaster. The #1 way E2E tests create false confidence is by testing features through API shortcuts instead of the actual rendered UI.
+
+* **The Rule**: Any user-facing interactive element — buttons, file inputs, dropdowns, modals, form submissions, tab switches — MUST be tested through the rendered DOM, not via `page.request.post()` or `page.evaluate()`. API shortcuts verify the backend works; they tell you nothing about whether the user can actually click the button.
+
+* **The Canonical Failure** (failure4): An E2E test for file upload used `page.request.post('/api/documents/upload', ...)` and passed. The actual "Select Files" button was completely broken — a `hidden` class prevented the `<label>` click from reaching the `<input>`, and `onChange` never fired. The test passed for weeks while no user could upload a file. It took 5 rounds of debugging to fix once discovered manually.
+
+* **API shortcuts are BANNED for feature verification**:
+
+  * File uploads: use `page.waitForEvent('filechooser')` + `fileChooser.setFiles()`, not `page.request.post()`
+
+  * Form submissions: use `page.getByLabel().fill()` + `page.getByRole('button').click()`, not `page.request.post()`
+
+  * Button actions: use `page.getByRole('button').click()`, not `page.evaluate(() => document.querySelector('button').click())`
+
+  * Navigation: use `page.getByRole('link').click()`, not `page.goto('/target-url')`
+
+* **API shortcuts are CORRECT for test setup**:
+
+  * User registration/login (auth fixture) — bypasses React re-render issues
+
+  * Seeding test data before the test begins
+
+  * Cleaning up test data after the test ends
+
+  * Verifying backend state after a UI action (complementary, not a replacement)
+
+* **The distinction**: Use APIs to *set up* the test. Use the real UI to *run* the test. Use APIs to *verify backend side-effects* after the test.
+
+* **File upload testing pattern** (the right way):
+
+  ```typescript
+  test('user can upload a document via the UI', async ({ authedPage: page }) => {
+    await page.goto('/documents');
+    // Click the REAL button — this tests the full click → input → onChange chain
+    const fileChooserPromise = page.waitForEvent('filechooser');
+    await page.getByRole('button', { name: /select files|upload/i }).click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles('test-fixtures/sample.pdf');
+    // Verify the upload completed through the UI
+    await expect(page.getByText('sample.pdf')).toBeVisible();
+  });
+  ```
+
+* **Modal/dialog testing pattern**:
+
+  ```typescript
+  test('user can open and submit a modal form', async ({ authedPage: page }) => {
+    await page.goto('/items');
+    await page.getByRole('button', { name: /create|new/i }).click();
+    // Verify modal opened
+    await expect(page.getByRole('dialog')).toBeVisible();
+    // Fill and submit through the modal's real form
+    await page.getByLabel('Name').fill('Test Item');
+    await page.getByRole('button', { name: /save|submit/i }).click();
+    // Verify modal closed and item appeared
+    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page.getByText('Test Item')).toBeVisible();
+  });
+  ```
+
+### Clickable Element Testing (Outcome Verification)
+
+The exhaustive crawl asks "does this element error when clicked?" Clickable element testing asks "does this element **do what it's supposed to do** when clicked?" Every interactive element on every page gets a defined expected outcome, and the test verifies expected = actual.
+
+* **Concept**: For each page/route, build an **element outcome map** — a structured list of every interactive element and what should happen when a user interacts with it. Then write tests that verify each one through the rendered DOM.
+
+* **What it covers** (by element type):
+
+  | Element Type | Interaction | Expected Outcome to Verify |
+  |---|---|---|
+  | **Nav links** | Click | Correct URL + page heading/content renders |
+  | **In-page links** | Click | Correct scroll target or anchor navigation |
+  | **Action buttons** | Click | State change, API call + response, DOM update, or navigation |
+  | **Submit buttons** | Click | Form data sent, success/error feedback shown |
+  | **Modal triggers** | Click | Dialog opens with correct content |
+  | **Modal close/cancel** | Click | Dialog closes, no state change |
+  | **Form text fields** | Click/focus + type | Field gains focus, accepts input, value persists |
+  | **Form field validation** | Type invalid input + blur/submit | Validation message appears |
+  | **Checkboxes** | Click | Checked state toggles, dependent UI updates |
+  | **Radio buttons** | Click | Selection changes, siblings deselect |
+  | **Toggles/switches** | Click | State flips, associated feature enables/disables |
+  | **Dropdowns/selects** | Click + select option | Menu opens, selection persists, dependent UI updates |
+  | **Tabs** | Click | Correct panel shows, other panels hide |
+  | **Accordions** | Click | Content expands/collapses |
+  | **File inputs** | Click | File chooser opens (via `waitForEvent('filechooser')`) |
+  | **Delete/destructive buttons** | Click | Confirmation dialog appears (never immediate delete) |
+  | **Pagination** | Click next/prev/page | Correct page of data loads |
+  | **Sort headers** | Click | Data reorders, indicator shows direction |
+  | **Search/filter inputs** | Type + enter/submit | Results filter, empty state if no matches |
+  | **Copy buttons** | Click | Clipboard updated, toast/feedback shown |
+  | **Expand/collapse** | Click | Content toggles visibility |
+
+* **How to build the element outcome map**:
+
+  1. Visit each route in the running app
+  2. Discover all interactive elements (buttons, links, inputs, selects, checkboxes, tabs, etc.)
+  3. For each element, determine its expected outcome by reading the component source, the page context, or the user story
+  4. Write one test assertion per element verifying expected = actual
+
+* **Scaffold pattern** — one spec per page:
+
+  ```typescript
+  // e2e/clickable-elements/dashboard.spec.ts
+  import { test, expect } from '../fixtures/auth';
+
+  test.describe('Dashboard — clickable element outcomes', () => {
+    test.beforeEach(async ({ authedPage: page }) => {
+      await page.goto('/dashboard');
+    });
+
+    // --- Navigation links ---
+    test('sidebar "Documents" link navigates to /documents', async ({ authedPage: page }) => {
+      await page.getByRole('link', { name: /documents/i }).click();
+      await expect(page).toHaveURL(/\/documents/);
+      await expect(page.getByRole('heading', { name: /documents/i })).toBeVisible();
+    });
+
+    test('sidebar "Settings" link navigates to /settings', async ({ authedPage: page }) => {
+      await page.getByRole('link', { name: /settings/i }).click();
+      await expect(page).toHaveURL(/\/settings/);
+    });
+
+    // --- Action buttons ---
+    test('"New Project" button opens creation modal', async ({ authedPage: page }) => {
+      await page.getByRole('button', { name: /new project/i }).click();
+      await expect(page.getByRole('dialog')).toBeVisible();
+      await expect(page.getByRole('dialog').getByRole('heading')).toContainText(/create|new/i);
+    });
+
+    // --- Form fields ---
+    test('search input accepts text and filters results', async ({ authedPage: page }) => {
+      await page.getByRole('searchbox').click();
+      await page.getByRole('searchbox').fill('test query');
+      await expect(page.getByRole('searchbox')).toHaveValue('test query');
+      // Verify filtering happened
+      await page.waitForTimeout(300); // debounce
+      await expect(page.getByText(/no results|test query/i)).toBeVisible();
+    });
+
+    // --- Tabs ---
+    test('"Analytics" tab shows analytics panel', async ({ authedPage: page }) => {
+      await page.getByRole('tab', { name: /analytics/i }).click();
+      await expect(page.getByRole('tabpanel')).toBeVisible();
+      await expect(page.getByRole('tabpanel').getByText(/chart|metric|data/i)).toBeVisible();
+    });
+
+    // --- File upload ---
+    test('"Upload" button opens file chooser', async ({ authedPage: page }) => {
+      const fileChooserPromise = page.waitForEvent('filechooser');
+      await page.getByRole('button', { name: /upload|select files/i }).click();
+      const fileChooser = await fileChooserPromise;
+      expect(fileChooser).toBeTruthy();
+    });
+  });
+  ```
+
+* **Runs AFTER** user-story tests and common E2E tests — it fills the gap between "feature workflows work" and "every individual element works"
+
+* **Relationship to other E2E layers**:
+
+  | Layer | Question It Answers |
+  |---|---|
+  | User-story tests | "Does the workflow work end-to-end?" |
+  | Desired outcome assessment | "Does the feature achieve its purpose?" |
+  | Clickable element testing | "Does every individual element do what it should?" |
+  | Exhaustive interaction crawl | "Does anything error when clicked?" |
+
+* **vs. exhaustive crawl**: The crawl is automated discovery + error detection. Clickable element testing is deliberate mapping + outcome verification. The crawl catches "something broke." Clickable element testing catches "this button does nothing when it should open a modal." Both are needed.
+
 ### Other Functional Types
 
 * **Regression**: Re-run full suite after changes — automate heavily
@@ -241,6 +412,7 @@ For a typical React + Rust + PostgreSQL project:
 | Component tests                     | Key UI components                                                                | Fully automated             |
 | E2E tests (user stories)            | All user story workflows + interaction verification + desired outcome assessment | Fully automated             |
 | E2E tests (common)                  | Smoke, errors, responsive, navigation, walkthrough                               | Fully automated             |
+| E2E tests (clickable elements)      | Every interactive element mapped to expected outcome, verified through DOM       | Fully automated             |
 | E2E tests (exhaustive crawl)        | Every interactive element on every page, including sub-tabs and dropdowns        | Fully automated             |
 | Performance                         | Key API endpoints                                                                | Automated in CI             |
 | Security                            | All code + deps                                                                  | Automated + periodic manual |
@@ -303,7 +475,25 @@ Using `page.locator('.text-red-400')` or `page.locator('#email')` instead of `pa
 
 Declaring "147 tests passing!" when the tests verify nothing meaningful. **Fix**: Always ask "If every feature broke, would these tests catch it?" before claiming done.
 
-### 7. Sandbox Environment Failures (E2E-Specific)
+### 7. API-Shortcut Testing (E2E-Specific)
+
+Testing user-facing features via API calls instead of through the rendered UI. The test proves the backend works but says nothing about whether the user can actually interact with the feature.
+
+**Examples of the anti-pattern:**
+
+* File upload tested via `page.request.post('/api/documents/upload', ...)` — the upload API works, but the "Select Files" button is completely broken (hidden input, broken onChange, wrong CSS class)
+
+* Form submission tested via `page.request.post('/api/items', { data })` — the API accepts the request, but the submit button does nothing when clicked
+
+* Navigation tested via `page.goto('/target')` instead of clicking the actual link — the page renders, but the nav link points to `#` or is obscured by another element
+
+**Why it's devastating:** These tests pass with 100% reliability while the feature is completely broken for every real user. The false confidence is worse than having no test at all, because the team sees a green suite and ships.
+
+**Fix:** Use the real UI interaction for every user-facing action. Use API calls only for test setup (auth, data seeding) and backend verification.
+
+**Canonical case:** failure4 — file upload test passed via API for weeks while no user could upload a file through the browser. Took 5 rounds of manual debugging to fix. See `references/e2e-sandbox-patterns.md` for the full story.
+
+### 8. Sandbox Environment Failures (E2E-Specific)
 
 E2E tests that work locally but fail in sandbox environments (Claude Code, CI) due to:
 

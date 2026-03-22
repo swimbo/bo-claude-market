@@ -234,9 +234,46 @@ Evaluate whether E2E tests actually verify that interactions produce expected ou
 
 Thresholds: ✅ >80%, ⚠️ 50-80%, ❌ <50% for pairing and selectors.
 
-### Step 3d: Assess Exhaustive Interaction Coverage
+### Step 3d: Assess Clickable Element Outcome Coverage
 
-Evaluate whether the test suite covers ALL interactive elements across all pages, not just those in user story workflows:
+Evaluate whether every interactive element on every page has a test verifying its expected outcome:
+
+1. **Check for clickable element tests**: Look for `e2e/clickable-elements/` directory or `*.clickable.spec.ts` files
+2. **If found**:
+
+   * Count how many pages/routes have clickable element specs
+   * For each spec, check that tests verify **expected outcome = actual outcome** (not just "no errors")
+   * Check for API-shortcut patterns (`page.request.post` in feature tests) — flag as CRITICAL
+   * Check that file uploads use `waitForEvent('filechooser')`, not API calls
+   * Report: "Clickable element tests cover N of M routes"
+3. **If NOT found**:
+
+   * Note the absence: "No clickable element outcome tests — individual interactive elements (buttons, links, form fields, tabs, dropdowns) may work in user-story happy paths but fail in isolation"
+   * Recommend scaffolding `e2e/clickable-elements/` with one spec per page
+
+4. **Cross-reference with user-story tests**:
+
+   * Estimate how many interactive elements exist across all pages (use Playwright to query `button, a[href], input, select, textarea, [role="button"], [role="checkbox"], [role="switch"], [role="tab"], [role="combobox"]`)
+   * Estimate how many are covered by user-story tests vs. clickable element tests
+   * Report: "Estimated N interactive elements across M routes; user-story tests cover ~X%, clickable element tests cover ~Y%"
+   * Flag pages with zero element-level coverage
+
+Include in the gap report:
+
+```
+### Clickable Element Outcome Coverage
+| Check | Result | Status |
+|-------|--------|--------|
+| Clickable element test directory exists | Yes/No | ✅/❌ |
+| Routes with clickable element specs | N of M | ✅/⚠️/❌ |
+| API-shortcut tests found (CRITICAL) | N found | ✅ (0) / ❌ |
+| File uploads use filechooser API | Yes/No | ✅/❌ |
+| Pages with zero element-level coverage | [list] | ⚠️ |
+```
+
+### Step 3d-2: Assess Exhaustive Interaction Coverage
+
+Evaluate whether the test suite's safety net covers ALL interactive elements (error detection, not outcome verification):
 
 1. **Check for exhaustive interaction tests**: Look for `e2e/exhaustive-interactions.spec.ts` or similar files that crawl pages and test all interactive elements
 2. **If found**:
@@ -250,23 +287,14 @@ Evaluate whether the test suite covers ALL interactive elements across all pages
    * Report: "Exhaustive crawl covers N of M routes"
 3. **If NOT found**:
 
-   * Note the absence: "No exhaustive interaction tests — elements not covered by user stories may be untested (dead buttons, broken links behind sub-tabs, non-functional dropdown items)"
+   * Note the absence: "No exhaustive interaction tests — elements not covered by user stories or clickable element tests may be untested"
 
    * Recommend scaffolding `e2e/exhaustive-interactions.spec.ts` to cover all interactive elements
-4. **Cross-reference with user-story tests**:
-
-   * Estimate how many interactive elements exist across all pages (use Playwright to query `button, a[href], input, select, textarea, [role="button"], [role="checkbox"], [role="switch"]`)
-
-   * Estimate how many are covered by user-story E2E tests
-
-   * Report: "Estimated N interactive elements across M routes; user-story tests cover approximately X%"
-
-   * Flag pages with zero E2E coverage (no user story touches them)
 
 Include in the gap report:
 
 ```
-### Exhaustive Interaction Coverage
+### Exhaustive Interaction Coverage (Safety Net)
 | Check | Result | Status |
 |-------|--------|--------|
 | Exhaustive crawl test exists | Yes/No | ✅/❌ |

@@ -52,7 +52,7 @@ Create an implementation plan organized in 2-week phases:
 **Phase 0 (E2E Environment)**: Sandbox-safe Playwright setup (browser path, no webServer, API-first auth, timeouts)
 **Phase 1 (Foundation)**: Static analysis + unit testing framework
 **Phase 2 (Integration)**: Integration tests + test database setup
-**Phase 3 (E2E)**: User-story-driven Playwright tests with desired outcome assessment + exhaustive interaction crawl
+**Phase 3 (E2E)**: User-story-driven Playwright tests with desired outcome assessment + clickable element outcome testing + exhaustive interaction crawl
 **Phase 4 (Security + Performance)**: SAST in CI + k6 load tests
 **Phase 5 (Polish)**: Accessibility + cross-browser + documentation
 
@@ -110,11 +110,17 @@ Before planning E2E tests, discover user stories:
    * How to verify it (e.g., "API returns 201, user can log in")
    * Expected result (e.g., "Redirect to /dashboard after login")
    * Plan a dedicated outcome assessment test per story that verifies all outcomes after executing the full workflow
-6. **Plan exhaustive interaction crawl**: After user-story specs, plan an exhaustive interaction test:
+6. **Plan clickable element outcome tests**: For each page/route, build an element outcome map:
+   * Identify every interactive element on the page (buttons, links, form fields, tabs, dropdowns, checkboxes, file inputs, etc.)
+   * Define the expected outcome for each element (navigates to URL, opens modal, toggles state, accepts input, opens file chooser, etc.)
+   * Plan one test per element verifying expected outcome = actual outcome through the rendered DOM
+   * CRITICAL: file uploads MUST use `waitForEvent('filechooser')`, forms MUST use `fill()` + `click()` — no API shortcuts
+   * This catches "button does nothing" bugs that user-story tests miss because they only test the happy path
+7. **Plan exhaustive interaction crawl**: After clickable element tests, plan an exhaustive interaction test:
    * List all routes to crawl (from router config)
    * Identify pages with tabs, accordions, dropdowns, or modals that hide interactive elements
    * Plan the crawl to reveal hidden elements, then test every button, link, input, and dropdown
-   * This catches dead buttons, broken links, and non-functional elements missed by user-story tests
+   * This is the safety net — catches errors on elements missed by clickable element tests
 
 ### Step 5: Define Quality Gates
 

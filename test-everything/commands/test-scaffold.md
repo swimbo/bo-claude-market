@@ -337,6 +337,110 @@ Scaffold a shared Playwright fixture that automatically detects silent failures 
   await expect(page.getByRole('list').getByText('document.pdf')).toBeVisible();
   ```
 
+**Real-User Interaction Fixtures**:
+
+Scaffold helper fixtures for interactions that agents commonly shortcut via API:
+
+* Create `e2e/fixtures/file-upload.ts` — file upload helper that uses the real UI path:
+
+  ```typescript
+  // e2e/fixtures/file-upload.ts
+  import type { Page } from '@playwright/test';
+
+  /**
+   * Upload a file through the real UI button click path.
+   * NEVER use page.request.post() for upload testing — it bypasses the UI entirely.
+   * See failure4 case study in e2e-sandbox-patterns.md.
+   */
+  export async function uploadFileViaUI(
+    page: Page,
+    buttonSelector: { role: string; name: RegExp } | string,
+    filePath: string | string[]
+  ) {
+    const fileChooserPromise = page.waitForEvent('filechooser');
+
+    if (typeof buttonSelector === 'string') {
+      await page.getByText(buttonSelector).click();
+    } else {
+      await page.getByRole(buttonSelector.role as any, { name: buttonSelector.name }).click();
+    }
+
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(filePath);
+  }
+  ```
+
+* Create `e2e/fixtures/form-helpers.ts` — form interaction helpers:
+
+  ```typescript
+  // e2e/fixtures/form-helpers.ts
+  import type { Page } from '@playwright/test';
+  import { expect } from '@playwright/test';
+
+  /**
+   * Fill a form field and verify the value stuck (catches React re-render issues).
+   * Always use this instead of bare page.fill() for important form fields.
+   */
+  export async function fillAndVerify(page: Page, label: string, value: string) {
+    await page.getByLabel(label).fill(value);
+    await expect(page.getByLabel(label)).toHaveValue(value);
+  }
+
+  /**
+   * Submit a form by clicking its submit button and waiting for the API response.
+   * NEVER use page.request.post() as a substitute for clicking submit.
+   */
+  export async function submitFormAndWait(
+    page: Page,
+    submitName: RegExp,
+    apiPattern: string | RegExp
+  ) {
+    const responsePromise = page.waitForResponse(resp =>
+      (typeof apiPattern === 'string'
+        ? resp.url().includes(apiPattern)
+        : apiPattern.test(resp.url())) && resp.status() < 400
+    );
+    await page.getByRole('button', { name: submitName }).click();
+    return responsePromise;
+  }
+  ```
+
+**CRITICAL: API-Shortcut Testing is BANNED in Feature Tests**
+
+When scaffolding E2E tests, NEVER generate tests that use `page.request.post()`, `page.request.put()`, or `page.request.delete()` to verify user-facing features. These test the API, not the UI. If the button breaks, the test still passes.
+
+API calls are ONLY acceptable for:
+- Auth setup (the auth fixture)
+- Data seeding before a test
+- Cleanup after a test
+- Verifying backend side-effects after a UI action (complementary, not a replacement)
+
+**BAD — API-shortcut testing (BANNED):**
+
+```typescript
+// BANNED: Tests the upload API, not the upload button
+test('upload document', async ({ page }) => {
+  const response = await page.request.post('/api/documents/upload', {
+    multipart: { file: fs.createReadStream('test.pdf') }
+  });
+  expect(response.ok()).toBeTruthy();
+});
+```
+
+**GOOD — Real UI interaction:**
+
+```typescript
+// CORRECT: Tests the actual button → file dialog → upload chain
+test('upload document via Select Files button', async ({ authedPage: page }) => {
+  await page.goto('/documents');
+  const fileChooserPromise = page.waitForEvent('filechooser');
+  await page.getByRole('button', { name: /select files/i }).click();
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles('test-fixtures/sample.pdf');
+  await expect(page.getByText('sample.pdf')).toBeVisible();
+});
+```
+
 **User-Story-Driven Test Generation with Desired Outcomes**:
 
 E2E specs must be derived from user stories, not invented ad-hoc. Each user story must define **desired outcomes** — the measurable, verifiable end-states that prove the feature works correctly.
@@ -735,6 +839,139 @@ Scaffold a single end-to-end walkthrough test that chains the top user story wor
 * Do NOT use separate `test()` blocks — maintain session state in one continuous test
 
 * Add script: `"test:e2e:walkthrough": "playwright test walkthrough.spec.ts"`
+
+**Clickable Element Testing (Outcome Verification)**:
+
+Scaffold tests that verify every interactive element on every page does what it's supposed to do when clicked. Unlike the exhaustive crawl (which checks for errors), these tests verify **expected outcome = actual outcome** for each element.
+
+* Create `e2e/clickable-elements/` directory — one spec per page/route
+
+* For each route, build an **element outcome map** by:
+
+  1. Reading the page component source to identify all interactive elements
+  2. Determining what each element should do (navigate, open modal, toggle state, submit form, etc.)
+  3. Writing one test per element verifying expected outcome = actual outcome
+
+* Use accessible locators exclusively (`getByRole`, `getByLabel`, `getByText`)
+
+* Every test must verify through the rendered DOM — NO API shortcuts
+
+* Template:
+
+  ```typescript
+  // e2e/clickable-elements/<page-name>.spec.ts
+  import { test, expect } from '../fixtures/auth';
+
+  test.describe('<PageName> — clickable element outcomes', () => {
+    test.beforeEach(async ({ authedPage: page }) => {
+      await page.goto('/<route>');
+    });
+
+    // --- Navigation links ---
+    // For each nav link on this page: click → verify URL + page renders
+
+    test('"<Link Text>" link navigates to <target>', async ({ authedPage: page }) => {
+      await page.getByRole('link', { name: /<link-text>/i }).click();
+      await expect(page).toHaveURL(/<target-url>/);
+      await expect(page.getByRole('heading', { name: /<page-heading>/i })).toBeVisible();
+    });
+
+    // --- Action buttons ---
+    // For each button: click → verify the specific expected outcome
+
+    test('"<Button Text>" button <expected action>', async ({ authedPage: page }) => {
+      await page.getByRole('button', { name: /<button-text>/i }).click();
+      // Verify: modal opens, item created, navigation, state change, etc.
+      await expect(/* expected outcome */).toBeVisible();
+    });
+
+    // --- Form fields ---
+    // For each editable field: click/focus → verify accepts input
+
+    test('"<Field Label>" field accepts input', async ({ authedPage: page }) => {
+      const field = page.getByLabel(/<field-label>/i);
+      await field.click();
+      await field.fill('test value');
+      await expect(field).toHaveValue('test value');
+    });
+
+    // --- Tabs ---
+    // For each tab: click → verify correct panel shows with expected content
+
+    test('"<Tab Name>" tab shows <expected content>', async ({ authedPage: page }) => {
+      await page.getByRole('tab', { name: /<tab-name>/i }).click();
+      await expect(page.getByRole('tabpanel')).toBeVisible();
+      await expect(page.getByRole('tabpanel').getByText(/<expected-text>/i)).toBeVisible();
+    });
+
+    // --- Checkboxes/Toggles ---
+    // For each checkbox/toggle: click → verify state change
+
+    test('"<Toggle Label>" toggle changes state', async ({ authedPage: page }) => {
+      const toggle = page.getByRole('checkbox', { name: /<label>/i });
+      await toggle.click();
+      await expect(toggle).toBeChecked();
+      await toggle.click();
+      await expect(toggle).not.toBeChecked();
+    });
+
+    // --- Dropdowns/Selects ---
+    // For each dropdown: click → verify options appear, selection persists
+
+    test('"<Select Label>" dropdown allows selection', async ({ authedPage: page }) => {
+      await page.getByRole('combobox', { name: /<label>/i }).click();
+      await page.getByRole('option', { name: /<option>/i }).click();
+      await expect(page.getByRole('combobox', { name: /<label>/i })).toContainText(/<option>/i);
+    });
+
+    // --- File inputs ---
+    // For each file input: click → verify file chooser opens
+
+    test('"<Upload Button>" opens file chooser', async ({ authedPage: page }) => {
+      const fileChooserPromise = page.waitForEvent('filechooser');
+      await page.getByRole('button', { name: /<upload-text>/i }).click();
+      const fileChooser = await fileChooserPromise;
+      expect(fileChooser).toBeTruthy();
+    });
+
+    // --- Delete/Destructive buttons ---
+    // For each destructive action: click → verify confirmation dialog appears
+
+    test('"Delete" button shows confirmation dialog', async ({ authedPage: page }) => {
+      await page.getByRole('button', { name: /delete/i }).first().click();
+      await expect(page.getByRole('alertdialog')).toBeVisible();
+      // Cancel to avoid side effects
+      await page.getByRole('button', { name: /cancel/i }).click();
+      await expect(page.getByRole('alertdialog')).not.toBeVisible();
+    });
+  });
+  ```
+
+* **Element type reference** for building the outcome map:
+
+  | Element Type | Locator Pattern | Outcome to Verify |
+  |---|---|---|
+  | Nav links | `getByRole('link', { name })` | URL change + page content |
+  | Action buttons | `getByRole('button', { name })` | DOM change, modal, navigation, or API response |
+  | Submit buttons | `getByRole('button', { name: /submit\|save/i })` | Success feedback + data persisted |
+  | Modal triggers | `getByRole('button', { name })` | `getByRole('dialog')` becomes visible |
+  | Modal close | Dialog's `getByRole('button', { name: /close\|cancel/i })` | Dialog not visible |
+  | Text inputs | `getByLabel(name)` | `toHaveValue()` after fill |
+  | Search fields | `getByRole('searchbox')` | Results filter or empty state |
+  | Checkboxes | `getByRole('checkbox', { name })` | `toBeChecked()` toggles |
+  | Radio buttons | `getByRole('radio', { name })` | Selected, siblings deselected |
+  | Toggles/switches | `getByRole('switch', { name })` | `toBeChecked()` toggles |
+  | Tabs | `getByRole('tab', { name })` | `getByRole('tabpanel')` shows correct content |
+  | Dropdowns | `getByRole('combobox', { name })` | Options appear, selection persists |
+  | Accordions | `getByRole('button')` in heading | Content expands/collapses |
+  | File inputs | `getByRole('button', { name: /upload/i })` | `waitForEvent('filechooser')` fires |
+  | Delete buttons | `getByRole('button', { name: /delete/i })` | Confirmation dialog appears |
+  | Sort headers | `getByRole('columnheader')` | Data reorders, indicator changes |
+  | Pagination | `getByRole('button', { name: /next\|prev/i })` | New page of data loads |
+
+* Add script: `"test:e2e:clickable": "PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test clickable-elements/"`
+
+* Run AFTER user-story tests, BEFORE exhaustive crawl
 
 **Exhaustive Interaction Crawl**:
 

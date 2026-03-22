@@ -107,6 +107,18 @@ For each change, recommend specific tests:
 
 * The feature's purpose (why) hasn't been verified, only its mechanics (how)
 
+**Clickable element outcome testing needed when**:
+
+* New pages or routes are added — every interactive element on the page needs an expected outcome mapped and verified
+
+* Existing pages gain new buttons, links, form fields, tabs, dropdowns, or other interactive elements
+
+* Navigation structure changes (sidebar links, header nav, breadcrumbs)
+
+* Form fields are added or modified — click/focus, input acceptance, and validation all need verification
+
+* File upload UI is added — MUST use `waitForEvent('filechooser')` through the real button, not API shortcuts
+
 **Exhaustive interaction coverage needed when**:
 
 * New pages or routes are added with interactive elements not covered by user stories
@@ -114,6 +126,34 @@ For each change, recommend specific tests:
 * New tabs, accordions, dropdowns, or modals are added that contain buttons/links/inputs
 
 * Interactive elements exist on pages that have zero E2E test coverage
+
+### Step 3d: Click-Through Verification (CRITICAL)
+
+For each interactive UI element in changed files — buttons, file inputs, links, dropdowns, modals, form submissions — verify that an E2E test actually interacts with the **rendered element**, not an API shortcut.
+
+**What to check:**
+
+1. **File uploads**: Grep E2E tests for `page.request.post` with upload/multipart patterns. If found, flag: "File upload tested via API shortcut — bypasses the real button. Use `page.waitForEvent('filechooser')` + `fileChooser.setFiles()` instead."
+
+2. **Form submissions**: Grep for `page.request.post` or `page.request.put` in feature test files (not auth fixtures). If found alongside a feature test, flag: "Form submission tested via API — bypasses the real fill + click path."
+
+3. **Button actions**: Grep for `page.evaluate(() =>` with `.click()` or `.submit()` inside. Flag: "Button click via evaluate() — bypasses event propagation. Use `page.getByRole('button').click()` instead."
+
+4. **Navigation**: Check if E2E tests use `page.goto('/target')` for in-app navigation that should be tested via link clicks. Flag when the changed code adds a link/nav element but the test navigates directly.
+
+**Report API-shortcut tests as HIGH PRIORITY gaps** — they are worse than missing tests because they create false confidence:
+
+```
+### API-Shortcut Tests (CRITICAL — Replace These)
+1. **[File:line]**: File upload uses `page.request.post('/api/upload')`
+   - Impact: Tests the API, not the UI. If the upload button breaks, this test still passes.
+   - Fix: Use `page.waitForEvent('filechooser')` + click the real button
+   - Reference: failure4 case study in e2e-sandbox-patterns.md
+
+2. **[File:line]**: Form submission uses `page.request.post('/api/items')`
+   - Impact: Tests the API, not the form. If the submit button is broken, test still passes.
+   - Fix: Use `page.getByLabel().fill()` + `page.getByRole('button').click()`
+```
 
 ### Step 3b: Detect Shallow Existing Tests
 

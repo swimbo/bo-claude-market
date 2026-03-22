@@ -81,6 +81,21 @@ grep -rn 'webServer' playwright.config.* --include='*.ts' --include='*.js'
 # If webServer block exists, flag it — times out in sandbox
 grep -rn 'PLAYWRIGHT_BROWSERS_PATH' package.json
 # If NOT found in test:e2e scripts, flag it — browsers won't be found in sandbox
+
+# Check 8: API-shortcut testing (CRITICAL — tests pass while UI is broken)
+grep -rn 'page\.request\.post\|page\.request\.put\|page\.request\.delete' e2e/ --include='*.spec.*'
+# If found in feature tests (not auth fixtures), flag: bypasses the real UI
+# Exception: OK in test setup/teardown, NOT OK as the feature verification
+
+# Check 9: File uploads not using real interaction
+grep -rn 'upload\|file' e2e/ --include='*.spec.*' -l
+# For each file, check for page.waitForEvent('filechooser')
+# If a test uploads files but does NOT use filechooser, flag: API-shortcut upload
+
+# Check 10: Form submissions via API instead of UI
+grep -rn 'page\.request' e2e/ --include='*.spec.*'
+# Cross-reference with the test name/context — if the test is verifying a form feature
+# but uses page.request instead of fill() + click(), flag it
 ```
 
 **Critical violations (MUST be fixed — review cannot pass with these):**
@@ -98,6 +113,12 @@ grep -rn 'PLAYWRIGHT_BROWSERS_PATH' package.json
 * Missing `PLAYWRIGHT_BROWSERS_PATH` in npm scripts — browsers won't be found in sandbox
 
 * UI-based user registration in test helpers — `page.fill()` gets lost during React re-renders; use API-first registration
+
+* **API-shortcut feature testing** — `page.request.post/put/delete` used to verify user-facing features (file uploads, form submissions, button actions) instead of interacting with the rendered UI. This is the #1 cause of "tests pass, feature is broken." API calls are correct for auth setup and data seeding, WRONG for feature verification. See failure4 case study.
+
+* **File upload tests without `fileChooser`** — any test that uploads files but doesn't use `page.waitForEvent('filechooser')` is bypassing the real button click path. The upload API may work while the button is completely broken.
+
+* **Form submission via API in feature tests** — `page.request.post()` in a test that should be verifying a form's fill → click → response cycle
 
 **Structural anti-patterns**:
 
@@ -136,6 +157,8 @@ grep -rn 'PLAYWRIGHT_BROWSERS_PATH' package.json
 * No browser health monitoring — E2E test suites without console error detection (`pageerror` listener) or network failure detection (`requestfailed` listener).
 
 * Missing desired outcome assessment — E2E tests walk through user story steps but never verify the end-state.
+
+* Missing clickable element outcome tests — pages have interactive elements (buttons, links, form fields, tabs, dropdowns) with no test verifying that clicking them produces the expected result. User-story tests only cover elements in the happy path; clickable element tests cover everything on the page.
 
 * Incomplete element coverage — E2E tests only interact with elements mentioned in user stories, leaving buttons behind sub-tabs, dropdown menu items, accordion content, and secondary navigation completely untested.
 
@@ -242,6 +265,9 @@ Tests that verify page loads but not feature behavior:
 - `webServer` block present in `playwright.config.ts` (sandbox-unsafe)
 - `PLAYWRIGHT_BROWSERS_PATH` missing from npm test scripts (sandbox-unsafe)
 - Test helpers that register users through UI forms instead of API calls (React re-render fragile)
+- Any `page.request.post/put/delete` in feature verification tests (API-shortcut testing — tests the backend, not the UI)
+- File upload tests that don't use `page.waitForEvent('filechooser')` (bypasses the real button)
+- Form submission tests that use API calls instead of `fill()` + `click()` (bypasses the real form)
 
 ## Quality Standards
 
