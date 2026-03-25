@@ -9,6 +9,10 @@ allowed-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "Agent"]
 
 End-to-end testing workflow: audit, plan, build, run, fix, repeat until green.
 
+## Browser Automation Tool Policy
+
+**Use `playwright-cli` via Bash** (`npx playwright test`) for all E2E testing. DO NOT use `mcp__playwright__*` or `mcp__chrome-devtools__*` MCP tools — they lack test fixtures, assertions, and reproducibility. All tests run via Playwright Test CLI in headless mode.
+
 ## Non-Negotiable Rules
 
 These rules are absolute. You MUST NOT rationalize, work around, or make exceptions. If you catch yourself thinking "just this once" or "it's simpler to..." — STOP. You are about to write a bad test.

@@ -2,6 +2,10 @@
 
 This document captures battle-tested patterns for running Playwright E2E tests reliably inside macOS Sandbox (Claude Code) and similar restricted environments. Every pattern here was discovered through real failures and verified through successful runs.
 
+## Browser Automation Tool Policy
+
+**Use `playwright-cli` via Bash** (`npx playwright test`, `npx playwright install`) for all E2E testing. DO NOT use `mcp__playwright__*` or `mcp__chrome-devtools__*` MCP tools — they lack test fixtures, browser health monitoring, assertion libraries, and reproducibility. All tests run headless via Playwright Test CLI.
+
 ## The Problem
 
 Claude Code runs inside macOS Sandbox, which blocks:

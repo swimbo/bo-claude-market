@@ -8,6 +8,16 @@ version: 0.1.0
 
 Comprehensive testing knowledge covering all testing types, architecture models, quality gates, and implementation strategies. Tailored to projects using React + Vitest (frontend), Rust `#[test]` (backend), Playwright (E2E), and k6 (performance).
 
+## Browser Automation Tool Policy
+
+**Use `playwright-cli` via Bash for all browser interactions** — `npx playwright test`, `npx playwright install`, etc. This is the ONLY approved tool for E2E testing and browser automation in this plugin.
+
+**DO NOT USE** any of the following for testing:
+- `mcp__playwright__*` tools (Playwright MCP server)
+- `mcp__chrome-devtools__*` tools (Chrome DevTools MCP server)
+
+These MCP tools are designed for ad-hoc browser debugging, not structured E2E testing. They lack test fixtures, browser health monitoring, assertion libraries, and the reproducibility guarantees that Playwright Test CLI provides. All E2E tests must run via `npx playwright test` in headless mode.
+
 ## Testing Classification
 
 Testing divides along three axes:

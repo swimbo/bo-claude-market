@@ -111,6 +111,8 @@ Test UI components in isolation with various states, props, and interactions.
 
 ### Layer: `e2e`
 
+**Browser Automation Tool Policy**: Use `playwright-cli` via Bash (`npx playwright test`) for all E2E testing. DO NOT use `mcp__playwright__*` or `mcp__chrome-devtools__*` MCP tools.
+
 **CRITICAL: Sandbox-Safe Setup**
 
 E2E tests run inside macOS Sandbox (Claude Code), which blocks the default Playwright browser cache, server startup via `config.webServer`, and `nice()` syscalls. You MUST follow the sandbox-safe patterns below. See `references/e2e-sandbox-patterns.md` for full rationale.
