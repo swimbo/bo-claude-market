@@ -45,6 +45,13 @@
       "version": "0.1.0",
       "description": "Incident postmortem builder — intake artifacts (logs, chat threads, screenshots, configs, monitoring data) and produce structured 8-section postmortems with gap detection and parallel artifact analysis.",
       "author": {"name": "Bo"}
+    },
+    {
+      "name": "standard-design",
+      "source": "./standard-design",
+      "version": "0.1.0",
+      "description": "Standard Design System plugin — apply, review, and scaffold React + MUI admin interfaces with dual-mode theming, 28 component overrides, design tokens, and 4 page patterns.",
+      "author": {"name": "Bo"}
     }
   ]
 }

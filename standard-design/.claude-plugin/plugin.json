@@ -1,0 +1,11 @@
+{
+  "name": "standard-design",
+  "version": "0.1.0",
+  "description": "Standard Design System plugin — apply, review, and scaffold React + MUI interfaces using the Standard admin design system with dual-mode theming, design tokens, and component patterns",
+  "author": {
+    "name": "Bo",
+    "url": "https://github.com/bo"
+  },
+  "license": "MIT",
+  "keywords": ["design-system", "mui", "react", "theming", "admin-ui", "standard"]
+}
