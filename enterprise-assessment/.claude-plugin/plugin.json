@@ -1,0 +1,11 @@
+{
+  "name": "enterprise-assessment",
+  "version": "0.1.0",
+  "description": "Enterprise readiness evaluator — assesses projects against 12 categories covering security, compliance, operational maturity, and code quality with risk-scored findings, compliance framework mapping (NIST, SOC2, ISO 27001), and executive-ready reports",
+  "author": {
+    "name": "Bo",
+    "url": "https://github.com/bo"
+  },
+  "license": "MIT",
+  "keywords": ["enterprise", "assessment", "compliance", "security", "readiness", "scorecard", "SOC2", "NIST"]
+}
