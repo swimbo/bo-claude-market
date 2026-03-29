@@ -4,43 +4,36 @@ Custom plugins for Claude Code.
 
 ## Plugins
 
-| Plugin                                | Description                                                                                        |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| [whitepaper](./whitepaper/)           | Technical whitepaper authoring — guided creation, review, and revision workflows                   |
-| [top-10](./top-10/)                   | Competitive research — top 10 solutions analysis with deep dives and PRD generation                |
+| Plugin | Description |
+|--------|-------------|
+| [bo-planner](./bo-planner/) | File-based planning — scope fences, environment snapshots, verification gates, subagent delegation |
+| [enterprise-assessment](./enterprise-assessment/) | Enterprise readiness evaluator — 12-category assessment with risk scoring, compliance mapping (NIST, SOC2, ISO 27001) |
+| [standard-design](./standard-design/) | Standard Design System — apply, review, and scaffold React + MUI admin interfaces with dual-mode theming |
 | [test-everything](./test-everything/) | Comprehensive testing toolkit — audit gaps, plan strategy, scaffold infrastructure, review quality |
-| [bo-planner](./bo-planner/)           | File-based planning — scope fences, environment snapshots, verification gates, subagent delegation |
-| [article-writer](./article-writer/)   | Article writing — 6-stage pipeline with voice profiles, 42 templates, research depth levels, series support |
+| [whitepaper](./whitepaper/) | Technical whitepaper authoring — guided creation, review, and revision workflows |
+| [top-10](./top-10/) | Competitive research — top 10 solutions analysis with deep dives and PRD generation |
+| [article-writer](./article-writer/) | Article writing — 6-stage pipeline with voice profiles, 42 templates, research depth levels, series support |
 | [incident-postmortem](./incident-postmortem/) | Incident postmortem builder — intake artifacts (logs, chat threads, screenshots), produce structured 8-section postmortems |
+
+## Plugin Integration
+
+Four core plugins (bo-planner, standard-design, test-everything, enterprise-assessment) automatically detect and consume each other's artifacts when installed on the same project. This enables a unified lifecycle:
+
+```
+Plan → Design → Review → Test → Assess → Deliver
+```
+
+See [plugin-integration.md](./plugin-integration.md) for the full integration guide, artifact flow diagrams, and example workflows.
 
 ## Installation
 
-```bash proof:W3sidHlwZSI6InByb29mU3VnZ2VzdGlvbiIsImZyb20iOjE4NiwidG8iOjI0OCwiYXR0cnMiOnsiaWQiOiJtMTc3Mjg1NjY4NjMyNF8xIiwia2luZCI6Imluc2VydCIsImJ5IjoiYWk6ZXh0ZXJuYWwtYWdlbnQiLCJjb250ZW50IjoiXG5jbGF1ZGUgcGx1Z2luIGluc3RhbGwgYm8tcGxhbm5lciAtLW1hcmtldHBsYWNlIGJvLW1hcmtldHBsYWNlIiwic3RhdHVzIjoicGVuZGluZyIsImNyZWF0ZWRBdCI6IjIwMjYtMDMtMDdUMDQ6MTE6MjYuMzI0WiIsInJ1bklkIjpudWxsLCJmb2N1c0FyZWFJZCI6bnVsbCwiZm9jdXNBcmVhTmFtZSI6bnVsbCwiYWdlbnRJZCI6bnVsbCwicHJvcG9zYWxJZCI6bnVsbCwicHJvdmlzaW9uYWwiOm51bGwsIm9yY2hlc3RyYXRvciI6bnVsbCwiZGVidWdBdXRvRml4ZWRRdW90ZXMiOm51bGwsImRlYnVnQXV0b0ZpeGVkUXVvdGVzUmVhc29uIjpudWxsfX1d
+```bash
+claude plugin install bo-planner --marketplace bo-marketplace
+claude plugin install enterprise-assessment --marketplace bo-marketplace
+claude plugin install standard-design --marketplace bo-marketplace
+claude plugin install test-everything --marketplace bo-marketplace
 claude plugin install whitepaper --marketplace bo-marketplace
 claude plugin install top-10 --marketplace bo-marketplace
-claude plugin install test-everything --marketplace bo-marketplace
-claude plugin install bo-planner --marketplace bo-marketplace
 claude plugin install article-writer --marketplace bo-marketplace
 claude plugin install incident-postmortem --marketplace bo-marketplace
 ```
-
-<!-- PROOF
-{
-  "version": 2,
-  "marks": {
-    "m1772856686324_1": {
-      "kind": "insert",
-      "by": "ai:external-agent",
-      "createdAt": "2026-03-07T04:11:26.324Z",
-      "range": {
-        "from": 742,
-        "to": 804
-      },
-      "content": "\nclaude plugin install bo-planner --marketplace bo-marketplace",
-      "status": "pending"
-    }
-  }
-}
--->
-
-<!-- PROOF:END -->
