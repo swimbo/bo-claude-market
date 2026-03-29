@@ -100,6 +100,28 @@ Produce a compliance report organized by severity:
 
 Present the report to the user. If there are critical issues, ask if they want you to fix them automatically.
 
+## Step 4: Save Report for Cross-Plugin Use
+
+Check if a bo-planner planning session is active by looking for `docs/planning/phased-plan.md`:
+
+- **If planning is active**: Save the compliance report to `docs/planning/design-compliance.md` with a header:
+  ```markdown
+  # Standard Design Compliance Report
+  **Date:** [current date]
+  **Files reviewed:** [count]
+  **Critical issues:** [count]
+  **Warnings:** [count]
+  **Info:** [count]
+
+  [full report content]
+  ```
+  This makes the report available to:
+  - `/bo-planner:done` — checks for unresolved critical design issues
+  - `/enterprise-assessment:assess` — uses as evidence for Code Quality category
+  - `/bo-planner:status` — shows design compliance state
+
+- **If no planning session**: Do not save to file (report was already presented inline)
+
 ## Important Rules
 
 - Only flag issues that deviate from Standard design system rules — don't enforce general code style

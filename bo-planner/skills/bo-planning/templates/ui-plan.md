@@ -6,20 +6,34 @@
 
 ## Design System
 
+### Standard Design System Integration
+
+<!-- If the project uses the Standard Design System (React + MUI), the tokens below are pre-filled.
+     Run `/standard-design:apply` to install the theme, or `/standard-design:review` to check compliance.
+     If NOT using Standard Design, replace these with your project's brand tokens. -->
+
+**Design system in use:** Standard Design System / Custom (choose one)
+
+If using Standard Design System, the following tokens are pre-defined and should NOT be overridden:
+- Fonts: Outfit (display), DM Sans (body), JetBrains Mono (code)
+- Dark accent: #00d4ff (electric cyan) / Light accent: #0969da (professional blue)
+- 28 MUI component overrides applied via theme
+- See `/standard-design` skill for full token reference
+
 ### Brand Alignment
 
-<!-- If aligning to a specific brand, map tokens here -->
+<!-- If aligning to a specific brand or overriding Standard Design defaults, map tokens here -->
 
 | Role | Hex | Usage |
 | ---- | --- | ----- |
-| Primary | \[#hex] | Primary text, high-contrast backgrounds |
-| Surface | \[#hex] | Page/container backgrounds |
-| Accent | \[#hex] | Interactive elements, CTAs |
-| Secondary Accent | \[#hex] | Informational highlights |
-| Muted | \[#hex] | Borders, disabled states, secondary text |
-| Success | \[#hex] | Success states, confirmations |
-| Warning | \[#hex] | Warnings, caution states |
-| Destructive | \[#hex] | Errors, destructive actions |
+| Primary | \[#hex or Standard: textPrimary] | Primary text, high-contrast backgrounds |
+| Surface | \[#hex or Standard: charcoal] | Page/container backgrounds |
+| Accent | \[#hex or Standard: accent] | Interactive elements, CTAs |
+| Secondary Accent | \[#hex or Standard: accentDim] | Informational highlights |
+| Muted | \[#hex or Standard: textMuted] | Borders, disabled states, secondary text |
+| Success | \[#hex or Standard: success] | Success states, confirmations |
+| Warning | \[#hex or Standard: warning] | Warnings, caution states |
+| Destructive | \[#hex or Standard: danger] | Errors, destructive actions |
 
 ### Color Contrast Verification
 
@@ -35,16 +49,16 @@ Minimum requirements: 4.5:1 for body text, 3:1 for large text (18pt+ or 14pt bol
 
 ### Scale
 
-<!-- Limit to 2-3 font families. For monospaced environments, adjust tracking at large sizes. -->
+<!-- Limit to 2-3 font families. If using Standard Design, these are pre-defined. -->
 
 | Role | Font | Size | Weight | Usage |
 | ---- | ---- | ---- | ------ | ----- |
-| Display | \[Font] | \[size] | \[weight] | Hero text, large numbers |
-| Heading | \[Font] | \[size] | \[weight] | Section headers |
-| Subheading | \[Font] | \[size] | \[weight] | Subsection headers |
-| Body | \[Font] | \[size] | \[weight] | Primary content |
-| Label | \[Font] | \[size] | \[weight] | Form labels, captions |
-| Code | \[Monospace Font] | \[size] | \[weight] | Code blocks, terminal output |
+| Display | \[Font or Outfit] | \[size or 2.25rem] | \[weight or 700] | Hero text, large numbers |
+| Heading | \[Font or Outfit] | \[size or 1.75rem] | \[weight or 600] | Section headers |
+| Subheading | \[Font or Outfit] | \[size or 1.25rem] | \[weight or 600] | Subsection headers |
+| Body | \[Font or DM Sans] | \[size or 0.9375rem] | \[weight or 400] | Primary content |
+| Label | \[Font or DM Sans] | \[size or 0.75rem] | \[weight or 400] | Form labels, captions |
+| Code | \[Monospace or JetBrains Mono] | \[size or 0.6875rem] | \[weight or 500] | Code blocks, data labels |
 
 ### Monospaced Adjustments (if applicable)
 

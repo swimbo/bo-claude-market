@@ -35,7 +35,28 @@ Based on what the project contains:
 
 * **If it's a web app**: Check that the dev server starts without errors.
 
-### Step 3: Scope Audit
+### Step 3: Cross-Plugin Quality Gates
+
+Check for artifacts from other plugins and include their results in the completion check:
+
+1. **Enterprise Assessment** — Check for `docs/planning/enterprise-assessment.md` or `enterprise-assessment-report.md`:
+   - If found, read the overall grade and risk posture
+   - If grade < B (below 75%): **WARN** "Enterprise assessment grade is [grade] ([pct]%) — risk posture is [posture]. Consider remediating Critical/High findings before delivery."
+   - List count of Critical and High findings
+   - This is a warning, not a blocker — the user decides whether to proceed
+
+2. **Design Compliance** — Check for `docs/planning/design-compliance.md`:
+   - If found, read the critical issue count
+   - If critical issues > 0: **WARN** "[n] critical design compliance issues remain (raw hex colors, wrong fonts, etc.)"
+   - This is a warning, not a blocker
+
+3. **Test Coverage** — Check for test-everything audit results or `.test-results/`:
+   - If found, report test pass/fail counts and coverage metrics
+   - If tests are failing: **BLOCK** "Tests are failing — must fix before delivery"
+
+Include these results in the Step 5 summary output.
+
+### Step 4: Scope Audit
 
 <span data-proof="suggestion" data-id="m1772856376784_5" data-by="ai:external-agent" data-kind="replace">Compare the IN scope items from task_plan.md against what was actually delivered:</span>
 
@@ -45,7 +66,7 @@ Based on what the project contains:
 
 * Flag any IN scope items that were missed
 
-### <span data-proof="suggestion" data-id="m1772856376777_4" data-by="ai:external-agent" data-kind="replace">Step 4: Ask User</span>
+### <span data-proof="suggestion" data-id="m1772856376777_4" data-by="ai:external-agent" data-kind="replace">Step 5: Ask User</span>
 
 Present the results to the user using AskUserQuestion:
 
@@ -56,13 +77,15 @@ Completion check:
 - Tests: {pass}/{total} passing
 - Scope: {delivered}/{in_scope} items delivered
 - Unresolved errors: {count}
+- Enterprise assessment: {grade} ({pct}%) — {posture} [or "not run"]
+- Design compliance: {critical} critical issues [or "not run"]
 
 Ready to mark complete? Or should I address [specific issues]?
 ```
 
 Do NOT declare success until the user confirms.
 
-### <span data-proof="suggestion" data-id="m1772856376764_2" data-by="ai:external-agent" data-kind="replace">Step 5: Update Files</span>
+### <span data-proof="suggestion" data-id="m1772856376764_2" data-by="ai:external-agent" data-kind="replace">Step 6: Update Files</span>
 
 If user confirms:
 

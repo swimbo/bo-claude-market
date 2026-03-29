@@ -206,6 +206,18 @@ Perform the same analysis as `/test-everything:test-audit`:
 5. Assess exhaustive interaction coverage — check if all interactive elements on all pages are tested (see test-audit Step 3d)
 6. Identify gaps — output a brief summary table (not the full report)
 
+#### Cross-Plugin Intelligence
+
+Before auditing, gather context from other plugins' artifacts:
+
+1. **`docs/planning/user-stories.md`** (bo-planner) — use acceptance criteria as test requirements baseline
+2. **`docs/planning/architecture.md`** (bo-planner) — use API endpoints and service boundaries to identify integration test targets
+3. **`docs/planning/ux-plan.md`** (bo-planner) — use user flows for E2E test coverage mapping
+4. **`enterprise-assessment-report.md`** or **`docs/planning/enterprise-assessment.md`** — use Testing category gaps as P0 priorities
+5. **`src/theme/ThemeModeProvider.tsx`** (standard-design) — flag need for theme-aware component tests
+
+If bo-planner artifacts exist, include a **Traceability Matrix** in the audit showing which user stories have test coverage and which don't.
+
 ### Phase 2: Plan
 
 Based on the audit, determine what needs to be built:

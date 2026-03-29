@@ -28,6 +28,18 @@ Parse `--profile` from arguments. Check for `.enterprise-assessment.yml`. Defaul
 
 Load category weights and must-pass settings from the profile. Reference the rubric at the enterprise-rubric skill.
 
+## Step 2b: Gather Cross-Plugin Intelligence
+
+Check for artifacts from other plugins to enrich the assessment:
+
+1. **`docs/planning/architecture.md`** (bo-planner) — tech stack context, API endpoints, architecture decisions
+2. **`docs/planning/user-stories.md`** (bo-planner) — feature completeness baseline
+3. **`docs/planning/phased-plan.md`** (bo-planner) — scope fence for focused assessment
+4. **Test results** (test-everything) — `.test-results/`, test audit reports, coverage metrics
+5. **`docs/planning/design-compliance.md`** or `src/theme/` (standard-design) — design system compliance
+
+Pass any found artifacts as context to category assessors so they don't duplicate work.
+
 ## Step 3: Evaluate All Categories in Parallel
 
 Spawn `category-assessor` subagents in parallel using the Agent tool — one per enabled category.
@@ -37,6 +49,7 @@ For each agent, provide:
 2. Project root path
 3. Detected tech stack
 4. Assessment profile
+5. Cross-plugin context (any artifacts found in Step 2b)
 
 Do NOT ask for must-pass categories interactively — use profile defaults for the report.
 
@@ -58,11 +71,16 @@ The report must include all sections:
 
 ## Step 5: Save and Notify
 
-Save the report as `enterprise-assessment-report.md` in the project root.
+### Output Location
+
+Check if a bo-planner planning session is active by looking for `docs/planning/phased-plan.md`:
+
+- **If planning is active**: Save to `docs/planning/enterprise-assessment.md` — this integrates the report into the planning artifact set, making it visible to `/bo-planner:status` and `/bo-planner:done`
+- **If no planning session**: Save to `enterprise-assessment-report.md` in the project root
 
 Tell the user:
 ```
-Report saved to `enterprise-assessment-report.md`.
+Report saved to `[output path]`.
 
 Key metrics:
 - Overall Grade: [grade] ([pct]%)
@@ -74,6 +92,8 @@ Key metrics:
 The risk register and remediation checklist can be used to track progress toward enterprise readiness.
 Run `/enterprise-assessment:compare` after remediation to measure improvement.
 ```
+
+If saved to `docs/planning/`, also note: "Assessment integrated into planning artifacts. Run `/bo-planner:status` to see unified progress."
 
 ## Important Guidelines
 

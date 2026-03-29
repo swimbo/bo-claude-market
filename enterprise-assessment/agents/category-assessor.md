@@ -43,6 +43,11 @@ You will receive:
 2. **Project root path** — where the project is located
 3. **Detected tech stack** — languages, frameworks, package managers
 4. **Assessment profile** — which profile is being used (affects emphasis)
+5. **Cross-plugin context** (optional) — artifacts from other plugins:
+   - `architecture.md` contents (bo-planner) — intended architecture to assess against
+   - `user-stories.md` contents (bo-planner) — feature completeness baseline
+   - Test audit results (test-everything) — for Testing category, use these as authoritative
+   - Design compliance results (standard-design) — for Code Quality, use these as evidence
 
 ## Instructions
 
@@ -62,6 +67,15 @@ Use tools to thoroughly examine the project for evidence related to your assigne
 - **Bash** — Structural checks (e.g., `ls`, counting files, checking directory structure)
 
 Be thorough but focused — only scan for evidence related to your category.
+
+### Cross-Plugin Intelligence
+
+Before scanning, check if cross-plugin context was provided in your inputs:
+
+- **Testing category**: If test-everything audit results were provided, use them as the primary evidence source. Do not re-scan for test files — the test-everything plugin's analysis is more thorough. Score based on their gap analysis and coverage metrics.
+- **Code Quality category**: If standard-design compliance results were provided, incorporate them as evidence for the "Consistent patterns" check. A project using Standard Design System with passing compliance gets credit for design system adoption.
+- **Documentation category**: If bo-planner artifacts exist (`architecture.md`, `user-stories.md`, `ux-plan.md`), these count as architecture documentation, requirements documentation, and UX documentation respectively. Score accordingly.
+- **Infrastructure category**: If `architecture.md` documents deployment requirements, cross-reference against actual Dockerfiles, CI configs, and env documentation.
 
 ### Scan Depth by Category
 

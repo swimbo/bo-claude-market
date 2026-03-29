@@ -14,13 +14,39 @@ Evaluate a project against 12 enterprise readiness categories, assign risk-score
 
 ## Instructions
 
-## Step 1: Detect Project
+## Step 1: Detect Project and Gather Cross-Plugin Intelligence
 
 Scan the project root to identify:
 - Backend language and frameworks
 - Frontend framework (if any)
 - Package managers and build tools
 - Project structure and size
+
+### Cross-Plugin Artifact Detection
+
+Check for artifacts from other plugins and use them to enrich the assessment:
+
+1. **`docs/planning/architecture.md`** (bo-planner):
+   - If found, use the documented tech stack, API endpoints, and architecture decisions as assessment context
+   - Cross-reference documented infrastructure requirements against actual implementation
+   - Pass this context to category assessors so they assess against intended architecture, not just discovered code
+
+2. **`docs/planning/user-stories.md`** (bo-planner):
+   - If found, compare implemented features against documented stories for feature completeness
+   - Pass story count to assessors for Documentation & Knowledge category
+
+3. **`docs/planning/phased-plan.md`** (bo-planner):
+   - If found, read the scope fence (IN/OUT items) to focus assessment on in-scope components only
+   - Note the planning maturity level in the executive summary
+
+4. **Test-everything results** (test-everything plugin):
+   - Check for `.test-results/`, test audit reports, or recent test run output
+   - If found, pass results directly to the Testing category assessor — do not duplicate the scan
+   - Use coverage metrics as authoritative evidence
+
+5. **`src/theme/ThemeModeProvider.tsx`** or `src/theme/index.ts` (standard-design):
+   - If found, note "Standard Design System in use" for Code Quality category
+   - Check for `docs/planning/design-compliance.md` — if found, pass to Code Quality assessor
 
 Report findings briefly before proceeding.
 

@@ -90,6 +90,27 @@ Ask the user what navigation items they want. Generate the nav items array.
 
 File output: `{path}/AppLayout.tsx`
 
+## Step 0: Gather Cross-Plugin Context
+
+Check for bo-planner planning artifacts that can inform the scaffold:
+
+1. **`docs/planning/ui-plan.md`** (bo-planner):
+   - If found, read the design system section — validate it aligns with Standard Design tokens
+   - Use the planned color palette, typography scale, and component inventory as constraints
+   - If the ui-plan specifies custom colors or fonts that conflict with Standard Design, warn the user:
+     "ui-plan.md specifies [custom value] which differs from Standard Design's [token]. Using Standard Design defaults — update ui-plan.md if intentional."
+   - Use the component inventory to determine which MUI components to import
+   - Use the layout architecture section to inform page layout decisions
+
+2. **`docs/planning/ux-plan.md`** (bo-planner):
+   - If found, read user flows for the entity being scaffolded
+   - Use the interaction patterns to inform form validation, error handling, and loading states
+   - If the ux-plan documents specific error messages or empty states, include them in the scaffold
+
+3. **`docs/planning/user-stories.md`** (bo-planner):
+   - If found, check if there are user stories for the entity being scaffolded
+   - Use acceptance criteria to add TODO comments at the exact points where acceptance criteria need implementation
+
 ## Step 1: Validate Theme Exists
 
 Check that the Standard theme is installed in the project:

@@ -23,6 +23,37 @@ If a `/test-everything:test-audit` was recently run, use those results. Otherwis
 
 * Identify major gaps
 
+#### Cross-Plugin Intelligence
+
+Before planning, check for artifacts from other plugins that can inform the test strategy:
+
+1. **Check for `docs/planning/user-stories.md`** (bo-planner artifact):
+   - If found, parse all user stories with their acceptance criteria and desired outcomes
+   - Each user story maps to at least one E2E test spec
+   - Acceptance criteria map directly to test assertions
+   - Include a "Story-Driven Tests" section in the plan
+
+2. **Check for `docs/planning/architecture.md`** (bo-planner artifact):
+   - If found, extract API endpoints, service boundaries, and data models
+   - API endpoints → integration test stubs (one per endpoint)
+   - Service boundaries → integration test fixtures
+   - Data models → unit test coverage targets for validation logic
+
+3. **Check for `docs/planning/ux-plan.md`** (bo-planner artifact):
+   - If found, extract user flows (happy path + error paths)
+   - Each user flow → E2E test covering the complete flow
+   - Error paths → negative E2E tests
+
+4. **Check for `enterprise-assessment-report.md`** or `docs/planning/enterprise-assessment.md`:
+   - If found, read the Testing category findings
+   - Use identified gaps as P0 priorities in the test plan
+   - Reference compliance requirements that need test evidence (e.g., SOC2 CC8.1)
+
+5. **Check for `src/theme/ThemeModeProvider.tsx`** (standard-design artifact):
+   - If found, the project uses Standard Design System
+   - Plan component tests that verify theme token usage
+   - Plan visual regression tests for dark/light mode switching
+
 ### Step 2: Select Testing Architecture Model
 
 Based on project type, recommend:
@@ -121,6 +152,20 @@ Before planning E2E tests, discover user stories:
    * Identify pages with tabs, accordions, dropdowns, or modals that hide interactive elements
    * Plan the crawl to reveal hidden elements, then test every button, link, input, and dropdown
    * This is the safety net — catches errors on elements missed by clickable element tests
+
+### Step 4b: Architecture-Driven Integration Tests
+
+If `docs/planning/architecture.md` was found in Step 1:
+
+1. Extract every API endpoint listed in the "API Design" section
+2. For each endpoint, plan an integration test covering:
+   - Happy path (valid request → expected response)
+   - Auth required (unauthenticated → 401)
+   - Validation (invalid input → 400 with error details)
+   - Not found (missing resource → 404)
+3. Extract service boundaries and plan integration tests for each boundary
+4. Include these in Phase 2 of the implementation plan as "Architecture-Driven Tests"
+5. Cross-reference with user stories — if a story maps to an endpoint, note the traceability
 
 ### Step 5: Define Quality Gates
 
