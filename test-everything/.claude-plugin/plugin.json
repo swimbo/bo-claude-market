@@ -1,9 +1,9 @@
 {
   "name": "test-everything",
-  "version": "0.10.0",
-  "description": "Comprehensive testing toolkit: audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers — with user-story-driven E2E testing, click-through verification (no API shortcuts), interaction verification, exhaustive interaction crawling, desired outcome assessment, UX/UI quality auditing, and sandbox-safe E2E patterns for reliable Playwright execution in Claude Code",
+  "version": "0.11.0",
+  "description": "Comprehensive testing toolkit: audit coverage gaps, plan testing strategies, scaffold test infrastructure, review test quality, and enforce tests as immutable contracts — with agent-team enforcement (argue and debate until green), confrontational fix mandates, user-story-driven E2E testing, click-through verification (no API shortcuts), interaction verification, exhaustive interaction crawling, desired outcome assessment, UX/UI quality auditing, and sandbox-safe E2E patterns for reliable Playwright execution in Claude Code",
   "author": {
     "name": "Bo"
   },
-  "keywords": ["testing", "quality", "coverage", "strategy", "tdd", "e2e", "performance", "security", "interaction-verification", "exhaustive-crawl", "desired-outcomes", "ux", "ui"]
+  "keywords": ["testing", "quality", "coverage", "strategy", "tdd", "e2e", "performance", "security", "interaction-verification", "exhaustive-crawl", "desired-outcomes", "ux", "ui", "contract-enforcement", "agent-teams", "argue-debate"]
 }

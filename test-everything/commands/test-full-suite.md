@@ -464,29 +464,99 @@ After UX audit, evaluate the visual interface quality:
 
 If you cannot produce this report, you have not completed Phase 3.5. Do NOT proceed to Phase 4.
 
-### Phase 4: Run & Fix
+### Phase 4: Run & Fix (Contract Enforcement)
 
-Loop until all tests pass:
+**"The tests are the contract. Everything must pass."**
+
+Tests written in Phase 3 are now the immutable contract. Implementation must conform to them — not the other way around. When tests fail, agents get specific, confrontational mandates and must prove their fixes work. This "argue and debate" dynamic resolves incomplete work.
+
+#### 4a: Initial Run — Establish the Contract
 
 1. Run the full test suite using the project's test command
-2. If tests fail:
+2. Capture every failure: test name, file, error, expected vs actual
+3. If all pass on first run, proceed to Step 4f
 
-   * Analyze the failure output
+#### 4b: Analyze Failures — Generate Mandates
 
-   * Determine if the bug is in the test or the source code
+For each failing test:
 
-   * **If browser health fixture caught console errors or failed network requests**, fix the source code — these are real bugs, not test issues
+1. **Read the test** — understand what the contract demands
+2. **Read the stack trace** — follow it to the source code that's broken
+3. **Trace the root cause** — identify the exact code that doesn't match the test expectation
+4. **Categorize** failures by responsible area: auth/session, UI elements, API contract, state/data, navigation, timing
 
-   * Fix the root cause — don't weaken tests to make them pass
+Generate a **specific, confrontational mandate** for each category:
 
-   * **Never disable the browser health fixture to make tests pass** — if it's catching errors, the app has bugs
+```
+## Mandate: [Category] — [N] failing tests
 
-   * Re-run and repeat
-3. If tests pass, run linting/type-checking if available
-4. Fix any lint or type errors introduced
-5. Verify browser health monitoring is active — confirm test output shows the fixture loaded (no console errors, no failed requests)
-6. Run the exhaustive interaction crawl (`test:e2e:exhaustive`) to verify all interactive elements across all pages work without errors — fix any elements that trigger JS errors or API failures when clicked
-7. Run desired outcome assessment tests — verify all defined outcomes pass; if any fail, investigate whether the issue is in the test or the application
+**Failing:** `[test name]` — expected [X], got [Y] because [root cause at file:line]
+
+**Fix required:** In `[file:line]`, change [specific thing] to [specific thing].
+
+**Prove it:** Run `[test command]` and show output. If `[test name]` still fails
+with [error], your [component/endpoint] is not [doing the specific thing].
+The tests are the contract — they don't change, your implementation does.
+```
+
+Examples of good mandate tone:
+- "If tests still fail with 401 errors, your API endpoint is not properly reading the session cookie. Prove your implementation works."
+- "If tests fail to find elements, your components are missing the required accessible roles. Prove your implementation works."
+- "`POST /api/items` returns `{ data: items }` but the test expects `{ items: [...] }`. Your serializer wraps in an extra key. Fix the serializer."
+
+#### 4c: Dispatch Parallel Agents
+
+For each failure category, dispatch a parallel agent with:
+
+1. **The mandate** — specific, confrontational, with file:line references
+2. **The contract** — the test file(s) they must make pass
+3. **The prove-it command** — the specific test command to self-verify
+4. **The rule** — "The tests are the contract. They don't change. Your implementation does."
+
+Independent failure categories dispatch in parallel. Dependent categories (frontend needs API fix first) dispatch sequentially.
+
+Each agent's instructions must include:
+```
+THE TESTS ARE THE CONTRACT. EVERYTHING MUST PASS.
+
+Fix the APPLICATION code to make these tests pass. Do NOT modify test files.
+After changes, run: [test command]
+You are DONE only when ALL tests in your scope pass.
+If you believe a test has a genuine bug, document evidence — do NOT skip or weaken it.
+```
+
+#### 4d: Verify — Re-Run Full Suite
+
+After all dispatched agents complete:
+
+1. Run the FULL test suite (not just previously failing tests)
+2. Compare results:
+   - **All pass** → proceed to 4f
+   - **Same tests still fail** → escalate with Round 2 mandates (cite what was tried, why it failed)
+   - **Different tests fail** → one agent's fix broke something. Generate cross-cutting mandates: "Your fix to `[file]` for [test-1] broke [test-2]. Find a solution that satisfies BOTH. The tests are both part of the contract."
+   - **Fewer failures** → progress. Dispatch focused mandates for remaining failures.
+
+#### 4e: Escalation (Max 5 Rounds)
+
+Each round produces more specific mandates:
+
+- **Round 2**: "Your previous fix didn't work. `[test]` still fails with `[error]`. Your approach of [X] didn't work because [Y]. The actual problem is [Z]."
+- **Round 3**: "Two attempts failed. Full execution trace: [request → middleware → handler → response → assertion]. The failure is at `[file:line]` because [reason]."
+- **Round 4**: "Multiple attempts failed. This indicates a misunderstanding of [architecture]. The system works like [explanation]. Fix [specific thing]."
+- **Round 5**: Escalate to user with full analysis of what was tried and what's still broken.
+
+**Never exceed 5 rounds.** If 5 rounds can't fix it, present remaining failures to the user for guidance.
+
+#### 4f: Post-Fix Verification
+
+Once the core suite passes:
+
+1. Run linting/type-checking if available — fix any errors introduced
+2. **Check for weakened tests** — grep all test files for `test.skip`, `test.fixme`, `waitForTimeout`, weakened assertions that agents might have introduced during fixes. If found, revert the weakening and fix properly.
+3. Verify browser health monitoring is active — confirm test output shows the fixture loaded
+4. **If browser health fixture caught console errors or failed network requests**, fix the source code — these are real bugs, not test issues. **Never disable the browser health fixture to make tests pass.**
+5. Run the exhaustive interaction crawl (`test:e2e:exhaustive`) to verify all interactive elements work without errors
+6. Run desired outcome assessment tests — verify all defined outcomes pass
 
 ### Phase 5: Quality Review (Second Self-Review)
 
