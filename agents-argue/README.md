@@ -13,7 +13,7 @@ Invoke by asking Claude to debate your plan:
 "poke holes in this plan"
 ```
 
-Or use the skill directly: `/adversarial-consensus:debate [path/to/plan.md]`
+Or use the skill directly: `/agents-argue:debate [path/to/plan.md]`
 
 1. **Discover** — Finds the plan (auto-discovers from bo-planner and deep-plan output, or accepts a path)
 2. **Analyze** — Reads the plan, identifies relevant domains, selects 3-5 expert personas
@@ -63,7 +63,7 @@ When invoked without a path, the plugin searches for:
 ## Installation
 
 ```bash
-claude --plugin-dir /path/to/adversarial-consensus
+claude --plugin-dir /path/to/agents-argue
 ```
 
 ## Requirements

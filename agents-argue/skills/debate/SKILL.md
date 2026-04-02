@@ -87,7 +87,7 @@ Wait for all persona agents to complete. Collect all position papers.
 
 ## Step 4: Moderator Synthesis (Round 1)
 
-Use the Agent tool to invoke the `debate-moderator` agent (set `subagent_type` to `adversarial-consensus:debate-moderator`). Pass it all position papers:
+Use the Agent tool to invoke the `debate-moderator` agent (set `subagent_type` to `agents-argue:debate-moderator`). Pass it all position papers:
 
 ```
 Here are position papers from {N} domain experts reviewing an implementation plan.
@@ -130,7 +130,7 @@ Respond to the disagreements that involve your expertise (400-800 words):
 Do NOT hedge or be diplomatic. Take clear positions.
 ```
 
-After each round, feed responses back to the `debate-moderator` agent (via Agent tool with `subagent_type: adversarial-consensus:debate-moderator`):
+After each round, feed responses back to the `debate-moderator` agent (via Agent tool with `subagent_type: agents-argue:debate-moderator`):
 
 ```
 Round {N} responses from all personas. Update disagreement status.

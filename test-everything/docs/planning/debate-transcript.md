@@ -9,7 +9,7 @@
 | Rounds | 2 |
 | Personas | Senior QA Architect, Senior E2E Test Engineer, Senior Design Systems Engineer (contrarian), Senior DX Engineer |
 | Source Plan | docs/planning/phased-plan.md |
-| Plugin | adversarial-consensus v0.1.0 |
+| Plugin | agents-argue v0.1.0 |
 
 ## Position Paper Summaries
 
