@@ -59,6 +59,13 @@
       "version": "0.1.0",
       "description": "Enterprise readiness evaluator — 12-category assessment with risk-scored findings, compliance framework mapping (NIST, SOC2, ISO 27001), assessment profiles, and executive-ready reports.",
       "author": {"name": "Bo"}
+    },
+    {
+      "name": "adversarial-consensus",
+      "source": "./adversarial-consensus",
+      "version": "0.1.0",
+      "description": "Multi-agent adversarial debate — spawns domain-expert personas to stress-test implementation plans through structured rounds until consensus emerges. 170 personas across 16 domains.",
+      "author": {"name": "Bo"}
     }
   ]
 }
