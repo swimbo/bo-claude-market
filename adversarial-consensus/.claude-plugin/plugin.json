@@ -1,0 +1,10 @@
+{
+  "name": "adversarial-consensus",
+  "version": "0.1.0",
+  "description": "Multi-agent adversarial debate to stress-test plans. Spawns domain-relevant persona agents that argue positions until consensus emerges.",
+  "author": {
+    "name": "Bo",
+    "url": "https://github.com/bo"
+  },
+  "keywords": ["planning", "debate", "consensus", "multi-agent", "review"]
+}
