@@ -1,15 +1,10 @@
 # Architecture
 
-## Tech Stack
+<!-- Tech stack details are in tech-guide.md. Data entities are in data-map.md. -->
 
-| Layer          | Technology | Rationale |
-| -------------- | ---------- | --------- |
-| Frontend       | <br />     | <br />    |
-| Backend        | <br />     | <br />    |
-| Database       | <br />     | <br />    |
-| Infrastructure | <br />     | <br />    |
+## System Overview
 
-<!-- For new fullstack projects, reference ~/.claude/templates/fullstack/ -->
+<!-- High-level description of the system and its major components -->
 
 ## Project Structure
 
@@ -18,13 +13,13 @@
 ├── [directory structure]
 ```
 
-## Data Model
+## Component Boundaries
 
-<!-- Key entities and their relationships -->
+<!-- How the system is divided into components/services and their responsibilities -->
 
-| Entity | Fields | Relationships |
-| ------ | ------ | ------------- |
-| <br /> | <br /> | <br />        |
+| Component | Responsibility | Communicates With |
+| --------- | -------------- | ----------------- |
+| <br />    | <br />         | <br />            |
 
 ## API Design
 

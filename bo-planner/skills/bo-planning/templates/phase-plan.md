@@ -37,6 +37,10 @@
 ## Verification
 
 <!-- What proves this phase is done. "It should work" is not verification. -->
+<!-- For Phase 4 (Architecture) and Phase 5 (Tech Guide): adversarial debate is REQUIRED. -->
+<!-- Add: [ ] agents-argue:debate invoked on artifact -->
+<!-- Add: [ ] Consensus incorporated into artifact -->
+<!-- Add: [ ] Unresolved items logged to findings.md -->
 
 * [ ] \[Specific check 1]
 

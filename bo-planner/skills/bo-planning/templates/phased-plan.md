@@ -39,15 +39,20 @@ Phase 1
 | Phase | Name                     | Status       | Verified |
 | ----- | ------------------------ | ------------ | -------- |
 | 1     | Requirements & Discovery | in\_progress | no       |
-| 2     | Planning & Structure     | pending      | no       |
-| 3     | UX Planning              | pending      | no       |
-| 4     | UI Planning              | pending      | no       |
-| 5     | Implementation           | pending      | no       |
-| 6     | Testing & Verification   | pending      | no       |
-| 7     | Delivery                 | pending      | no       |
+| 2     | Data Map                 | pending      | no       |
+| 3     | User Stories             | pending      | no       |
+| 4     | Architecture             | pending      | no       |
+| 5     | Tech Guide               | pending      | no       |
+| 6     | UX Planning              | pending      | no       |
+| 7     | UI Planning              | pending      | no       |
+| 8     | Implementation           | pending      | no       |
+| 9     | E2E Test Generation      | pending      | no       |
+| 10    | Testing & Verification   | pending      | no       |
+| 11    | Delivery                 | pending      | no       |
 
-<!-- Phases 3-4 apply when the project has user-facing components.
-     For backend-only or library projects, skip and renumber. -->
+<!-- Phases 6-7 apply when the project has user-facing components.
+     Phase 9 applies when the project has testable UI or CLI.
+     For backend-only or library projects, skip conditional phases and renumber. -->
 
 See `phase-#-plan.md` for detailed plans per phase.
 

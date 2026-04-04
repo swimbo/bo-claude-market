@@ -29,13 +29,19 @@ The argument is the task description. If no argument is provided, ask the user w
 
    * `phased-plan.md` — High-level phase overview, scope fence, environment, delegations
 
-   * `user-stories.md` — User stories derived from the requirements
+   * `data-map.md` — Data entities, relationships, flows, access patterns, storage requirements
 
-   * `architecture.md` — Tech stack, architecture decisions, project structure. If building a new fullstack app, reference `~/.claude/templates/fullstack/` for the preferred stack.
+   * `user-stories.md` — User stories derived from the requirements with acceptance criteria
+
+   * `architecture.md` — System design, component boundaries, API surface, infrastructure decisions. If building a new fullstack app, reference `~/.claude/templates/fullstack/` for the preferred stack. **After drafting, invoke `agents-argue:debate` on this file to stress-test decisions.**
+
+   * `tech-guide.md` — Tech stack selection, dependency versions, coding conventions, dev environment setup. Reference `~/.claude/preferred-tech-stack.md` for defaults. **After drafting, invoke `agents-argue:debate` on this file to validate stack choices.**
 
    * `ux-plan.md` — User flows, interaction patterns, accessibility requirements, error handling strategy, dark pattern audit _(create when project has user-facing components)_
 
    * `ui-plan.md` — Visual design system, color palette, typography scale, component inventory, layout architecture _(create when project has visual interfaces)_
+
+   * `e2e-tests.md` — Playwright test plan derived from user stories and UX flows, plus generated test file inventory _(create when project has testable UI or CLI)_
 
    * `phase-1-plan.md` through `phase-N-plan.md` — Detailed plan for each phase with task checklist, dependencies, verification criteria
 
@@ -56,3 +62,5 @@ The argument is the task description. If no argument is provided, ask the user w
 * Scope fence is non-negotiable — if something isn't in IN scope, don't do it
 
 * All planning files go in `docs/planning/`, never in project root
+
+* **Architecture and Tech Guide require adversarial debate** — invoke `agents-argue:debate` on each artifact after drafting. Incorporate consensus before marking the phase complete. Debate Architecture before Tech Guide (sequential, not parallel).

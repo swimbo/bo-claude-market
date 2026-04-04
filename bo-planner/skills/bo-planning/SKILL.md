@@ -57,10 +57,13 @@ docs/planning/
 ├── phase-1-plan.md          # Detailed plan for Phase 1
 ├── phase-2-plan.md          # Detailed plan for Phase 2
 ├── phase-N-plan.md          # ...one per phase
+├── data-map.md              # Data entities, relationships, flows, access patterns
 ├── user-stories.md          # User stories derived from requirements
-├── architecture.md          # Architecture decisions, tech stack, diagrams
+├── architecture.md          # System design, component boundaries, API surface
+├── tech-guide.md            # Tech stack, dependency versions, conventions, dev setup
 ├── ux-plan.md               # UX: user flows, interaction patterns, accessibility
 ├── ui-plan.md               # UI: visual design system, typography, colors, components
+├── e2e-tests.md             # Playwright test plan and generated test inventory
 ├── findings.md              # Research discoveries, external content
 └── progress.md              # Session log, test results, errors
 ```
@@ -73,14 +76,17 @@ Before any complex task:
 2. **Define scope** — IN/OUT scope fence, confirmed with user
 3. **Create** **`docs/planning/`** **directory** — `mkdir -p docs/planning`
 4. **Create** **`phased-plan.md`** — High-level phases, scope fence, environment snapshot
-5. **Create** **`user-stories.md`** — User stories from requirements
-6. **Create** **`architecture.md`** — Tech stack, architecture decisions
-7. **Create** **`ux-plan.md`** — User flows, interaction patterns, accessibility, error handling _(if project has user-facing components)_
-8. **Create** **`ui-plan.md`** — Visual design system, typography, colors, component inventory _(if project has visual interfaces)_
-9. **Create** **`phase-#-plan.md`** — One detailed plan per phase
-10. **Create** **`findings.md`** — Research, decisions, resources
-11. **Create** **`progress.md`** — Session log, test results, errors
-12. **Get approval** — Present plan to user before starting
+5. **Create** **`data-map.md`** — Data entities, relationships, flows, access patterns, storage
+6. **Create** **`user-stories.md`** — User stories from requirements with acceptance criteria
+7. **Create** **`architecture.md`** — System design, component boundaries, API surface
+8. **Create** **`tech-guide.md`** — Tech stack, dependency versions, conventions, dev environment setup
+9. **Create** **`ux-plan.md`** — User flows, interaction patterns, accessibility, error handling _(if project has user-facing components)_
+10. **Create** **`ui-plan.md`** — Visual design system, typography, colors, component inventory _(if project has visual interfaces)_
+11. **Create** **`e2e-tests.md`** — Playwright test plan derived from user stories and UX flows _(if project has testable UI or CLI)_
+12. **Create** **`phase-#-plan.md`** — One detailed plan per phase
+13. **Create** **`findings.md`** — Research, decisions, resources
+14. **Create** **`progress.md`** — Session log, test results, errors
+15. **Get approval** — Present plan to user before starting
 
 Use templates from `${CLAUDE_PLUGIN_ROOT}/templates/` as starting points.
 
@@ -152,17 +158,23 @@ After 3 failures: Escalate to user with what you tried
 
 ## Phase Planning
 
-Use the 7-phase pattern (customize phase names to the task):
+Use the 11-phase pattern (customize phase names to the task):
 
 1. **Requirements & Discovery** — Understand intent, capture constraints, environment snapshot
-2. **Planning & Structure** — Technical approach, architecture decisions, scope confirmation
-3. **UX Planning** — User flows, interaction patterns, accessibility, error handling, dark pattern audit _(skip for backend-only/library projects)_
-4. **UI Planning** — Visual design system, typography, color palette, component inventory, layout _(skip for non-visual projects)_
-5. **Implementation** — Build it, using subagents for independent work
-6. **Testing & Verification** — Run tests, verify requirements met. Consider `test-everything:test-full-suite` for comprehensive coverage.
-7. **Delivery** — Final review, user verification, cleanup
+2. **Data Map** — Map data entities, relationships, flows, access patterns, storage requirements. Output: `data-map.md`
+3. **User Stories** — Derive user stories with acceptance criteria, priorities, and phase mapping. Output: `user-stories.md`
+4. **Architecture** — System design, component boundaries, API surface, infrastructure decisions. Output: `architecture.md`. **Then invoke `agents-argue:debate` on `architecture.md`** to stress-test decisions through adversarial consensus before proceeding.
+5. **Tech Guide** — Tech stack selection, dependency versions, coding conventions, dev environment setup. Output: `tech-guide.md`. **Then invoke `agents-argue:debate` on `tech-guide.md`** to validate stack choices through adversarial consensus before proceeding.
+6. **UX Planning** — User flows, interaction patterns, accessibility, error handling, dark pattern audit _(skip for backend-only/library projects)_. Output: `ux-plan.md`
+7. **UI Planning** — Visual design system, typography, color palette, component inventory, layout _(skip for non-visual projects)_. Output: `ui-plan.md`
+8. **Implementation** — Build it, using subagents for independent work
+9. **E2E Test Generation** — Generate Playwright CLI tests from user stories and UX flows _(skip if no testable UI/CLI)_. Output: `e2e-tests.md` + test files
+10. **Testing & Verification** — Run all tests (including generated Playwright tests), verify requirements met. Consider `test-everything:test-full-suite` for comprehensive coverage.
+11. **Delivery** — Final review, user verification, cleanup
 
-Phases 3-4 apply when the project has user-facing components (web apps, CLI tools, plugins, IDE extensions). For backend-only or pure library projects, skip and renumber to 5 phases.
+Phases 6-7 apply when the project has user-facing components (web apps, CLI tools, plugins, IDE extensions).
+Phase 9 applies when the project has testable UI or CLI interfaces.
+For backend-only or pure library projects, skip conditional phases and renumber.
 
 `phased-plan.md` contains the high-level overview of all phases with status tracking.
 Each phase gets its own `phase-#-plan.md` with:
@@ -198,16 +210,16 @@ When creating UX or UI plans, reference the research documents in the plugin's `
 * **`research/ux-design.md`** — Nielsen's heuristics, Shneiderman's rules, dark patterns taxonomy, CLI usability (12-Factor CLI, Heroku standards), IDE plugin architecture, Microsoft HAX guidelines for AI interaction, MCP tool design, accessibility standards
 * **`research/ui-design.md`** — Dieter Rams' principles, Gestalt composition, color theory with WCAG contrast ratios, monospaced typography adjustments, VS Code extension containers, JetBrains UI paradigms, CLI/TUI aesthetics (Ratatui, Charmbracelet), Anthropic brand color palette, visual anti-patterns
 
-### When to include UX/UI phases
+### When to include conditional phases
 
-| Project Type | UX Plan | UI Plan |
-| ------------ | ------- | ------- |
-| Web application | Yes | Yes |
-| CLI tool | Yes | Yes (TUI composition) |
-| IDE plugin/extension | Yes | Yes (container mapping) |
-| API / backend service | No | No |
-| Library / SDK | Partial (API ergonomics) | No |
-| MCP server | Partial (tool descriptions for LLM "users") | No |
+| Project Type | UX Plan | UI Plan | E2E Tests (Playwright) |
+| ------------ | ------- | ------- | ---------------------- |
+| Web application | Yes | Yes | Yes |
+| CLI tool | Yes | Yes (TUI composition) | Yes (CLI tests) |
+| IDE plugin/extension | Yes | Yes (container mapping) | Yes |
+| API / backend service | No | No | Partial (API integration tests) |
+| Library / SDK | Partial (API ergonomics) | No | No |
+| MCP server | Partial (tool descriptions for LLM "users") | No | No |
 
 ## Integration with Existing Skills
 
@@ -215,9 +227,15 @@ This planning system works alongside:
 
 * **brainstorming** — Use BEFORE planning for creative/design work
 
+* **agents-argue:debate** — **MANDATORY** during Architecture (Phase 4) and Tech Guide (Phase 5). See "Adversarial Debate Gates" below.
+
 * **frontend-design** — Use during UI Planning phase for production-grade interfaces
 
 * **test-driven-development** — Use during Implementation phase
+
+* **playwright-cli** — Use during E2E Test Generation phase to scaffold and run Playwright tests
+
+* **webapp-testing** — Use during E2E Test Generation and Testing & Verification phases
 
 * **verification-before-completion** — Use during Delivery phase
 
@@ -226,6 +244,28 @@ This planning system works alongside:
 * **test-everything:test-audit** — Use to validate test gaps
 
 * **dispatching-parallel-agents** — Use when 3+ independent tasks need delegation
+
+## Adversarial Debate Gates
+
+Phases 4 (Architecture) and 5 (Tech Guide) each have a mandatory debate gate. The phase is NOT complete until the debate has run and the consensus output has been incorporated.
+
+### How it works
+
+For each of these phases:
+
+1. **Draft the artifact** — Write `architecture.md` or `tech-guide.md` as normal using the template.
+2. **Invoke the debate** — Use the Skill tool: `Skill("agents-argue:debate", args: "<path to artifact>")`. This launches multi-agent adversarial debate with domain-expert personas who critique and stress-test the decisions.
+3. **Incorporate consensus** — The debate produces `consensus-plan.md` and `debate-transcript.md` in `docs/planning/`. Update the original artifact (`architecture.md` or `tech-guide.md`) to incorporate resolved decisions from the consensus output.
+4. **Log unresolved items** — Any disagreements the debate could not resolve go into `findings.md` with a `NEEDS_HUMAN_DECISION` tag for the user to resolve before Implementation begins.
+5. **Mark phase complete** — Only after the artifact reflects the post-debate consensus.
+
+### Why this is mandatory
+
+Architecture and tech stack decisions are the highest-leverage choices in a project. Mistakes here compound through every downstream phase. The adversarial debate surfaces blind spots, challenges assumptions, and produces stronger decisions than a single perspective can.
+
+### Sequencing
+
+The two debates run **sequentially**, not in parallel — the Tech Guide debate may reference architecture decisions, so Architecture must be debated and finalized first.
 
 ## Anti-Patterns
 
@@ -246,13 +286,19 @@ This planning system works alongside:
 
 * [templates/phase-plan.md](templates/phase-plan.md)
 
+* [templates/data-map.md](templates/data-map.md)
+
 * [templates/user-stories.md](templates/user-stories.md)
 
 * [templates/architecture.md](templates/architecture.md)
 
+* [templates/tech-guide.md](templates/tech-guide.md)
+
 * [templates/ux-plan.md](templates/ux-plan.md)
 
 * [templates/ui-plan.md](templates/ui-plan.md)
+
+* [templates/e2e-tests.md](templates/e2e-tests.md)
 
 * [templates/findings.md](templates/findings.md)
 
