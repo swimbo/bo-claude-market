@@ -4,6 +4,17 @@
 
 * <span data-proof="suggestion" data-id="m1772856405360_3" data-by="ai:external-agent" data-kind="replace">[Captured from user request]</span>
 
+## Pain Point Research
+
+<!-- MANDATORY during Phase 1 — search for real user complaints before writing user stories -->
+<!-- Skip only for: internal tooling, user-provided research, or bug fixes/refactors -->
+
+| Pain Point | Source URL | Frequency | Relevance to Scope |
+| ---------- | ---------- | --------- | ------------------- |
+| <br />     | <br />     | <br />    | <br />              |
+
+<!-- Skip reason (if skipped): -->
+
 ## Research Findings
 
 * \[Key discoveries during exploration]

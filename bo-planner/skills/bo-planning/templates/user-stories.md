@@ -1,5 +1,15 @@
 # User Stories
 
+<!-- Each story should trace back to a user-stated requirement OR a researched pain point from findings.md -->
+
+## Pain Points Summary
+
+<!-- Summarize the top pain points from findings.md that informed these stories -->
+
+| Pain Point | Source | Stories Addressing It |
+| ---------- | ------ | --------------------- |
+| <br />     | <br /> | <br />                |
+
 ## Actors
 
 | Actor   | Description                            |
@@ -23,6 +33,8 @@ As a \[actor], I want to \[action], so that \[benefit].
 
 * Phase: \[Which phase implements this]
 
+* Source: \[user requirement | pain point from findings.md]
+
 **US-2: \[Story Title]**
 As a \[actor], I want to \[action], so that \[benefit].
 
@@ -35,6 +47,8 @@ As a \[actor], I want to \[action], so that \[benefit].
 * Priority: P0/P1/P2/P3
 
 * Phase: \[Which phase implements this]
+
+* Source: \[user requirement | pain point from findings.md]
 
 ## Story Map
 

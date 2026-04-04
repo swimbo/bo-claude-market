@@ -13,8 +13,9 @@ Opinionated fork of [planning-with-files](https://github.com/othmanadi/planning-
 | Environment capture    | None                           | Snapshot of existing state before planning               |
 | Verification           | Optional                       | Mandatory gate per phase                                 |
 | Phase detail           | Single file                    | `phased-plan.md` overview + individual `phase-#-plan.md` |
+| Pain point research    | None                           | Dedicated phase: web research into real user complaints before stories |
 | Data mapping           | None                           | Dedicated `data-map.md` with entities, flows, access patterns |
-| User stories           | None                           | Dedicated `user-stories.md` with acceptance criteria     |
+| User stories           | None                           | Dedicated `user-stories.md` grounded in researched pain points |
 | Architecture           | None                           | Dedicated `architecture.md` with adversarial debate gate |
 | Tech guide             | None                           | Dedicated `tech-guide.md` with adversarial debate gate   |
 | Subagent tracking      | None                           | Delegation table in phased-plan.md                       |
@@ -59,33 +60,36 @@ docs/planning/
 ├── ux-plan.md               # UX: user flows, interaction patterns, accessibility
 ├── ui-plan.md               # UI: visual design system, typography, colors, components
 ├── e2e-tests.md             # Playwright test plan and generated test inventory
-├── findings.md              # Research discoveries, external content
+├── findings.md              # Pain point research, discoveries, external content
 └── progress.md              # Session log, test results, errors
 ```
 
 ## Phases
 
-11-phase model (conditional phases skipped when not applicable):
+12-phase model (conditional phases skipped when not applicable):
 
-| Phase | Name | Conditional | Debate Gate |
-| ----- | ---- | ----------- | ----------- |
+| Phase | Name | Conditional | Quality Gate |
+| ----- | ---- | ----------- | ------------ |
 | 1 | Requirements & Discovery | | |
-| 2 | Data Map | | |
-| 3 | User Stories | | |
-| 4 | Architecture | | **Yes** |
-| 5 | Tech Guide | | **Yes** |
-| 6 | UX Planning | User-facing projects only | |
-| 7 | UI Planning | Visual interfaces only | |
-| 8 | Implementation | | |
-| 9 | E2E Test Generation | Testable UI/CLI only | |
-| 10 | Testing & Verification | | |
-| 11 | Delivery | | |
+| 2 | Pain Point Research | Skip for internal tooling / bug fixes | Web research into real user complaints |
+| 3 | Data Map | | |
+| 4 | User Stories | | Must reference pain point findings |
+| 5 | Architecture | | **Adversarial debate** |
+| 6 | Tech Guide | | **Adversarial debate** |
+| 7 | UX Planning | User-facing projects only | |
+| 8 | UI Planning | Visual interfaces only | |
+| 9 | Implementation | | |
+| 10 | E2E Test Generation | Testable UI/CLI only | |
+| 11 | Testing & Verification | | |
+| 12 | Delivery | | |
 
-Phases 4 and 5 require mandatory `agents-argue:debate` invocation — the artifact is drafted, debated by multi-agent adversarial consensus, then updated with resolved decisions before proceeding. Architecture is debated before Tech Guide (sequential).
+Phase 2 searches for real user complaints, competitor friction, and unmet needs via web research before user stories are written. Phases 5 and 6 require mandatory `agents-argue:debate` invocation — the artifact is drafted, debated by multi-agent adversarial consensus, then updated with resolved decisions before proceeding. Architecture is debated before Tech Guide (sequential).
 
 ## Philosophy
 
 * Explore first, plan second, code third
+
+* Research real pain before writing stories
 
 * Scope fence is non-negotiable
 

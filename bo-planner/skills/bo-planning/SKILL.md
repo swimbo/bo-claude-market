@@ -76,17 +76,18 @@ Before any complex task:
 2. **Define scope** — IN/OUT scope fence, confirmed with user
 3. **Create** **`docs/planning/`** **directory** — `mkdir -p docs/planning`
 4. **Create** **`phased-plan.md`** — High-level phases, scope fence, environment snapshot
-5. **Create** **`data-map.md`** — Data entities, relationships, flows, access patterns, storage
-6. **Create** **`user-stories.md`** — User stories from requirements with acceptance criteria
-7. **Create** **`architecture.md`** — System design, component boundaries, API surface
-8. **Create** **`tech-guide.md`** — Tech stack, dependency versions, conventions, dev environment setup
-9. **Create** **`ux-plan.md`** — User flows, interaction patterns, accessibility, error handling _(if project has user-facing components)_
-10. **Create** **`ui-plan.md`** — Visual design system, typography, colors, component inventory _(if project has visual interfaces)_
-11. **Create** **`e2e-tests.md`** — Playwright test plan derived from user stories and UX flows _(if project has testable UI or CLI)_
-12. **Create** **`phase-#-plan.md`** — One detailed plan per phase
-13. **Create** **`findings.md`** — Research, decisions, resources
-14. **Create** **`progress.md`** — Session log, test results, errors
-15. **Get approval** — Present plan to user before starting
+5. **Create** **`findings.md`** — Initialize with empty Pain Point Research table (populated during Phase 2)
+6. **Run pain point research** — WebSearch for user complaints, competitor friction, unmet needs. Populate `findings.md`.
+7. **Create** **`data-map.md`** — Data entities, relationships, flows, access patterns, storage
+8. **Create** **`user-stories.md`** — User stories from requirements AND pain point findings
+9. **Create** **`architecture.md`** — System design, component boundaries, API surface
+10. **Create** **`tech-guide.md`** — Tech stack, dependency versions, conventions, dev environment setup
+11. **Create** **`ux-plan.md`** — User flows, interaction patterns, accessibility, error handling _(if project has user-facing components)_
+12. **Create** **`ui-plan.md`** — Visual design system, typography, colors, component inventory _(if project has visual interfaces)_
+13. **Create** **`e2e-tests.md`** — Playwright test plan derived from user stories and UX flows _(if project has testable UI or CLI)_
+14. **Create** **`phase-#-plan.md`** — One detailed plan per phase
+15. **Create** **`progress.md`** — Session log, test results, errors
+16. **Get approval** — Present plan to user before starting
 
 Use templates from `${CLAUDE_PLUGIN_ROOT}/templates/` as starting points.
 
@@ -158,22 +159,24 @@ After 3 failures: Escalate to user with what you tried
 
 ## Phase Planning
 
-Use the 11-phase pattern (customize phase names to the task):
+Use the 12-phase pattern (customize phase names to the task):
 
 1. **Requirements & Discovery** — Understand intent, capture constraints, environment snapshot
-2. **Data Map** — Map data entities, relationships, flows, access patterns, storage requirements. Output: `data-map.md`
-3. **User Stories** — Derive user stories with acceptance criteria, priorities, and phase mapping. Output: `user-stories.md`
-4. **Architecture** — System design, component boundaries, API surface, infrastructure decisions. Output: `architecture.md`. **Then invoke `agents-argue:debate` on `architecture.md`** to stress-test decisions through adversarial consensus before proceeding.
-5. **Tech Guide** — Tech stack selection, dependency versions, coding conventions, dev environment setup. Output: `tech-guide.md`. **Then invoke `agents-argue:debate` on `tech-guide.md`** to validate stack choices through adversarial consensus before proceeding.
-6. **UX Planning** — User flows, interaction patterns, accessibility, error handling, dark pattern audit _(skip for backend-only/library projects)_. Output: `ux-plan.md`
-7. **UI Planning** — Visual design system, typography, color palette, component inventory, layout _(skip for non-visual projects)_. Output: `ui-plan.md`
-8. **Implementation** — Build it, using subagents for independent work
-9. **E2E Test Generation** — Generate Playwright CLI tests from user stories and UX flows _(skip if no testable UI/CLI)_. Output: `e2e-tests.md` + test files
-10. **Testing & Verification** — Run all tests (including generated Playwright tests), verify requirements met. Consider `test-everything:test-full-suite` for comprehensive coverage.
-11. **Delivery** — Final review, user verification, cleanup
+2. **Pain Point Research** — Web research into real user complaints, competitor friction, and unmet needs in the problem space. Output: `findings.md` (Pain Point Research section). See "Pain Point Research" below.
+3. **Data Map** — Map data entities, relationships, flows, access patterns, storage requirements. Output: `data-map.md`
+4. **User Stories** — Derive user stories with acceptance criteria, priorities, and phase mapping. Must reference pain point findings. Output: `user-stories.md`
+5. **Architecture** — System design, component boundaries, API surface, infrastructure decisions. Output: `architecture.md`. **Then invoke `agents-argue:debate` on `architecture.md`** to stress-test decisions through adversarial consensus before proceeding.
+6. **Tech Guide** — Tech stack selection, dependency versions, coding conventions, dev environment setup. Output: `tech-guide.md`. **Then invoke `agents-argue:debate` on `tech-guide.md`** to validate stack choices through adversarial consensus before proceeding.
+7. **UX Planning** — User flows, interaction patterns, accessibility, error handling, dark pattern audit _(skip for backend-only/library projects)_. Output: `ux-plan.md`
+8. **UI Planning** — Visual design system, typography, color palette, component inventory, layout _(skip for non-visual projects)_. Output: `ui-plan.md`
+9. **Implementation** — Build it, using subagents for independent work
+10. **E2E Test Generation** — Generate Playwright CLI tests from user stories and UX flows _(skip if no testable UI/CLI)_. Output: `e2e-tests.md` + test files
+11. **Testing & Verification** — Run all tests (including generated Playwright tests), verify requirements met. Consider `test-everything:test-full-suite` for comprehensive coverage.
+12. **Delivery** — Final review, user verification, cleanup
 
-Phases 6-7 apply when the project has user-facing components (web apps, CLI tools, plugins, IDE extensions).
-Phase 9 applies when the project has testable UI or CLI interfaces.
+Phase 2 may be skipped ONLY for internal tooling with no external users, when the user provides their own research, or for bug fixes/refactors with no new user-facing behavior. Record skip reason in `findings.md`.
+Phases 7-8 apply when the project has user-facing components (web apps, CLI tools, plugins, IDE extensions).
+Phase 10 applies when the project has testable UI or CLI interfaces.
 For backend-only or pure library projects, skip conditional phases and renumber.
 
 `phased-plan.md` contains the high-level overview of all phases with status tracking.
@@ -247,7 +250,7 @@ This planning system works alongside:
 
 ## Adversarial Debate Gates
 
-Phases 4 (Architecture) and 5 (Tech Guide) each have a mandatory debate gate. The phase is NOT complete until the debate has run and the consensus output has been incorporated.
+Phases 5 (Architecture) and 6 (Tech Guide) each have a mandatory debate gate. The phase is NOT complete until the debate has run and the consensus output has been incorporated.
 
 ### How it works
 
@@ -267,7 +270,51 @@ Architecture and tech stack decisions are the highest-leverage choices in a proj
 
 The two debates run **sequentially**, not in parallel — the Tech Guide debate may reference architecture decisions, so Architecture must be debated and finalized first.
 
-## Anti-Patterns
+## Pain Point Research (Phase 2)
+
+Phase 2 is a dedicated research phase that grounds the entire project in real user pain. Without it, user stories are based solely on the requester's assumptions. This phase ensures we build for actual problems, not imagined ones.
+
+### How it works
+
+After Phase 1 establishes intent and constraints:
+
+1. **Identify the problem space** — What domain is this project in? What existing tools/products address the same need?
+2. **Search for user complaints** — Use WebSearch to find forum posts, GitHub issues, Reddit threads, reviews, and support tickets where real users describe frustrations in this space. Target 5+ distinct sources across at least 2 platforms.
+3. **Analyze competitor friction** — Look at how existing solutions handle the same problem. Where do users report friction, confusion, or missing features?
+4. **Synthesize patterns** — Group complaints into themes. Distinguish one-off gripes from recurring pain patterns.
+5. **Capture findings** — Write all discoveries to `findings.md` under the `## Pain Point Research` section with:
+   - Source URL
+   - Key complaint/pain point
+   - Frequency signal (one person vs. recurring theme)
+   - Relevance to our project scope
+6. **Present to user** — Summarize the top pain points and ask: "Do any of these change your priorities or scope?"
+
+### What to search for
+
+- `"[domain/product] frustrating"`, `"[domain/product] wish it could"`, `"[domain/product] missing feature"`
+- GitHub issues with high reaction counts in competing/related projects
+- Reddit/HN threads complaining about the problem space
+- App store or product reviews mentioning friction
+- Stack Overflow questions indicating common confusion or workarounds
+
+### Verification
+
+Phase 2 is complete when:
+- `findings.md` has a populated Pain Point Research table with 5+ entries
+- At least 2 different source platforms are represented
+- Findings have been presented to the user
+- User has confirmed whether findings affect scope
+
+### When to skip
+
+Phase 2 may be skipped ONLY when:
+- The project is purely internal tooling with no external users
+- The user explicitly says they've already done this research and provides their findings
+- The project is a bug fix or refactor with no new user-facing behavior
+
+Record the skip reason in `findings.md` if skipped.
+
+
 
 | Don't                                              | Do Instead                                 |
 | -------------------------------------------------- | ------------------------------------------ |

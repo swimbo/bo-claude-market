@@ -29,9 +29,11 @@ The argument is the task description. If no argument is provided, ask the user w
 
    * `phased-plan.md` — High-level phase overview, scope fence, environment, delegations
 
+   * `findings.md` — **Populated during Phase 2 (Pain Point Research)** with real user complaints, competitor friction, and unmet needs from web research. Also holds later research discoveries and technical decisions.
+
    * `data-map.md` — Data entities, relationships, flows, access patterns, storage requirements
 
-   * `user-stories.md` — User stories derived from the requirements with acceptance criteria
+   * `user-stories.md` — User stories derived from requirements AND pain point research findings, with acceptance criteria
 
    * `architecture.md` — System design, component boundaries, API surface, infrastructure decisions. If building a new fullstack app, reference `~/.claude/templates/fullstack/` for the preferred stack. **After drafting, invoke `agents-argue:debate` on this file to stress-test decisions.**
 
@@ -44,8 +46,6 @@ The argument is the task description. If no argument is provided, ask the user w
    * `e2e-tests.md` — Playwright test plan derived from user stories and UX flows, plus generated test file inventory _(create when project has testable UI or CLI)_
 
    * `phase-1-plan.md` through `phase-N-plan.md` — Detailed plan for each phase with task checklist, dependencies, verification criteria
-
-   * `findings.md` — Research, discoveries, technical decisions
 
    * `progress.md` — Session log, test results, error log
 
@@ -62,5 +62,7 @@ The argument is the task description. If no argument is provided, ask the user w
 * Scope fence is non-negotiable — if something isn't in IN scope, don't do it
 
 * All planning files go in `docs/planning/`, never in project root
+
+* **Pain point research before user stories** — Phase 2 populates `findings.md` with real user complaints via web research. Phase 4 (User Stories) must reference these findings. Skip only for internal tooling, user-provided research, or bug fixes.
 
 * **Architecture and Tech Guide require adversarial debate** — invoke `agents-argue:debate` on each artifact after drafting. Incorporate consensus before marking the phase complete. Debate Architecture before Tech Guide (sequential, not parallel).
