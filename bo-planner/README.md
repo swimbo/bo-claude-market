@@ -68,28 +68,34 @@ docs/planning/
 
 12-phase model (conditional phases skipped when not applicable):
 
-| Phase | Name | Conditional | Quality Gate |
-| ----- | ---- | ----------- | ------------ |
-| 1 | Requirements & Discovery | | |
-| 2 | Pain Point Research | Skip for internal tooling / bug fixes | Web research into real user complaints |
-| 3 | Data Map | | |
-| 4 | User Stories | | Must reference pain point findings |
-| 5 | Architecture | | **Adversarial debate** |
-| 6 | Tech Guide | | **Adversarial debate** |
-| 7 | UX Planning | User-facing projects only | |
-| 8 | UI Planning | Visual interfaces only | |
-| 9 | Implementation | | |
-| 10 | E2E Test Generation | Testable UI/CLI only | |
-| 11 | Testing & Verification | | |
-| 12 | Delivery | | |
+| Phase | Name | Conditional | Kickoff Research | Quality Gate |
+| ----- | ---- | ----------- | ---------------- | ------------ |
+| 1 | Requirements & Discovery | | | |
+| 2 | Pain Point Research | Skip for internal tooling / bug fixes | (is research) | Real user complaints via web research |
+| 3 | Data Map | | Yes | |
+| 4 | User Stories | | | Must reference pain point findings |
+| 5 | Architecture | | Yes | **Adversarial debate** |
+| 6 | Tech Guide | | **Yes (critical)** | **Adversarial debate** |
+| 7 | UX Planning | User-facing projects only | Yes | |
+| 8 | UI Planning | Visual interfaces only | Yes | |
+| 9 | Implementation | | | |
+| 10 | E2E Test Generation | Testable UI/CLI only | Yes | |
+| 11 | Testing & Verification | | | |
+| 12 | Delivery | | | |
 
-Phase 2 searches for real user complaints, competitor friction, and unmet needs via web research before user stories are written. Phases 5 and 6 require mandatory `agents-argue:debate` invocation — the artifact is drafted, debated by multi-agent adversarial consensus, then updated with resolved decisions before proceeding. Architecture is debated before Tech Guide (sequential).
+**Kickoff research** — Phases 3, 5, 6, 7, 8, and 10 start with a time-boxed (3-5 min) web search targeting "latest"/"current" information to counter stale LLM training data. Highest value is Phase 6 (Tech Guide) where library versions and breaking changes matter most.
+
+**Pain Point Research** — Phase 2 searches for real user complaints, competitor friction, and unmet needs via web research before user stories are written.
+
+**Adversarial debate** — Phases 5 and 6 require mandatory `agents-argue:debate` invocation. The artifact is drafted, debated by multi-agent adversarial consensus, then updated with resolved decisions before proceeding. Architecture is debated before Tech Guide (sequential).
 
 ## Philosophy
 
 * Explore first, plan second, code third
 
 * Research real pain before writing stories
+
+* Ground every major phase in current reality, not stale training data
 
 * Scope fence is non-negotiable
 

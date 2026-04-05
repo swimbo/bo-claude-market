@@ -8,6 +8,19 @@
 
 * \[What must be done before this phase starts]
 
+## Kickoff Research
+
+<!-- Required for Phases 3, 5, 6, 7, 8, 10. Time-box 3-5 minutes. -->
+<!-- Target "latest" and "current" information to counter stale training data. -->
+
+* Queries run:
+  * [ ] \[Query 1]
+  * [ ] \[Query 2]
+* Key findings (deltas from assumed knowledge):
+  * \[Finding 1]
+  * \[Finding 2]
+* Findings captured in `findings.md` under `## Phase [#] Kickoff Research`
+
 ## Tasks
 
 * [ ] \[Task 1]

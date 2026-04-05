@@ -163,14 +163,14 @@ Use the 12-phase pattern (customize phase names to the task):
 
 1. **Requirements & Discovery** — Understand intent, capture constraints, environment snapshot
 2. **Pain Point Research** — Web research into real user complaints, competitor friction, and unmet needs in the problem space. Output: `findings.md` (Pain Point Research section). See "Pain Point Research" below.
-3. **Data Map** — Map data entities, relationships, flows, access patterns, storage requirements. Output: `data-map.md`
+3. **Data Map** — **Kickoff research first** (see "Phase Kickoff Research" below). Then map data entities, relationships, flows, access patterns, storage requirements. Output: `data-map.md`
 4. **User Stories** — Derive user stories with acceptance criteria, priorities, and phase mapping. Must reference pain point findings. Output: `user-stories.md`
-5. **Architecture** — System design, component boundaries, API surface, infrastructure decisions. Output: `architecture.md`. **Then invoke `agents-argue:debate` on `architecture.md`** to stress-test decisions through adversarial consensus before proceeding.
-6. **Tech Guide** — Tech stack selection, dependency versions, coding conventions, dev environment setup. Output: `tech-guide.md`. **Then invoke `agents-argue:debate` on `tech-guide.md`** to validate stack choices through adversarial consensus before proceeding.
-7. **UX Planning** — User flows, interaction patterns, accessibility, error handling, dark pattern audit _(skip for backend-only/library projects)_. Output: `ux-plan.md`
-8. **UI Planning** — Visual design system, typography, color palette, component inventory, layout _(skip for non-visual projects)_. Output: `ui-plan.md`
+5. **Architecture** — **Kickoff research first.** Then system design, component boundaries, API surface, infrastructure decisions. Output: `architecture.md`. **Then invoke `agents-argue:debate` on `architecture.md`** to stress-test decisions through adversarial consensus before proceeding.
+6. **Tech Guide** — **Kickoff research first — this is the highest-value research step, targeting latest stable versions and breaking changes.** Then tech stack selection, dependency versions, coding conventions, dev environment setup. Output: `tech-guide.md`. **Then invoke `agents-argue:debate` on `tech-guide.md`** to validate stack choices through adversarial consensus before proceeding.
+7. **UX Planning** — **Kickoff research first.** Then user flows, interaction patterns, accessibility, error handling, dark pattern audit _(skip for backend-only/library projects)_. Output: `ux-plan.md`
+8. **UI Planning** — **Kickoff research first.** Then visual design system, typography, color palette, component inventory, layout _(skip for non-visual projects)_. Output: `ui-plan.md`
 9. **Implementation** — Build it, using subagents for independent work
-10. **E2E Test Generation** — Generate Playwright CLI tests from user stories and UX flows _(skip if no testable UI/CLI)_. Output: `e2e-tests.md` + test files
+10. **E2E Test Generation** — **Kickoff research first.** Then generate Playwright CLI tests from user stories and UX flows _(skip if no testable UI/CLI)_. Output: `e2e-tests.md` + test files
 11. **Testing & Verification** — Run all tests (including generated Playwright tests), verify requirements met. Consider `test-everything:test-full-suite` for comprehensive coverage.
 12. **Delivery** — Final review, user verification, cleanup
 
@@ -314,7 +314,61 @@ Phase 2 may be skipped ONLY when:
 
 Record the skip reason in `findings.md` if skipped.
 
+## Phase Kickoff Research
 
+LLM training data goes stale fast — framework versions, library APIs, design patterns, and best practices change constantly. Before starting each major phase, run a brief focused web search to ground decisions in current reality rather than memorized knowledge.
+
+### Which phases require kickoff research
+
+| Phase | Why | Priority |
+| ----- | --- | -------- |
+| 3. Data Map | Privacy regulations, data modeling patterns, storage options evolve | Medium |
+| 5. Architecture | Architectural patterns and reference architectures change | High |
+| 6. Tech Guide | **Highest value** — library versions, breaking changes, stack recommendations | **Critical** |
+| 7. UX Planning | Accessibility standards (WCAG), interaction patterns, AI/agent UX patterns | Medium |
+| 8. UI Planning | Design trends, component libraries, CSS features | Medium |
+| 10. E2E Test Generation | Playwright API changes, current test patterns | High |
+
+Phases 1, 2, 4, 9, 11, 12 do not require kickoff research — they are either internal, already research-based, derivative, or execution-focused.
+
+### How it works
+
+At the start of each listed phase, before touching the template:
+
+1. **Formulate 2-4 focused queries** — Target "latest" and "current" information. Examples:
+   - Phase 6: `"latest stable [framework] version 2026"`, `"[library] breaking changes [current year]"`, `"current recommended [stack type] 2026"`
+   - Phase 5: `"current architectural patterns for [domain]"`, `"[system type] reference architecture 2026"`
+   - Phase 10: `"Playwright latest API 2026"`, `"current best practices Playwright e2e [current year]"`
+2. **Run WebSearch** — Use 3-5 minutes max. This is a grounding check, not a deep dive.
+3. **Prefer official sources** — Framework docs, release notes, official guides. Skip low-quality aggregator content.
+4. **Capture deltas** — Write findings to `findings.md` under a `## Phase [N] Kickoff Research` subsection. Focus on what changed vs. what you'd have assumed from training data.
+5. **Apply findings to the phase artifact** — Let the research shape decisions in `architecture.md`, `tech-guide.md`, etc.
+
+### Query templates
+
+| Topic | Query pattern |
+| ----- | ------------- |
+| Framework version | `"[framework] latest stable version [current year]"` |
+| Breaking changes | `"[library] breaking changes [version] to [version]"` |
+| Best practices | `"current best practices [domain] [current year]"` |
+| Patterns | `"latest [pattern type] patterns [current year]"` |
+| Deprecations | `"[tool] deprecated [current year]"` |
+| Reference architectures | `"[system type] reference architecture latest"` |
+
+### Keep it bounded
+
+Kickoff research is a **grounding check**, not a full research phase (that's Phase 2). Time-box it to 3-5 minutes per phase. The goal is to catch stale knowledge, not to produce a literature review.
+
+### When to skip
+
+Kickoff research may be skipped for a phase when:
+- The user has explicitly provided current information for that phase
+- The phase is trivial for this project (e.g., Data Map for a stateless CLI tool)
+- Training data cutoff is recent enough for the specific topic (rare — default to searching)
+
+Log any skips in `findings.md` with a reason.
+
+## Anti-Patterns
 
 | Don't                                              | Do Instead                                 |
 | -------------------------------------------------- | ------------------------------------------ |

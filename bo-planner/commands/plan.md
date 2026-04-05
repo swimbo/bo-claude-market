@@ -65,4 +65,6 @@ The argument is the task description. If no argument is provided, ask the user w
 
 * **Pain point research before user stories** — Phase 2 populates `findings.md` with real user complaints via web research. Phase 4 (User Stories) must reference these findings. Skip only for internal tooling, user-provided research, or bug fixes.
 
+* **Kickoff research at the start of major phases** — Phases 3, 5, 6, 7, 8, and 10 begin with a 3-5 minute WebSearch targeting "latest"/"current" information to counter stale training data. Capture findings in `findings.md`. Highest value is Phase 6 (Tech Guide).
+
 * **Architecture and Tech Guide require adversarial debate** — invoke `agents-argue:debate` on each artifact after drafting. Incorporate consensus before marking the phase complete. Debate Architecture before Tech Guide (sequential, not parallel).

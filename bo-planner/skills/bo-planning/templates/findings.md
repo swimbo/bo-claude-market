@@ -15,6 +15,41 @@
 
 <!-- Skip reason (if skipped): -->
 
+## Phase Kickoff Research
+
+<!-- Brief grounding research run at the start of Phases 3, 5, 6, 7, 8, 10 -->
+<!-- Counters stale LLM training data by targeting "latest"/"current" information -->
+
+### Phase 3 (Data Map) Kickoff
+
+* Queries: <br />
+* Findings: <br />
+
+### Phase 5 (Architecture) Kickoff
+
+* Queries: <br />
+* Findings: <br />
+
+### Phase 6 (Tech Guide) Kickoff
+
+* Queries: <br />
+* Findings: <br />
+
+### Phase 7 (UX Planning) Kickoff
+
+* Queries: <br />
+* Findings: <br />
+
+### Phase 8 (UI Planning) Kickoff
+
+* Queries: <br />
+* Findings: <br />
+
+### Phase 10 (E2E Test Generation) Kickoff
+
+* Queries: <br />
+* Findings: <br />
+
 ## Research Findings
 
 * \[Key discoveries during exploration]
