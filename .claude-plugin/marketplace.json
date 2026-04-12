@@ -73,6 +73,13 @@
       "version": "0.1.0",
       "description": "Orchestrates enterprise-grade implementation of a bo-planner plan by chaining agents-argue, standard-design, test-everything, and enterprise-assessment into a single phased execution loop with quality gates and gap auditing.",
       "author": {"name": "Bo"}
+    },
+    {
+      "name": "article-publisher",
+      "source": "./article-publisher",
+      "version": "0.1.0",
+      "description": "Publish articles to Substack, Reddit, and LinkedIn with browser automation, screenshot verification, and auto-formatting fixes.",
+      "author": {"name": "Bo"}
     }
   ]
 }

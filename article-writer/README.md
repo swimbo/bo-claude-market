@@ -26,6 +26,8 @@ claude --plugin-dir /path/to/article-writer
 | `/write-article <topic>` | Write a complete article through the 6-stage pipeline |
 | `/write-series <theme>` | Plan and write a multi-article series |
 | `/analyze-voice <name>` | Create a voice profile from writing samples |
+| `/interview-voice <name>` | Build a voice profile through an interactive interview — no writing samples required |
+| `/refine-voice <name>` | Feed editorial corrections from real drafts back into a voice profile |
 | `/manage-profiles` | List, view, set-default, or delete voice profiles |
 | `/create-template <name>` | Create a template from example articles |
 | `/manage-templates` | List, view, edit, or delete templates |

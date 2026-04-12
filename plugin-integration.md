@@ -4,22 +4,39 @@ When multiple plugins from this marketplace are installed on the same project, t
 
 ## Integrated Lifecycle
 
-The four core plugins form a natural workflow:
+The six core plugins form a natural workflow. `bo-planner` owns phases 1–8 (planning) with `agents-argue` as a mandatory debate gate. `implement-bo-plan` owns phases 9–14 (execution) and chains the remaining plugins:
 
 ```
-/bo-planner:plan → /standard-design:scaffold → /standard-design:review
-                                                        ↓
-/bo-planner:done ← /enterprise-assessment:assess ← /test-everything:test-full-suite
+/bo-planner:plan                               # Phases 1-8
+  ├─ /agents-argue:debate (architecture.md)    # Phase 5 gate
+  └─ /agents-argue:debate (tech-guide.md)      # Phase 6 gate
+                            ↓
+/implement-bo-plan:implement                   # Phases 9-14
+  ├─ /standard-design:scaffold                 # Phase 9 (UI)
+  ├─ /test-everything:test-plan + scaffold     # Phase 10
+  ├─ /test-everything:test-full-suite          # Phase 11
+  ├─ /test-everything:test-contract            # Phase 11 on failure
+  ├─ /standard-design:review                   # Phase 11.5 gate
+  ├─ /enterprise-assessment:assess             # Phase 11.6 gate (≥ B)
+  ├─ plan-gaps.md audit (parallel subagents)   # Phase 13
+  └─ severity-ordered gap fixes + gate re-runs # Phase 14
+                            ↓
+/bo-planner:done                               # Final sign-off
 ```
 
 | Phase | Plugin | What It Does |
 |-------|--------|-------------|
-| 1. Plan | bo-planner | Creates scope, architecture, user stories, UX/UI plans in `docs/planning/` |
-| 2. Design | standard-design | Scaffolds pages using planned constraints, applies theme |
-| 3. Review | standard-design | Audits design compliance, saves findings for other plugins |
-| 4. Test | test-everything | Generates tests from user stories and architecture, runs them |
-| 5. Assess | enterprise-assessment | Evaluates readiness, consumes test and design results |
-| 6. Deliver | bo-planner | Checks all quality gates before declaring done |
+| 1–4. Plan (early) | bo-planner | Requirements, pain point research, data map, user stories |
+| 5–6. Plan (decisions) | bo-planner + agents-argue | Architecture and tech guide drafted, then debated to consensus |
+| 7–8. Plan (UX/UI) | bo-planner | UX and UI plans (when user-facing) |
+| 9. Implementation | implement-bo-plan + standard-design | Parallel subagents build tasks; UI work scaffolded against the design system |
+| 10. E2E Tests | implement-bo-plan + test-everything | Strategy + generated specs from user stories |
+| 11. Testing | implement-bo-plan + test-everything | Full suite run; `test-contract` loop on failure |
+| 11.5. Design Gate | implement-bo-plan + standard-design | `review` — blocks on critical issues |
+| 11.6. Enterprise Gate | implement-bo-plan + enterprise-assessment | `assess` — blocks if grade < B |
+| 12. Delivery | bo-planner | `done` completion protocol |
+| 13. Plan Gap Audit | implement-bo-plan | Parallel artifact-vs-code diff → `plan-gaps.md` |
+| 14. Fix Gaps | implement-bo-plan | Severity-ordered fixes with gate re-runs until zero open |
 
 ## How Plugins Read Each Other's Artifacts
 
@@ -59,8 +76,26 @@ bo-planner creates structured artifacts in `docs/planning/` that other plugins d
 | Artifact | Consumed By | How It's Used |
 |----------|-------------|--------------|
 | `docs/planning/enterprise-assessment.md` | bo-planner `/done` | Warns if grade < B before delivery; shows risk posture |
+| `docs/planning/enterprise-assessment.md` | implement-bo-plan | Phase 11.6 gate — blocks phase 12 if grade < B. Critical/High findings seed `plan-gaps.md`. |
 | `docs/planning/enterprise-assessment.md` | test-everything | Testing category gaps become P0 priorities in test plans |
 | Assessment report | enterprise-assessment `/compare` | Baseline for measuring improvement over time |
+
+### agents-argue produces artifacts that others consume
+
+| Artifact | Consumed By | How It's Used |
+|----------|-------------|--------------|
+| `docs/planning/consensus-plan.md` | bo-planner | Phase 5/6 gate — decisions are incorporated back into `architecture.md` and `tech-guide.md` before the phase can be marked complete |
+| `docs/planning/debate-transcript.md` | bo-planner `findings.md` | Unresolved items tagged `NEEDS_HUMAN_DECISION` are surfaced to the user |
+| `consensus-plan.md` | implement-bo-plan | Phase 9 respects debate outcomes when implementing contested tradeoffs |
+
+### implement-bo-plan produces artifacts that others consume
+
+| Artifact | Consumed By | How It's Used |
+|----------|-------------|--------------|
+| `docs/planning/plan-gaps.md` | bo-planner `/done` | Blocks final sign-off if open non-`wont_fix` gaps remain |
+| `docs/planning/plan-gaps.md` | enterprise-assessment | Gap severities seed remediation priorities on next `assess` run |
+| `docs/planning/progress.md` (phase 9–14 entries) | bo-planner `/status` | Unified status across planning + execution |
+| Gate results in `progress.md` | implement-bo-plan `/resume` | Identifies the failing gate as the restart point |
 
 ## Output Location Convention
 
