@@ -60,13 +60,14 @@ docs/planning/
 ├── ux-plan.md               # UX: user flows, interaction patterns, accessibility
 ├── ui-plan.md               # UI: visual design system, typography, colors, components
 ├── e2e-tests.md             # Playwright test plan and generated test inventory
+├── plan-gaps.md             # Audit of implemented code vs. plan (Phase 13 output)
 ├── findings.md              # Pain point research, discoveries, external content
 └── progress.md              # Session log, test results, errors
 ```
 
 ## Phases
 
-12-phase model (conditional phases skipped when not applicable):
+14-phase model (conditional phases skipped when not applicable):
 
 | Phase | Name | Conditional | Kickoff Research | Quality Gate |
 | ----- | ---- | ----------- | ---------------- | ------------ |
@@ -82,12 +83,16 @@ docs/planning/
 | 10 | E2E Test Generation | Testable UI/CLI only | Yes | |
 | 11 | Testing & Verification | | | |
 | 12 | Delivery | | | |
+| 13 | Plan Gap Audit | | | Diff code vs. every planning artifact → `plan-gaps.md` |
+| 14 | Fix All Gaps | | | Zero open non-`wont_fix` gaps |
 
 **Kickoff research** — Phases 3, 5, 6, 7, 8, and 10 start with a time-boxed (3-5 min) web search targeting "latest"/"current" information to counter stale LLM training data. Highest value is Phase 6 (Tech Guide) where library versions and breaking changes matter most.
 
 **Pain Point Research** — Phase 2 searches for real user complaints, competitor friction, and unmet needs via web research before user stories are written.
 
 **Adversarial debate** — Phases 5 and 6 require mandatory `agents-argue:debate` invocation. The artifact is drafted, debated by multi-agent adversarial consensus, then updated with resolved decisions before proceeding. Architecture is debated before Tech Guide (sequential).
+
+**Plan Gap Audit & Fix** — Phases 13–14 close the loop. Phase 13 diffs the shipped code against every planning artifact and records misses in `plan-gaps.md` (severity: blocker/major/minor/nit). Phase 14 works through the gap list in severity order until every non-`wont_fix` row is `fixed`. Prevents "done" from drifting away from "planned".
 
 ## Philosophy
 

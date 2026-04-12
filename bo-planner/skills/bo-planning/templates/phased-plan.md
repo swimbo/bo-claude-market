@@ -50,6 +50,8 @@ Phase 1
 | 10    | E2E Test Generation      | pending      | no       |
 | 11    | Testing & Verification   | pending      | no       |
 | 12    | Delivery                 | pending      | no       |
+| 13    | Plan Gap Audit           | pending      | no       |
+| 14    | Fix All Gaps             | pending      | no       |
 
 <!-- Phase 2 may be skipped for internal tooling, user-provided research, or bug fixes.
      Phases 7-8 apply when the project has user-facing components.

@@ -64,6 +64,7 @@ docs/planning/
 ├── ux-plan.md               # UX: user flows, interaction patterns, accessibility
 ├── ui-plan.md               # UI: visual design system, typography, colors, components
 ├── e2e-tests.md             # Playwright test plan and generated test inventory
+├── plan-gaps.md             # Audit of implemented code vs. plan (Phase 13 output)
 ├── findings.md              # Research discoveries, external content
 └── progress.md              # Session log, test results, errors
 ```
@@ -159,7 +160,7 @@ After 3 failures: Escalate to user with what you tried
 
 ## Phase Planning
 
-Use the 12-phase pattern (customize phase names to the task):
+Use the 14-phase pattern (customize phase names to the task):
 
 1. **Requirements & Discovery** — Understand intent, capture constraints, environment snapshot
 2. **Pain Point Research** — Web research into real user complaints, competitor friction, and unmet needs in the problem space. Output: `findings.md` (Pain Point Research section). See "Pain Point Research" below.
@@ -173,6 +174,8 @@ Use the 12-phase pattern (customize phase names to the task):
 10. **E2E Test Generation** — **Kickoff research first.** Then generate Playwright CLI tests from user stories and UX flows _(skip if no testable UI/CLI)_. Output: `e2e-tests.md` + test files
 11. **Testing & Verification** — Run all tests (including generated Playwright tests), verify requirements met. Consider `test-everything:test-full-suite` for comprehensive coverage.
 12. **Delivery** — Final review, user verification, cleanup
+13. **Plan Gap Audit** — Diff the implemented code against every planning artifact (`user-stories.md`, `architecture.md`, `tech-guide.md`, `ux-plan.md`, `ui-plan.md`, `e2e-tests.md`, each `phase-#-plan.md`). Record every missing, partial, or deviated item. Output: `plan-gaps.md`. Present gaps to user for severity confirmation before Phase 14.
+14. **Fix All Gaps** — Work through `plan-gaps.md` in severity order (`blocker` → `major` → `minor` → `nit`). For each gap: implement the fix, re-run relevant tests, flip status to `fixed`. Phase is complete only when every non-`wont_fix` row is `fixed` and `plan-gaps.md` shows zero open items.
 
 Phase 2 may be skipped ONLY for internal tooling with no external users, when the user provides their own research, or for bug fixes/refactors with no new user-facing behavior. Record skip reason in `findings.md`.
 Phases 7-8 apply when the project has user-facing components (web apps, CLI tools, plugins, IDE extensions).
@@ -329,7 +332,7 @@ LLM training data goes stale fast — framework versions, library APIs, design p
 | 8. UI Planning | Design trends, component libraries, CSS features | Medium |
 | 10. E2E Test Generation | Playwright API changes, current test patterns | High |
 
-Phases 1, 2, 4, 9, 11, 12 do not require kickoff research — they are either internal, already research-based, derivative, or execution-focused.
+Phases 1, 2, 4, 9, 11, 12, 13, 14 do not require kickoff research — they are either internal, already research-based, derivative, or execution-focused.
 
 ### How it works
 
@@ -400,6 +403,8 @@ Log any skips in `findings.md` with a reason.
 * [templates/ui-plan.md](templates/ui-plan.md)
 
 * [templates/e2e-tests.md](templates/e2e-tests.md)
+
+* [templates/plan-gaps.md](templates/plan-gaps.md)
 
 * [templates/findings.md](templates/findings.md)
 
