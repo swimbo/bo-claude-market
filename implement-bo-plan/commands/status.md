@@ -41,7 +41,7 @@ Plan gaps (Phase 13/14)
   Accepted wont_fix: {count}
 
 Overrides in effect: {list or "none"}
-Next action:         {what /resume or /phase would do}
+Next action:         {what /continue-implementation or /phase would do}
 ```
 
 If no planning directory exists, print:

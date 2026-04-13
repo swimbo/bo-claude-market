@@ -178,9 +178,9 @@ planning artifact set and the implemented code.
    `bo-planner:done` re-run is clean. Mark phases 13 and 14 `complete` in
    `phased-plan.md`.
 
-## Resume Behavior
+## Continue-Implementation Behavior
 
-If interrupted, `/implement-bo-plan:resume` picks up where progress stopped:
+If interrupted, `/implement-bo-plan:continue-implementation` picks up where progress stopped (this command is named `continue-implementation` rather than `resume` because `/resume` is reserved by Claude Code for resuming conversations):
 
 1. Read `phased-plan.md` to find the first non-`complete` phase.
 2. Read `progress.md` for the last entry. If mid-phase, continue from the

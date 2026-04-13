@@ -1,6 +1,6 @@
 ---
-name: resume
-description: "Resume an interrupted implementation. Reads progress.md and phased-plan.md to determine where to restart."
+name: continue-implementation
+description: "Continue an interrupted implementation. Reads progress.md and phased-plan.md to determine where to restart. (Named continue-implementation because /resume is reserved by Claude Code for resuming conversations.)"
 allowed-tools:
   - Read
   - Bash
@@ -11,7 +11,7 @@ allowed-tools:
   - Skill
 ---
 
-Resume an in-flight `/implement` run.
+Continue an in-flight `/implement` run that was interrupted.
 
 ## Steps
 
