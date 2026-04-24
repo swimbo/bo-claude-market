@@ -73,6 +73,14 @@ Run phases in order. Do not advance past a gate without evidence:
    - Append newly surfaced gaps to `plan-gaps.md`. Loop until 0 open non-`wont_fix`.
    - Mark phases 13 and 14 `complete`.
 
+9. **Final Gate — Done-Means-Done Checklist Pass**
+   - Locate `bo-planner/done-means-done/` via `Glob` on `**/bo-planner/done-means-done/phase-*.md`. If missing, stop and tell the user.
+   - For every non-skipped phase in `phased-plan.md`, load the matching `phase-##-*.md` checklist and verify every **Hard Gate** has evidence in `docs/planning/`.
+   - Record results in `progress.md > ## Done-Means-Done Audit` as a table (phase | gate | status | evidence).
+   - **Block** if any Hard Gate is `fail` or `missing`. Return to the responsible phase to remediate, then re-run this gate.
+   - Soft-check warnings do not block but must be logged with a reason.
+   - Only after this pass is green may the project be declared complete. Require `AskUserQuestion` confirmation.
+
 ## Override Flags
 
 Parse from `$ARGUMENTS`. Every override requires `AskUserQuestion` confirmation and is logged in `progress.md`:
@@ -95,3 +103,4 @@ Parse from `$ARGUMENTS`. Every override requires `AskUserQuestion` confirmation 
 - Phase 13 is never "skipped because phase 12 looked good" — the audit is the contract.
 - A gap is only closed when its owning gate is re-run green.
 - User confirms overrides. Claude never decides to lower a gate on its own.
+- The project is not complete until the Done-Means-Done final gate passes and the user confirms.

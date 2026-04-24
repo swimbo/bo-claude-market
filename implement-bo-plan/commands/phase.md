@@ -61,6 +61,10 @@ Run only the specified phase, following its section in the
 
 - Each phase's verification gate still applies — running in isolation doesn't
   bypass the gate.
+- For any phase, consult the canonical Hard Gates in
+  `bo-planner/done-means-done/phase-##-*.md`. Copy those gates into the
+  phase's `Verification` section and attach evidence to each before marking
+  the phase complete.
 - If the user passes an invalid phase number, list the accepted values and stop.
 - If the user passes `14` but there is no `plan-gaps.md`, prompt them to run
   phase 13 first.

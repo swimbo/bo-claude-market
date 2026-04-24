@@ -1,5 +1,5 @@
 ---
-name: status
+name: plan-status
 description: "Show current planning status — phases, scope, delegated agents, and verification state."
 ---
 

@@ -23,6 +23,17 @@ Before declaring ANY task complete, run through this checklist:
 
 * <span data-proof="suggestion" data-id="m1772856376792_6" data-by="ai:external-agent" data-kind="replace">Are there any unresolved errors in the error log?</span>
 
+### Step 1a: Done-Means-Done Checklist Pass
+
+For every non-skipped phase in `docs/planning/phased-plan.md`, load the matching checklist from `${CLAUDE_PLUGIN_ROOT}/done-means-done/phase-##-*.md` and verify that **every Hard Gate** is satisfied by the contents of `docs/planning/`:
+
+- Walk each Hard Gate item.
+- Confirm the referenced artifact file exists, the required section is populated, and required evidence is present.
+- For any Hard Gate that is NOT satisfied, record it as a blocker in the final summary.
+- Soft checks are advisory — record open soft checks as warnings, not blockers.
+
+If **any** Hard Gate fails for **any** non-skipped phase, the final answer must be **not complete**. List the specific gate failures with their phase number and gate text.
+
 ### Step 2: Run Project Checks
 
 Based on what the project contains:
@@ -73,6 +84,7 @@ Present the results to the user using AskUserQuestion:
 ```
 Completion check:
 - Phases: {completed}/{total}
+- Done-means-done: {passed_hard_gates}/{total_hard_gates} hard gates pass ({phase_with_failures} list)
 - User stories: {delivered}/{total} implemented
 - Tests: {pass}/{total} passing
 - Scope: {delivered}/{in_scope} items delivered

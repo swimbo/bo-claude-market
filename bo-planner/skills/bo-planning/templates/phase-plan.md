@@ -47,13 +47,25 @@
 
 * \[Concrete output 2]
 
+## Volatile Decision Check
+
+<!-- At the START of this phase: list every decision this phase will make that falls into a Volatile Decision Category (LLM/model, AI SDK, third-party API/service, datastore, hosting, framework version, pinned deps, architectural pattern, auth strategy, data contract, deploy/CI, observability). -->
+<!-- At the END of this phase: confirm each one had a Mode A (artifact) or Mode B (per-decision brief in docs/planning/decisions/) debate. -->
+
+* Volatile decisions expected this phase:
+  * [ ] \[Decision 1 — category — debate mode planned]
+  * [ ] \[Decision 2 — category — debate mode planned]
+* `None` if no volatile decisions are expected.
+
 ## Verification
 
 <!-- What proves this phase is done. "It should work" is not verification. -->
-<!-- For Phase 5 (Architecture) and Phase 6 (Tech Guide): adversarial debate is REQUIRED. -->
-<!-- Add: [ ] agents-argue:debate invoked on artifact -->
+<!-- For Phase 5 (Architecture) and Phase 6 (Tech Guide): Mode A adversarial debate is REQUIRED. -->
+<!-- For ANY phase that made a Volatile Decision: Mode B adversarial debate is REQUIRED. -->
+<!-- Add: [ ] agents-argue:debate invoked on artifact or decision brief -->
 <!-- Add: [ ] Consensus incorporated into artifact -->
 <!-- Add: [ ] Unresolved items logged to findings.md -->
+<!-- Add: [ ] Every volatile decision made in this phase has a row in docs/planning/decisions/INDEX.md -->
 
 * [ ] \[Specific check 1]
 

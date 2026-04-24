@@ -34,7 +34,7 @@ Opinionated fork of [planning-with-files](https://github.com/othmanadi/planning-
 | Command   | Description                                     |
 | --------- | ----------------------------------------------- |
 | `/plan`   | Start a planning session with scope negotiation |
-| `/status` | Quick status check of current plan              |
+| `/plan-status` | Quick status check of current plan              |
 | `/done`   | Verification protocol before declaring complete |
 
 ## Install

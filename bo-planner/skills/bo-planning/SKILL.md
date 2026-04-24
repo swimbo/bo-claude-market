@@ -133,6 +133,8 @@ Capture what already exists (repos, services, tools, files) BEFORE planning. Thi
 
 Every phase plan (`phase-#-plan.md`) has a `Verification` section. A phase cannot be marked `complete` without documented verification. "It should work" is not verification.
 
+The canonical per-phase completion checklists live in `${CLAUDE_PLUGIN_ROOT}/done-means-done/` (one file per phase, plus a README index). When starting a phase, copy its **Hard Gates** verbatim into that phase's `Verification` section. When closing a phase, walk the checklist top-to-bottom and attach evidence to every gate. `/done` and `implement-bo-plan` both consult these checklists as the final gate before declaring completion.
+
 ### 4. Subagents for Independent Work
 
 When a phase has 2+ independent tasks, delegate to parallel subagents. Track delegations in `phased-plan.md`. This is not optional.
@@ -253,25 +255,88 @@ This planning system works alongside:
 
 ## Adversarial Debate Gates
 
-Phases 5 (Architecture) and 6 (Tech Guide) each have a mandatory debate gate. The phase is NOT complete until the debate has run and the consensus output has been incorporated.
+The `agents-argue:debate` skill is **not optional** for volatile, high-leverage decisions. Phases 5 (Architecture) and 6 (Tech Guide) have mandatory full-artifact debates. **In addition**, an automatic fast-path debate is required any time a decision in the "Volatile Decision Categories" list below is made or changed — no matter which phase it happens in.
 
-### How it works
+### Volatile Decision Categories — Automatic Trigger
 
-For each of these phases:
+Any decision in any of these categories triggers `agents-argue:debate` automatically, even outside Phases 5 and 6. Each decision must be debated **at the time it is made or changed**, not deferred.
 
-1. **Draft the artifact** — Write `architecture.md` or `tech-guide.md` as normal using the template.
-2. **Invoke the debate** — Use the Skill tool: `Skill("agents-argue:debate", args: "<path to artifact>")`. This launches multi-agent adversarial debate with domain-expert personas who critique and stress-test the decisions.
-3. **Incorporate consensus** — The debate produces `consensus-plan.md` and `debate-transcript.md` in `docs/planning/`. Update the original artifact (`architecture.md` or `tech-guide.md`) to incorporate resolved decisions from the consensus output.
-4. **Log unresolved items** — Any disagreements the debate could not resolve go into `findings.md` with a `NEEDS_HUMAN_DECISION` tag for the user to resolve before Implementation begins.
+| Category | Examples | Why it's volatile |
+| -------- | -------- | ----------------- |
+| **LLM model / provider** | Claude Opus/Sonnet/Haiku version, GPT-4/5, Gemini, open-weights (Llama, Mistral), embedding models | Model family, capability, pricing, context window, and deprecation schedules shift every few months |
+| **AI SDK / framework** | Anthropic SDK, OpenAI SDK, LangChain, LlamaIndex, MCP server libraries, Agent SDK, Vercel AI SDK | APIs and abstractions churn constantly; yesterday's recommended pattern becomes an anti-pattern |
+| **Third-party API / service** | Auth provider (Clerk, Auth0, Supabase Auth), payments (Stripe, Lemon Squeezy), analytics, email, file storage, CDN, monitoring (Sentry, Datadog), vector DB, feature flags | Pricing, limits, TOS, and feature sets change; lock-in risk compounds |
+| **Primary datastore** | Postgres vs. MySQL vs. SQLite vs. MongoDB vs. DynamoDB vs. cloud-native variants; hosted vs. self-hosted | High switching cost; downstream decisions depend on it |
+| **Hosting / runtime** | AWS vs. GCP vs. Cloudflare vs. Fly vs. Render; Lambda vs. containers vs. edge; Vercel/Netlify vs. self-host | Cost model, cold-start, region, feature availability shift |
+| **Core framework / language version** | React 18 → 19, Node 20 → 22, Rust edition, Python version, Axum/Express/Hono, Vite/Next/Nuxt | Breaking changes per major; ecosystem compatibility follows |
+| **Pinned dependency majors** | ORM (Prisma vs. Drizzle vs. SQLx), test framework (Vitest vs. Jest), styling (Tailwind 3 vs. 4), auth libs, state libs | Majors break APIs; picking the wrong one costs a migration later |
+| **Architectural pattern choice** | Monolith vs. services vs. serverless; REST vs. GraphQL vs. tRPC; event-driven vs. request/response; multi-tenant strategy; sync vs. async boundary | Each choice compounds across every downstream component |
+| **Auth / session / token strategy** | JWT vs. sessions; access/refresh rotation; OAuth provider selection; permission model (RBAC vs. ABAC vs. ReBAC) | Security-critical, hard to reverse, vendor- and fashion-driven |
+| **Data contract / schema choice** | Primary-key strategy (UUID v4 vs. v7 vs. ULID vs. sequential); soft-delete vs. hard; event schema format | Irreversible once data exists |
+| **Deployment / CI pattern** | Docker vs. native builds, CI provider, rollout strategy, migration strategy | Provider feature sets and best practices shift |
+| **Observability stack** | Logging (pino, tracing, OTel), metrics backend, tracing backend, error tracking | Cost and feature parity move quickly |
+
+If a decision does not obviously fit this table but (a) a web search would return materially different answers than 12 months ago, or (b) the choice is hard to reverse, **default to debating it**. The cost of an unnecessary debate is minutes; the cost of a missed one is compounding tech debt.
+
+### Two Debate Modes
+
+**Mode A — Full-artifact debate (formal gate)**
+
+Applies to Phases 5 and 6. Debate the whole artifact.
+
+1. **Draft the artifact** — Write `architecture.md` or `tech-guide.md` using the template.
+2. **Invoke the debate** — `Skill("agents-argue:debate", args: "<path to artifact>")`.
+3. **Incorporate consensus** — The debate produces `consensus-plan.md` and `debate-transcript.md` in `docs/planning/`. Update the source artifact to reflect resolved decisions; add a `## Debate Outcomes` section.
+4. **Log unresolved items** — Tag unresolved disagreements `NEEDS_HUMAN_DECISION` in `findings.md`.
 5. **Mark phase complete** — Only after the artifact reflects the post-debate consensus.
 
-### Why this is mandatory
+**Mode B — Decision-level debate (fast path)**
 
-Architecture and tech stack decisions are the highest-leverage choices in a project. Mistakes here compound through every downstream phase. The adversarial debate surfaces blind spots, challenges assumptions, and produces stronger decisions than a single perspective can.
+Applies any time a single volatile decision is made or changed, in any phase. Do **not** wait for the next formal artifact review.
+
+1. **Write a one-page decision brief** in `docs/planning/decisions/<ISO-date>-<slug>.md` with: the decision being made, 2–3 candidate options, constraints, and the proposed choice. Create `docs/planning/decisions/` if it does not exist.
+2. **Invoke the debate** — `Skill("agents-argue:debate", args: "<path to brief>")`.
+3. **Record outcome** in the brief: chosen option, rejected options with rationale, unresolved concerns.
+4. **Fold the outcome** back into the correct downstream artifact (`architecture.md`, `tech-guide.md`, the relevant `phase-#-plan.md`, `data-map.md`, etc.).
+5. **Log unresolved concerns** in `findings.md` tagged `NEEDS_HUMAN_DECISION`.
+6. **Index the brief** — append a one-line entry to `docs/planning/decisions/INDEX.md`: `<ISO-date> | <slug> | <category> | <chosen option> | <artifact updated>`.
+
+### Triggers during every phase
+
+At the **start** of each phase, identify any volatile decision the phase is about to make. At the **end** of each phase, re-check whether any were made implicitly without a debate. If yes, run Mode B before closing the phase.
+
+| Phase | Likely volatile decisions | Action |
+| ----- | ------------------------- | ------ |
+| 1. Requirements | Rarely — but flag any pre-committed vendor in the constraints | Debate if constraint is questionable |
+| 3. Data Map | Primary datastore, key strategy, multi-tenant shape | Mode B per decision |
+| 5. Architecture | All — formal artifact debate | Mode A |
+| 6. Tech Guide | All — formal artifact debate; LLM/SDK choices if applicable | Mode A; Mode B for any LLM-specific choice not captured by the full debate |
+| 7. UX / 8. UI | Component library, styling system if not pinned earlier | Mode B |
+| 9. Implementation | Any unplanned tradeoff (library swap, new service, model change) | Mode B — **required**, not "if time permits" |
+| 10. E2E Tests | Test framework if not already fixed | Mode B |
+| 11 / 11.5 / 11.6 | Observability or reporting tool additions | Mode B |
+| 13. Plan Gap Audit | New service/model surfaced as drift | Mode B before marking it "fixed" |
+| 14. Fix All Gaps | Any replacement library or service used to close a gap | Mode B |
+
+### When to skip a debate
+
+Never skip for a Mode A gate. For Mode B, the only valid skip is when **all** of these hold:
+
+- The user has explicitly pre-committed to this choice in writing (`phased-plan.md > ## Constraints`).
+- The choice is trivially reversible (swap is < 1 day of work).
+- No downstream artifact needs to change based on the outcome.
+
+Record the skip reason in the decisions index with category `skipped-with-reason`.
+
+### Why this is aggressive
+
+Volatile decisions are where LLM training data goes stale fastest and where one wrong choice rewrites many downstream ones. Claude's default posture — picking the "known good" answer from training — silently commits the project to last year's best practice. Adversarial debate with current web grounding (via kickoff research) is the cheapest way to catch this before it compounds.
 
 ### Sequencing
 
-The two debates run **sequentially**, not in parallel — the Tech Guide debate may reference architecture decisions, so Architecture must be debated and finalized first.
+- **Architecture debate (Phase 5) must finish before Tech Guide debate (Phase 6)** — the two formal gates run sequentially, not in parallel.
+- **Mode B debates are always serialized against their dependencies** — debate the upstream decision first (e.g. pick the datastore before the ORM; pick the LLM before the prompt/context strategy).
+- **Multiple independent Mode B debates may run in parallel** when their outcomes do not depend on each other.
 
 ## Pain Point Research (Phase 2)
 

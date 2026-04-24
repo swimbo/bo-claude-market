@@ -53,7 +53,7 @@ Recommended companion plugins (the orchestrator invokes their skills/commands):
 | `/implement` | Run the full 9→14 loop from current phase through delivery and gap-free shipment |
 | `/phase`  | Run a single phase (e.g. `/phase 11`), useful for resuming or re-running |
 | `/continue-implementation` | Inspect `docs/planning/progress.md` and continue from the last completed phase (named `continue-implementation` because `/resume` is reserved by Claude Code for resuming conversations) |
-| `/status` | One-screen status: current phase, gate results, open gaps |
+| `/impl-status` | One-screen status: current phase, gate results, open gaps |
 
 ## Quality Gates
 

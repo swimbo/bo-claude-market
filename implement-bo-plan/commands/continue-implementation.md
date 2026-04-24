@@ -31,6 +31,11 @@ Continue an in-flight `/implement` run that was interrupted.
    - Phase 13 partially audited → find which artifact audits are incomplete,
      dispatch parallel subagents only for the missing ones.
    - Phase 14 has open gaps → continue from highest open severity.
+   - Phase 14 complete but no Done-Means-Done audit yet → restart point is the
+     Final Gate (Done-Means-Done Checklist Pass) described in the
+     `enterprise-implementation` skill.
+   - Done-Means-Done audit has `fail`/`missing` Hard Gates → restart at the
+     specific phases responsible for those gates.
 
 3. **Confirm with user.**
    Use `AskUserQuestion` to confirm:

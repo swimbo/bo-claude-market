@@ -8,7 +8,7 @@ description: >
 user-invocable: true
 allowed-tools: "Read, Write, Edit, Bash, Glob, Grep, Task, AskUserQuestion, Skill"
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Enterprise Implementation
@@ -47,10 +47,20 @@ local build.
    `Skill("standard-design:review", args: "<files>")` after each batch.
 4. For backend/data tasks, use `test-driven-development` — write the test from
    `user-stories.md` acceptance criteria first, then implement.
-5. When a tradeoff surfaces that the plan did not resolve (e.g. two viable
-   library choices discovered mid-implementation), invoke
-   `Skill("agents-argue:debate", args: "<scratch doc with the tradeoff>")`.
-   Log the outcome in `findings.md`.
+5. When a tradeoff surfaces that the plan did not resolve — **and always**
+   when the decision falls into a Volatile Decision Category defined by
+   `bo-planner` (LLM/model, AI SDK, third-party API/service, datastore,
+   hosting/runtime, core framework version, pinned dependency major,
+   architectural pattern, auth/session strategy, data contract, deploy/CI
+   pattern, observability stack) — run the Mode B debate:
+   - Write a one-page decision brief to `docs/planning/decisions/<ISO-date>-<slug>.md`.
+   - `Skill("agents-argue:debate", args: "<brief path>")`.
+   - Record chosen option, rejected options + rationale, and unresolved items in the brief.
+   - Fold outcome into the relevant artifact (`architecture.md`, `tech-guide.md`, phase plan, etc.).
+   - Append one line to `docs/planning/decisions/INDEX.md`.
+   - `NEEDS_HUMAN_DECISION` items go to `findings.md`.
+   - Silent adoption of a volatile choice is treated as a **major** plan gap
+     in Phase 13 — prevent that by debating it here.
 6. After each task: update the checkbox in `phase-9-plan.md`, append a
    one-line entry to `progress.md`.
 7. Verification: project builds cleanly, lints pass, any unit tests written
@@ -178,6 +188,82 @@ planning artifact set and the implemented code.
    `bo-planner:done` re-run is clean. Mark phases 13 and 14 `complete` in
    `phased-plan.md`.
 
+## Final Gate — Done-Means-Done Checklist Pass
+
+This is the last gate before declaring the project complete. It runs **after**
+Phase 14 and **after** `bo-planner:done` comes back clean. It exists because
+individual phase `Verification` sections can drift over time, but the canonical
+per-phase contracts in `bo-planner/done-means-done/` do not.
+
+### Locate the checklist folder
+
+The canonical checklists live in the `bo-planner` plugin at
+`bo-planner/done-means-done/phase-01-*.md` through `phase-14-*.md` plus
+`README.md`. In a typical install this resolves to one of:
+
+- `${CLAUDE_PLUGIN_ROOT}/../bo-planner/done-means-done/` (when plugins share a
+  cache root), or
+- `~/.claude/plugins/marketplaces/bo-marketplace/bo-planner/done-means-done/`,
+  or
+- `~/.claude/plugins/cache/bo-marketplace/bo-planner/*/done-means-done/`.
+
+Use `Glob` with `**/bo-planner/done-means-done/phase-*.md` to discover the
+concrete path. If none is found, **stop** and tell the user that
+`bo-planner`'s `done-means-done` checklists are required for final verification.
+
+### Run the pass
+
+For every non-skipped phase in `docs/planning/phased-plan.md`:
+
+1. **Load** the matching checklist (`phase-##-*.md`).
+2. **Walk every Hard Gate**. For each gate, locate the evidence in
+   `docs/planning/` (artifact section, command output in `progress.md`, test
+   result, user-confirmation line, etc.) and mark it pass / fail / missing.
+3. **Record** results in `progress.md > ## Done-Means-Done Audit` as a table:
+   `| phase | gate id or snippet | status | evidence link |`.
+4. **Record** any open Soft Checks as warnings in the same table with a
+   `soft` tag.
+
+### Block rule
+
+- If **any Hard Gate for any non-skipped phase** is `fail` or `missing`, the
+  project is **not complete**. List each failing gate with its phase number
+  and exact gate text, then return to the appropriate phase to remediate.
+- Soft-check warnings do **not** block, but every open soft check must have a
+  row in the audit table with a reason.
+- **Volatile decisions without debate**: check `docs/planning/decisions/INDEX.md`
+  exists (even if empty) and that every volatile choice referenced in
+  `architecture.md`, `tech-guide.md`, or any `phase-#-plan.md` has either a
+  Mode A debate outcome (in the artifact) or a Mode B brief indexed in
+  `decisions/INDEX.md`. A volatile choice with no debate trail is a
+  blocker — mark `fail` and surface it.
+
+### Surface to user
+
+Use `AskUserQuestion` to present the result:
+
+```
+Done-means-done audit:
+- Phases audited:       {n}/{total} (skipped: {list})
+- Hard gates passing:   {pass}/{total_hard}
+- Hard gates failing:   {fail_list or "none"}
+- Soft checks open:     {count}
+- Blockers remain:      {yes|no}
+
+If blockers remain, return to phase(s): {list}.
+Mark the project complete?
+```
+
+Only accept completion when Hard Gates are zero-fail **and** the user
+confirms. Then (and only then) append the final completion entry to
+`progress.md`: `Project completed and done-means-done audit passed on <date>`.
+
+### Why this exists
+
+Phase verification sections can be paraphrased or trimmed during a long
+project. The `done-means-done/` folder is the immutable contract. Running it
+as a final pass catches drift that phase-local verification misses.
+
 ## Continue-Implementation Behavior
 
 If interrupted, `/implement-bo-plan:continue-implementation` picks up where progress stopped (this command is named `continue-implementation` rather than `resume` because `/resume` is reserved by Claude Code for resuming conversations):
@@ -240,5 +326,6 @@ Every override requires `AskUserQuestion` confirmation and is recorded.
 ```
 Plan is memory. Gates are contracts. Gaps are the diff.
 Phase 9 implements; phase 11 verifies; phase 13 audits; phase 14 closes.
+Done-means-done is the final contract — nothing ships until every Hard Gate passes.
 Nothing ships with open plan gaps.
 ```

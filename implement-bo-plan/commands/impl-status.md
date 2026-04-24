@@ -1,5 +1,5 @@
 ---
-name: status
+name: impl-status
 description: "One-screen implementation status. Shows current phase, last gate results, open plan gaps, and overrides in effect."
 allowed-tools:
   - Read
@@ -19,6 +19,7 @@ Read (each may be absent — handle gracefully):
 - `docs/planning/design-compliance.md` — last design gate result
 - `docs/planning/enterprise-assessment.md` — last enterprise grade
 - `docs/planning/plan-gaps.md` — gap counts by severity and status
+- `docs/planning/progress.md > ## Done-Means-Done Audit` — final-gate pass result (if Phase 14 is complete)
 
 ## Output Format
 
@@ -39,6 +40,8 @@ Plan gaps (Phase 13/14)
   Minor:             {open}/{total}
   Nit:               {open}/{total}
   Accepted wont_fix: {count}
+
+Done-means-done:     {pass}/{total} Hard Gates passing  (failing phases: {list or "none"})
 
 Overrides in effect: {list or "none"}
 Next action:         {what /continue-implementation or /phase would do}

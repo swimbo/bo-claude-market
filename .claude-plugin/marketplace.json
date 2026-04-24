@@ -28,7 +28,7 @@
     {
       "name": "bo-planner",
       "source": "./bo-planner",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "description": "File-based planning with scope fences, environment snapshots, verification gates, and subagent delegation tracking. Produces structured artifacts in docs/planning/.",
       "author": {"name": "Bo"}
     },
@@ -70,7 +70,7 @@
     {
       "name": "implement-bo-plan",
       "source": "./implement-bo-plan",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "description": "Orchestrates enterprise-grade implementation of a bo-planner plan by chaining agents-argue, standard-design, test-everything, and enterprise-assessment into a single phased execution loop with quality gates and gap auditing.",
       "author": {"name": "Bo"}
     },
