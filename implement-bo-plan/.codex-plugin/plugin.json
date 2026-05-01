@@ -1,0 +1,36 @@
+{
+  "name": "implement-bo-plan",
+  "version": "0.2.0",
+  "description": "Orchestrates enterprise-grade implementation of a bo-planner plan by chaining agents-argue, standard-design, test-everything, and enterprise-assessment into a single phased execution loop with quality gates and gap auditing.",
+  "author": {
+    "name": "Bo"
+  },
+  "keywords": [
+    "implementation",
+    "orchestration",
+    "enterprise",
+    "bo-planner",
+    "quality-gates",
+    "testing",
+    "design-system",
+    "assessment"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Implement Bo Plan",
+    "shortDescription": "Orchestrates enterprise-grade implementation of a bo-planner plan by chaining agents-argue, standard-design, test-everything, and enterprise-assessment into a single phased execution loop with quality gates and gap auditing.",
+    "longDescription": "Orchestrates enterprise-grade implementation of a bo-planner plan by chaining agents-argue, standard-design, test-everything, and enterprise-assessment into a single phased execution loop with quality gates and gap auditing.",
+    "developerName": "Bo",
+    "category": "Development",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Implement this bo-planner plan.",
+      "Resume implementation from the current phase.",
+      "Show implementation status."
+    ],
+    "brandColor": "#9333EA"
+  }
+}

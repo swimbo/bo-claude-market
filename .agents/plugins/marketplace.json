@@ -1,0 +1,140 @@
+{
+  "name": "bo-marketplace",
+  "interface": {
+    "displayName": "Bo Marketplace"
+  },
+  "plugins": [
+    {
+      "name": "whitepaper",
+      "source": {
+        "source": "local",
+        "path": "./whitepaper"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Writing"
+    },
+    {
+      "name": "top-10",
+      "source": {
+        "source": "local",
+        "path": "./top-10"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Research"
+    },
+    {
+      "name": "test-everything",
+      "source": {
+        "source": "local",
+        "path": "./test-everything"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    },
+    {
+      "name": "bo-planner",
+      "source": {
+        "source": "local",
+        "path": "./bo-planner"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "article-writer",
+      "source": {
+        "source": "local",
+        "path": "./article-writer"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Writing"
+    },
+    {
+      "name": "incident-postmortem",
+      "source": {
+        "source": "local",
+        "path": "./incident-postmortem"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Operations"
+    },
+    {
+      "name": "standard-design",
+      "source": {
+        "source": "local",
+        "path": "./standard-design"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    },
+    {
+      "name": "enterprise-assessment",
+      "source": {
+        "source": "local",
+        "path": "./enterprise-assessment"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Security"
+    },
+    {
+      "name": "agents-argue",
+      "source": {
+        "source": "local",
+        "path": "./agents-argue"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "implement-bo-plan",
+      "source": {
+        "source": "local",
+        "path": "./implement-bo-plan"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    },
+    {
+      "name": "article-publisher",
+      "source": {
+        "source": "local",
+        "path": "./article-publisher"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Publishing"
+    }
+  ]
+}

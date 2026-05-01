@@ -1,0 +1,34 @@
+{
+  "name": "bo-planner",
+  "version": "0.2.0",
+  "description": "File-based planning with scope fences, environment snapshots, verification gates, and subagent delegation tracking. Opinionated fork of planning-with-files tailored for directive, parallel-first workflows.",
+  "author": {
+    "name": "Bo"
+  },
+  "keywords": [
+    "planning",
+    "workflow",
+    "context-engineering",
+    "subagents",
+    "verification",
+    "task-management"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Bo Planner",
+    "shortDescription": "File-based planning with scope fences, environment snapshots, verification gates, and subagent delegation tracking. Opinionated fork of planning-with-files tailored for directive, parallel-first workflows.",
+    "longDescription": "File-based planning with scope fences, environment snapshots, verification gates, and subagent delegation tracking. Opinionated fork of planning-with-files tailored for directive, parallel-first workflows.",
+    "developerName": "Bo",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Create a phased implementation plan.",
+      "Show plan status.",
+      "Check whether this work is done."
+    ],
+    "brandColor": "#D97706"
+  }
+}

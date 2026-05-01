@@ -1,0 +1,35 @@
+{
+  "name": "incident-postmortem",
+  "version": "0.1.0",
+  "description": "Build comprehensive incident postmortems from raw artifacts — chat threads, logs, screenshots, configs, and monitoring data",
+  "author": {
+    "name": "Bo",
+    "url": "https://github.com/bo"
+  },
+  "license": "MIT",
+  "keywords": [
+    "incident",
+    "postmortem",
+    "sre",
+    "reliability",
+    "incident-response"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Incident Postmortem",
+    "shortDescription": "Build comprehensive incident postmortems from raw artifacts — chat threads, logs, screenshots, configs, and monitoring data",
+    "longDescription": "Build comprehensive incident postmortems from raw artifacts — chat threads, logs, screenshots, configs, and monitoring data",
+    "developerName": "Bo",
+    "category": "Operations",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Build a postmortem from these artifacts.",
+      "Analyze this incident timeline.",
+      "Draft corrective actions for this incident."
+    ],
+    "brandColor": "#059669"
+  }
+}

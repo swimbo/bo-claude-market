@@ -1,0 +1,34 @@
+{
+  "name": "article-publisher",
+  "version": "0.1.0",
+  "description": "Publish articles to Substack, Reddit, and LinkedIn with browser automation, screenshot verification, and auto-formatting fixes.",
+  "author": {
+    "name": "Bo Bergstrom",
+    "email": "bo.bergstrom@gmail.com"
+  },
+  "keywords": [
+    "publishing",
+    "substack",
+    "linkedin",
+    "reddit",
+    "browser-automation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Article Publisher",
+    "shortDescription": "Publish articles to Substack, Reddit, and LinkedIn with browser automation, screenshot verification, and auto-formatting fixes.",
+    "longDescription": "Publish articles to Substack, Reddit, and LinkedIn with browser automation, screenshot verification, and auto-formatting fixes.",
+    "developerName": "Bo Bergstrom",
+    "category": "Publishing",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Publish this article to Substack.",
+      "Prepare this post for LinkedIn.",
+      "Verify this article formatting."
+    ],
+    "brandColor": "#16A34A"
+  }
+}

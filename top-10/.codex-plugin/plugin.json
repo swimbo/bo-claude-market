@@ -1,0 +1,33 @@
+{
+  "name": "top-10",
+  "version": "0.2.0",
+  "description": "Competitive research plugin — identifies top 10 solutions in any market, deep-dives each with detailed pricing analysis, and generates a comprehensive PRD and recommended pricing strategy from the findings.",
+  "author": {
+    "name": "Bo"
+  },
+  "keywords": [
+    "research",
+    "competitive-analysis",
+    "product-strategy",
+    "prd",
+    "market-research"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Top 10",
+    "shortDescription": "Competitive research plugin — identifies top 10 solutions in any market, deep-dives each with detailed pricing analysis, and generates a comprehensive PRD and recommended pricing strategy from the findings.",
+    "longDescription": "Competitive research plugin — identifies top 10 solutions in any market, deep-dives each with detailed pricing analysis, and generates a comprehensive PRD and recommended pricing strategy from the findings.",
+    "developerName": "Bo",
+    "category": "Research",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Find the top 10 solutions in this market.",
+      "Compare these competitors.",
+      "Create a PRD from this market research."
+    ],
+    "brandColor": "#0F766E"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "article-writer",
+  "version": "0.2.0",
+  "description": "Write well-researched, professional articles with voice profiles, deep research, templates, and multi-stage pipeline. Voice profiles include anti-patterns, signature moves, and revision checklists that improve with each use. Create profiles via interview or sample analysis, and refine them from real draft feedback.",
+  "author": {
+    "name": "Bo",
+    "url": "https://github.com/bo"
+  },
+  "keywords": [
+    "writing",
+    "articles",
+    "research",
+    "voice-profiles",
+    "style-guides",
+    "templates",
+    "content-creation",
+    "series"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Article Writer",
+    "shortDescription": "Write well-researched, professional articles with voice profiles, deep research, templates, and multi-stage pipeline. Voice profiles include anti-patterns, signature moves, and revision checklists that improve with each use. Create profiles via interview or sample analysis, and refine them from real draft feedback.",
+    "longDescription": "Write well-researched, professional articles with voice profiles, deep research, templates, and multi-stage pipeline. Voice profiles include anti-patterns, signature moves, and revision checklists that improve with each use. Create profiles via interview or sample analysis, and refine them from real draft feedback.",
+    "developerName": "Bo",
+    "category": "Writing",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Write an article from this idea.",
+      "Analyze my writing voice.",
+      "Create an article series plan."
+    ],
+    "brandColor": "#C2410C"
+  }
+}
