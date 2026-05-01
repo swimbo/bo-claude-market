@@ -8,7 +8,7 @@
       "name": "whitepaper",
       "source": {
         "source": "local",
-        "path": "./whitepaper"
+        "path": "./plugins/whitepaper"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -20,7 +20,7 @@
       "name": "top-10",
       "source": {
         "source": "local",
-        "path": "./top-10"
+        "path": "./plugins/top-10"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -32,7 +32,7 @@
       "name": "test-everything",
       "source": {
         "source": "local",
-        "path": "./test-everything"
+        "path": "./plugins/test-everything"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -44,7 +44,7 @@
       "name": "bo-planner",
       "source": {
         "source": "local",
-        "path": "./bo-planner"
+        "path": "./plugins/bo-planner"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -56,7 +56,7 @@
       "name": "article-writer",
       "source": {
         "source": "local",
-        "path": "./article-writer"
+        "path": "./plugins/article-writer"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -68,7 +68,7 @@
       "name": "incident-postmortem",
       "source": {
         "source": "local",
-        "path": "./incident-postmortem"
+        "path": "./plugins/incident-postmortem"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -80,7 +80,7 @@
       "name": "standard-design",
       "source": {
         "source": "local",
-        "path": "./standard-design"
+        "path": "./plugins/standard-design"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -92,7 +92,7 @@
       "name": "enterprise-assessment",
       "source": {
         "source": "local",
-        "path": "./enterprise-assessment"
+        "path": "./plugins/enterprise-assessment"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -104,7 +104,7 @@
       "name": "agents-argue",
       "source": {
         "source": "local",
-        "path": "./agents-argue"
+        "path": "./plugins/agents-argue"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -116,7 +116,7 @@
       "name": "implement-bo-plan",
       "source": {
         "source": "local",
-        "path": "./implement-bo-plan"
+        "path": "./plugins/implement-bo-plan"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -128,7 +128,7 @@
       "name": "article-publisher",
       "source": {
         "source": "local",
-        "path": "./article-publisher"
+        "path": "./plugins/article-publisher"
       },
       "policy": {
         "installation": "AVAILABLE",
