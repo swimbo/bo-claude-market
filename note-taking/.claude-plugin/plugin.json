@@ -1,0 +1,19 @@
+{
+  "name": "note-taking",
+  "version": "1.0.0",
+  "description": "Imports handwritten ScanSnap notes and Monologue voice notes into Obsidian. Transcribes handwriting locally via LM Studio vision model; fetches Monologue transcriptions via the official CLI.",
+  "author": {
+    "name": "Bo / Game Plan Tech"
+  },
+  "keywords": [
+    "obsidian",
+    "scansnap",
+    "monologue",
+    "handwriting",
+    "voice-notes",
+    "transcription",
+    "local-ai",
+    "lm-studio",
+    "note-taking"
+  ]
+}
