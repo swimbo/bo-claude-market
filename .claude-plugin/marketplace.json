@@ -8,78 +8,109 @@
       "name": "whitepaper",
       "source": "./whitepaper",
       "version": "0.2.0",
-      "description": "Technical whitepaper authoring plugin — guides users through creating high-quality whitepapers with structured workflows, research, review, and PDF generation.",
-      "author": {"name": "Bo"}
+      "description": "Technical whitepaper authoring plugin \u2014 guides users through creating high-quality whitepapers with structured workflows, research, review, and PDF generation.",
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "top-10",
       "source": "./top-10",
       "version": "0.1.0",
-      "description": "Competitive research plugin — identifies top 10 solutions in any market, deep-dives each, and generates a comprehensive PRD from the findings.",
-      "author": {"name": "Bo"}
+      "description": "Competitive research plugin \u2014 identifies top 10 solutions in any market, deep-dives each, and generates a comprehensive PRD from the findings.",
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "test-everything",
       "source": "./test-everything",
       "version": "0.1.0",
-      "description": "Comprehensive testing toolkit — audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers.",
-      "author": {"name": "Bo"}
+      "description": "Comprehensive testing toolkit \u2014 audit coverage gaps, plan testing strategies, scaffold test infrastructure, and review test quality across all testing layers.",
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "bo-planner",
       "source": "./bo-planner",
       "version": "0.2.0",
       "description": "File-based planning with scope fences, environment snapshots, verification gates, and subagent delegation tracking. Produces structured artifacts in docs/planning/.",
-      "author": {"name": "Bo"}
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "article-writer",
       "source": "./article-writer",
       "version": "0.1.0",
-      "description": "Article writing plugin — 6-stage pipeline (research, outline, draft, style critique, content critique, final edit) with voice profiles, 42 built-in templates, 4 research depth levels, series support, and ideas tracking.",
-      "author": {"name": "Bo"}
+      "description": "Article writing plugin \u2014 6-stage pipeline (research, outline, draft, style critique, content critique, final edit) with voice profiles, 42 built-in templates, 4 research depth levels, series support, and ideas tracking.",
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "incident-postmortem",
       "source": "./incident-postmortem",
       "version": "0.1.0",
-      "description": "Incident postmortem builder — intake artifacts (logs, chat threads, screenshots, configs, monitoring data) and produce structured 8-section postmortems with gap detection and parallel artifact analysis.",
-      "author": {"name": "Bo"}
+      "description": "Incident postmortem builder \u2014 intake artifacts (logs, chat threads, screenshots, configs, monitoring data) and produce structured 8-section postmortems with gap detection and parallel artifact analysis.",
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "standard-design",
       "source": "./standard-design",
       "version": "0.1.0",
-      "description": "Standard Design System plugin — apply, review, and scaffold React + MUI admin interfaces with dual-mode theming, 28 component overrides, design tokens, and 4 page patterns.",
-      "author": {"name": "Bo"}
+      "description": "Standard Design System plugin \u2014 apply, review, and scaffold React + MUI admin interfaces with dual-mode theming, 28 component overrides, design tokens, and 4 page patterns.",
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "enterprise-assessment",
       "source": "./enterprise-assessment",
       "version": "0.1.0",
-      "description": "Enterprise readiness evaluator — 12-category assessment with risk-scored findings, compliance framework mapping (NIST, SOC2, ISO 27001), assessment profiles, and executive-ready reports.",
-      "author": {"name": "Bo"}
+      "description": "Enterprise readiness evaluator \u2014 12-category assessment with risk-scored findings, compliance framework mapping (NIST, SOC2, ISO 27001), assessment profiles, and executive-ready reports.",
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "agents-argue",
       "source": "./agents-argue",
       "version": "0.1.0",
-      "description": "Multi-agent adversarial debate — spawns domain-expert personas to stress-test implementation plans through structured rounds until consensus emerges. 170 personas across 16 domains.",
-      "author": {"name": "Bo"}
+      "description": "Multi-agent adversarial debate \u2014 spawns domain-expert personas to stress-test implementation plans through structured rounds until consensus emerges. 170 personas across 16 domains.",
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "implement-bo-plan",
       "source": "./implement-bo-plan",
       "version": "0.2.0",
       "description": "Orchestrates enterprise-grade implementation of a bo-planner plan by chaining agents-argue, standard-design, test-everything, and enterprise-assessment into a single phased execution loop with quality gates and gap auditing.",
-      "author": {"name": "Bo"}
+      "author": {
+        "name": "Bo"
+      }
     },
     {
       "name": "article-publisher",
       "source": "./article-publisher",
       "version": "0.1.0",
       "description": "Publish articles to Substack, Reddit, and LinkedIn with browser automation, screenshot verification, and auto-formatting fixes.",
-      "author": {"name": "Bo"}
+      "author": {
+        "name": "Bo"
+      }
+    },
+    {
+      "name": "note-taking",
+      "source": "./note-taking",
+      "version": "1.0.0",
+      "description": "Imports handwritten ScanSnap notes and Monologue voice notes into Obsidian. Transcribes handwriting locally via LM Studio vision model (no cloud); fetches Monologue transcriptions via the official CLI. Fully portable via env vars.",
+      "author": {
+        "name": "Bo"
+      }
     }
   ]
 }

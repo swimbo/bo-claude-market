@@ -135,6 +135,18 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Publishing"
+    },
+    {
+      "name": "note-taking",
+      "source": {
+        "source": "local",
+        "path": "./plugins/note-taking"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
     }
   ]
 }
