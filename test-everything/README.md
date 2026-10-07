@@ -1,6 +1,13 @@
 # test-everything
 
-Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan strategies, scaffold infrastructure, and review quality across all testing layers — with user-story-driven E2E, exhaustive interaction crawling, desired outcome assessment, and UX/UI auditing.
+Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan strategies, scaffold infrastructure, and review quality across all testing layers — with user-story-driven E2E, exhaustive interaction crawling, desired outcome assessment, UX/UI auditing, and 13 AI-agent testing capabilities (mutation gating, property/fuzz/differential testing, flaky quarantine, quality scorecards, selective CI gating).
+
+## Governing Rule
+
+> **LLMs author tests and state invariants. Deterministic tools — test runners, mutation engines, fuzzers, contract verifiers — decide pass/fail and whether tests are acceptable. No LLM judgment sits in the merge gate. Mutation score gates test acceptance; coverage only selects where to write next; every new suite must pass a negative control (break the code, the suite must go red).**
+
+Every command in this plugin obeys this rule. AI agents write the tests; deterministic tools decide whether the tests count. See the skill's [enhancement-capabilities](skills/test-strategy/references/enhancement-capabilities.md) reference for the 13 mechanisms behind it.
+
 
 ## Features
 
@@ -47,7 +54,17 @@ Comprehensive testing toolkit for Claude Code. Audit coverage gaps, plan strateg
 | `/test-everything:test-audit`            | Analyze test coverage across all layers and produce a gap report including interaction verification, exhaustive element coverage, and desired outcome completeness   |
 | `/test-everything:test-plan`             | Generate a phased testing strategy with user story discovery, outcome definitions, exhaustive crawl planning, and quality gates                                      |
 | `/test-everything:test-scaffold <layer>` | Scaffold test infrastructure for a specific layer                                                                                                                    |
-| `/test-everything:test-full-suite`       | <span data-proof="authored" data-by="ai:external-agent">Full workflow: audit → plan → scaffold → write → self-review → run → fix → quality review until green</span> |
+| `/test-everything:test-full-suite`       | Full workflow: audit → plan → scaffold → write → self-review → run → fix → quality review until green                                                                            |
+| `/test-everything:test-mutation-loop`    | Run mutation testing on changed code and re-prompt per surviving mutant until the mutation-score threshold is met (mutation gates acceptance, coverage never does)   |
+| `/test-everything:test-adequacy`         | Audit the auditor: mutation gate + falsifiability sampling + tautology/assertion-free detection + E2E negative controls (break the code, suite must go red)         |
+| `/test-everything:test-property`         | Property-based testing: LLM states invariants, deterministic engine (Hypothesis/fast-check/proptest/gopter) falsifies; counterexamples become regression tests      |
+| `/test-everything:test-coverage-loop`    | Test-generation refinement loop: coverage selects where to write, mutation score decides what survives; reward-hacking guardrails included                          |
+| `/test-everything:test-e2e`              | Deterministic E2E specs from LLM exploration (accessibility tree / discover-then-freeze); healing is a diff for approval, never a silent self-edit                   |
+| `/test-everything:test-flaky`            | Quarantine flaky tests with typed labels, tiered SLAs, and a ~1% weighted bucket cap — quarantined tests keep running and reporting; never disabled                  |
+| `/test-everything:test-quality`          | Numeric five-metric scorecard: mutation 30%, assertion strength 25%, mock ratio 15%, tautology 15%, flaky 15%; <60 = decorative                                    |
+| `/test-everything:test-differential`     | Old-vs-new / oracle-vs-impl divergence testing with golden masters; every divergence gets a bug-or-intended ruling                                                  |
+| `/test-everything:test-fuzz`             | LLM-crafted adversarial seed corpora into deterministic fuzzers (atheris/Jazzer/cargo-fuzz/go-fuzz); findings become minimized deterministic regressions            |
+| `/test-everything:test-ci-gate`          | Impact-based selective test execution + deterministic merge-queue gating; map misses trigger the full suite; nightly runs the slow guarantees                        |
 
 ### Scaffold Layers
 
@@ -110,6 +127,20 @@ Tailored to: React + Vitest + Testing Library, Rust `#[test]`, Playwright, k6, S
 ```bash
 claude --plugin-dir ~/.claude/plugins/test-everything
 ```
+
+## What's New
+
+### v0.12.0 — 13 AI-agent testing capabilities from field research
+
+* **10 new commands**: `test-mutation-loop`, `test-adequacy`, `test-property`, `test-coverage-loop`, `test-e2e`, `test-flaky`, `test-quality`, `test-differential`, `test-fuzz`, `test-ci-gate`
+* **Governing rule** added to the skill and README: LLMs author tests; deterministic tools decide pass/fail; no LLM in the merge gate; mutation score gates; coverage selects; negative controls required
+* New skill reference: [enhancement-capabilities](skills/test-strategy/references/enhancement-capabilities.md) — the 13 mechanisms in detail
+* Built from real AI-agent test-suite failure modes: high-coverage/low-strength suites, reward hacking in generation loops, silent E2E self-healing, flaky-test debt, mock-orchestration theater
+
+### Changelog
+
+* **0.12.0** — 13 AI-agent testing capabilities (mutation gating, adequacy audit, property/fuzz/differential testing, flaky quarantine, scorecard, selective CI gate)
+* **0.11.0** — agent-team enforcement, argue-and-debate, sandbox-safe E2E, UX/UI audits
 
 <!-- PROOF
 {

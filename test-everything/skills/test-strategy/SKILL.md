@@ -1,12 +1,18 @@
 ---
 name: test-strategy
-description: This skill should be used when the user asks about "testing strategy", "what tests to write", "testing types", "test pyramid", "test diamond", "testing trophy", "what should I test", "testing architecture", "quality gates", "CI/CD testing", "shift-left testing", "test coverage gaps", "performance testing", "security testing", "accessibility testing", "E2E testing", "integration testing", "how to test", "test automation", "testing best practices", "test plan", "test coverage", "desired outcomes", "outcome assessment", "exhaustive testing", "interaction crawl", "click every button", or discusses how to plan, structure, or improve testing in a project. Provides comprehensive knowledge of all software testing types, architecture models, and implementation strategies tailored to React + Vitest, Rust, Playwright, and k6.
+description: This skill should be used when the user asks about "testing strategy", "what tests to write", "testing types", "test pyramid", "test diamond", "testing trophy", "what should I test", "testing architecture", "quality gates", "CI/CD testing", "shift-left testing", "test coverage gaps", "performance testing", "security testing", "accessibility testing", "E2E testing", "integration testing", "how to test", "test automation", "testing best practices", "test plan", "test coverage", "desired outcomes", "outcome assessment", "exhaustive testing", "interaction crawl", "click every button", "mutation testing", "mutation score", "property-based testing", "fuzzing", "flaky tests", "test quality scorecard", "differential testing", "contract testing", "test adequacy", or discusses how to plan, structure, or improve testing in a project. Provides comprehensive knowledge of all software testing types, architecture models, and implementation strategies tailored to React + Vitest, Rust, Playwright, and k6.
 version: 0.1.0
 ---
 
 # Testing Strategy Knowledge Base
 
 Comprehensive testing knowledge covering all testing types, architecture models, quality gates, and implementation strategies. Tailored to projects using React + Vitest (frontend), Rust `#[test]` (backend), Playwright (E2E), and k6 (performance).
+
+## GOVERNING RULE
+
+> **LLMs author tests and state invariants. Deterministic tools — test runners, mutation engines, fuzzers, contract verifiers — decide pass/fail and whether tests are acceptable. No LLM judgment sits in the merge gate. Mutation score gates test acceptance; coverage only selects where to write next; every new suite must pass a negative control (break the code, the suite must go red).**
+
+This rule governs every workflow in this plugin, and especially the AI-agent testing capabilities in [references/enhancement-capabilities.md](references/enhancement-capabilities.md) (mutation loops, adequacy audits, property/fuzz/differential testing, flaky quarantine, quality scorecards, selective CI gating) — each exposed as a `/test-*` command.
 
 ## Browser Automation Tool Policy
 
