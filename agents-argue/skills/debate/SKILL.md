@@ -1,18 +1,20 @@
 ---
 name: debate
-description: "This skill orchestrates multi-agent adversarial debate where domain-expert personas critique and stress-test an implementation plan through structured rounds until consensus emerges. This skill should be used when the user asks to \"debate a plan\", \"stress-test a plan\", \"red team this plan\", \"challenge this plan\", \"poke holes in this plan\", \"devil's advocate review\", \"adversarial review\", \"consensus review\", \"get multiple perspectives on a plan\", \"argue about the best approach\", \"critique this plan\", or \"what could go wrong with this plan\"."
+description: "This skill orchestrates research-backed multi-agent adversarial debate where domain-expert personas gather current evidence, critique and stress-test an implementation plan, then recommend a solution through structured rounds until consensus emerges. This skill should be used when the user asks to \"debate a plan\", \"stress-test a plan\", \"red team this plan\", \"challenge this plan\", \"poke holes in this plan\", \"devil's advocate review\", \"adversarial review\", \"consensus review\", \"get multiple perspectives on a plan\", \"argue about the best approach\", \"critique this plan\", \"recommend a solution\", or \"what could go wrong with this plan\"."
 argument-hint: "[path/to/plan.md] — optional, auto-discovers from bo-planner and deep-plan output when omitted"
-allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "Agent"]
+allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "Agent", "WebSearch", "WebFetch"]
 ---
 
-# Adversarial Consensus Debate
+# Research-Backed Adversarial Consensus Debate
 
-Orchestrate a structured multi-agent debate where domain-expert personas independently critique a plan, then argue their positions until consensus emerges. The output is a battle-tested plan incorporating the strongest arguments from each perspective.
+Orchestrate a structured multi-agent debate where domain-expert personas first gather current evidence, independently critique a plan, then argue their positions until consensus emerges. The output is a battle-tested recommendation and plan incorporating the strongest evidence from each perspective.
+
+This skill is not just a critique engine. When the plan involves technology choices, product decisions, security posture, APIs, vendors, laws, standards, pricing, platform capabilities, or anything else that may have changed recently, the debate MUST begin with current research and MUST cite the evidence used for the recommendation.
 
 ## Workflow Overview
 
 ```
-Discover Plan → Select Personas → Position Papers (parallel) → Moderator Synthesis → Debate Rounds → Final Consensus
+Discover Plan → Select Personas → Research Briefs (parallel) → Evidence Ledger → Position Papers (parallel) → Moderator Synthesis → Debate Rounds → Final Recommendation
 ```
 
 ## Step 1: Discover the Plan
@@ -33,6 +35,7 @@ After resolving the plan, establish these variables for use throughout the workf
 - **PLAN_PATH**: Absolute path to the primary plan file
 - **PLAN_DIRECTORY**: Parent directory of PLAN_PATH (output files are written here)
 - **FULL_PLAN_CONTENT**: The complete plan text (concatenated if multi-file)
+- **DECISION_QUESTIONS**: The concrete questions the debate must answer. Extract these from the plan and user request. If the user asks for a recommendation, include "What solution should we choose and why?"
 
 ## Step 2: Analyze Domain & Select Personas
 
@@ -48,9 +51,74 @@ Analyze the plan content to determine relevant domains:
 5. Select top personas following the selection algorithm in the personas reference
 6. Always include one **contrarian persona** from outside the plan's primary domain
 
-Present the selected personas to the user with a brief rationale for each selection. Include a cost estimate: "This debate will use approximately N agent calls (N persona papers + moderator + up to 3 debate rounds)." Ask for confirmation before proceeding. The user may add, remove, or swap personas.
+Present the selected personas to the user with a brief rationale for each selection. Include a cost estimate: "This debate will use approximately N agent calls (N persona research briefs + N persona papers + moderator + up to 3 debate rounds)." Ask for confirmation before proceeding. The user may add, remove, or swap personas.
 
-## Step 3: Generate Position Papers (Parallel)
+## Step 3: Generate Research Briefs (Parallel)
+
+Spawn one Agent per persona **in parallel** using a single message with multiple Agent tool calls. Each persona must research before taking a position.
+
+Research is mandatory when any of the following are true:
+- The plan compares technologies, vendors, platforms, frameworks, APIs, models, or libraries
+- The user asks for the "best", "right", "current", "latest", "recommended", or "most recent" solution
+- The decision depends on external facts, pricing, product capabilities, laws, standards, benchmarks, platform support, or release status
+- There is more than a 10% chance that a relevant fact has changed since the plan was written
+
+If research-capable tools are available, the persona must use them. If they are not available, the persona must explicitly state that current external research was unavailable and must not present a final recommendation as proven.
+
+Each persona researches from their domain angle and produces a Research Brief:
+
+```
+You are a {PERSONA_TITLE} with 15+ years of experience. You are evaluating a plan
+that requires a current, evidence-backed recommendation.
+
+## Your Perspective
+{PERSONA_PERSPECTIVE_BIAS}
+
+## Decision Questions
+{DECISION_QUESTIONS}
+
+## Research Requirements
+Research the current state before recommending anything.
+
+Minimum evidence standard:
+1. Use primary sources first: official docs, platform docs, standards, release notes, API references, source repos, benchmark repos, vendor security/privacy docs, or authoritative specifications.
+2. Use secondary sources only to fill gaps or compare real-world experience. Label them as secondary.
+3. Prefer sources from the last 18 months for fast-moving technologies. If an older source is still controlling, explain why.
+4. Capture publication or last-updated dates when available.
+5. For each material claim, cite the source URL or file path.
+6. Separate verified facts from inferences.
+
+Write a Research Brief with:
+
+1. **Evidence Summary**: The 5-10 facts that matter most, each with citation and date when available
+2. **Option Matrix**: The credible options, with current support status, constraints, risks, and fit
+3. **Unknowns / Proof Gaps**: Facts you could not verify and what would settle them
+4. **Recommended Spike or Test**: The smallest experiment needed if the evidence is insufficient
+5. **Preliminary Recommendation**: Choose a direction only if the evidence supports it; otherwise state what research is missing
+
+Do not rely on memory alone. Do not assume the plan's existing conclusion is current.
+
+## The Plan
+{FULL_PLAN_CONTENT}
+```
+
+Wait for all persona agents to complete. Collect all research briefs.
+
+## Step 4: Build Evidence Ledger
+
+Before generating position papers, synthesize the research briefs into an **Evidence Ledger**. This can be done by the main agent or the `debate-moderator` agent.
+
+The ledger must contain:
+- **Decision questions**: The concrete questions being answered
+- **Sources reviewed**: URL/path, title, type (primary/secondary), date or last-updated if available, and which persona used it
+- **Verified facts**: Claim, source, and relevance
+- **Contradictions**: Conflicting claims and what would resolve them
+- **Proof gaps**: Missing evidence that blocks a confident recommendation
+- **Evidence grade**: `STRONG`, `ADEQUATE`, or `INSUFFICIENT`
+
+If the evidence grade is `INSUFFICIENT` for the main decision, stop the debate path and produce an evidence ledger plus a spike/research plan. Do not proceed to a confident recommendation.
+
+## Step 5: Generate Position Papers (Parallel)
 
 Spawn one Agent per persona **in parallel** using a single message with multiple Agent tool calls. For each selected persona, look up their Perspective Bias from the personas reference and substitute it into the prompt. Each Agent call uses:
 
@@ -60,24 +128,33 @@ Spawn one Agent per persona **in parallel** using a single message with multiple
 
 ```
 You are a {PERSONA_TITLE} with 15+ years of experience. You have been asked to
-review the following implementation plan and provide your expert critique.
+review the following implementation plan and provide your expert critique and recommendation.
 
 ## Your Perspective
 {PERSONA_PERSPECTIVE_BIAS}
 
+## Shared Evidence Ledger
+{EVIDENCE_LEDGER}
+
+## Your Research Brief
+{THIS_PERSONA_RESEARCH_BRIEF}
+
 ## Your Task
 Write a Position Paper (800-1500 words) that:
 
-1. **Executive Assessment**: One paragraph — is this plan sound, risky, or flawed?
-2. **Strengths**: What does this plan get right? (3-5 points with reasoning)
-3. **Concerns**: What worries you? (3-7 points, ranked by severity)
+1. **Recommendation**: State the solution you recommend and the evidence grade behind it
+2. **Executive Assessment**: One paragraph — is this plan sound, risky, or flawed?
+3. **Evidence-Backed Rationale**: Cite the facts that drive your position
+4. **Strengths**: What does this plan get right? (3-5 points with reasoning)
+5. **Concerns**: What worries you? (3-7 points, ranked by severity)
    - For each concern: state the risk, explain why it matters, suggest an alternative
-4. **Missing Considerations**: What has been overlooked from your domain expertise?
-5. **Recommended Changes**: Concrete, specific modifications (not vague suggestions)
-6. **Hard Stance Items**: 1-3 points you would NOT compromise on — the hills you'd die on
+6. **Missing Considerations**: What has been overlooked from your domain expertise?
+7. **Recommended Changes**: Concrete, specific modifications (not vague suggestions)
+8. **Hard Stance Items**: 1-3 points you would NOT compromise on — the hills you'd die on
 
-Be specific and opinionated. Reference specific sections of the plan. Avoid generic advice.
+Be specific and opinionated. Reference specific sections of the plan and cite evidence from the ledger. Avoid generic advice.
 Do NOT be polite about real problems — this is adversarial review.
+Do NOT make uncited factual claims about current technology, platform capabilities, pricing, legal status, security posture, or vendor behavior.
 
 ## The Plan
 {FULL_PLAN_CONTENT}
@@ -85,13 +162,17 @@ Do NOT be polite about real problems — this is adversarial review.
 
 Wait for all persona agents to complete. Collect all position papers.
 
-## Step 4: Moderator Synthesis (Round 1)
+## Step 6: Moderator Synthesis (Round 1)
 
 Use the Agent tool to invoke the `debate-moderator` agent (set `subagent_type` to `agents-argue:debate-moderator`). Pass it all position papers:
 
 ```
 Here are position papers from {N} domain experts reviewing an implementation plan.
 Synthesize these into a Disagreement Brief following your standard process.
+Use the Evidence Ledger to separate evidence-backed findings from unsupported opinions.
+
+## Evidence Ledger
+{EVIDENCE_LEDGER}
 
 ## Position Papers
 {ALL_POSITION_PAPERS}
@@ -102,7 +183,7 @@ Synthesize these into a Disagreement Brief following your standard process.
 
 The moderator produces a **Disagreement Brief** identifying consensus points, contested decisions, and blind spots.
 
-## Step 5: Debate Rounds (Max 3)
+## Step 7: Debate Rounds (Max 3)
 
 For each round, spawn persona agents **in parallel** again. Each persona receives:
 
@@ -117,6 +198,9 @@ key disagreements.
 ## Moderator's Disagreement Brief
 {DISAGREEMENT_BRIEF}
 
+## Shared Evidence Ledger
+{EVIDENCE_LEDGER}
+
 ## Your Task
 Respond to the disagreements that involve your expertise (400-800 words):
 
@@ -128,6 +212,7 @@ Respond to the disagreements that involve your expertise (400-800 words):
 4. State clearly: "I concede on X" or "I maintain my position on X because..."
 
 Do NOT hedge or be diplomatic. Take clear positions.
+Do NOT introduce new factual claims unless you cite sources or explicitly label them as assumptions.
 ```
 
 After each round, feed responses back to the `debate-moderator` agent (via Agent tool with `subagent_type: agents-argue:debate-moderator`):
@@ -135,6 +220,7 @@ After each round, feed responses back to the `debate-moderator` agent (via Agent
 ```
 Round {N} responses from all personas. Update disagreement status.
 Determine which disagreements are RESOLVED, MAJORITY, or still CONTESTED.
+Reject any resolution that depends on uncited claims or unverified current facts.
 If all major disagreements are resolved, indicate CONSENSUS_REACHED.
 If not, produce targeted questions for the next round.
 
@@ -147,30 +233,36 @@ If not, produce targeted questions for the next round.
 - Round 3 completed → proceed to final synthesis regardless
 - All remaining disagreements are LOW impact → proceed to final synthesis
 
-## Step 6: Final Consensus Output
+## Step 8: Final Recommendation Output
 
 Send the `debate-moderator` agent (via Agent tool) the final synthesis request. Set PLAN_DIRECTORY to the parent directory of PLAN_PATH resolved in Step 1:
 
 ```
-Produce the final consensus output. Write two files:
+Produce the final research-backed consensus output. Write three files:
 
 1. consensus-plan.md — The revised plan incorporating all resolved decisions
-2. debate-transcript.md — Full record of the debate process
+2. evidence-ledger.md — Source list, verified facts, contradictions, and proof gaps
+3. debate-transcript.md — Full record of the debate process
 
 ## All Debate Material
 {POSITION_PAPERS + ALL_ROUND_RESPONSES + DISAGREEMENT_BRIEFS}
 
+## Evidence Ledger
+{EVIDENCE_LEDGER}
+
 ## Original Plan
 {FULL_PLAN_CONTENT}
 
-Write both files to: {PLAN_DIRECTORY}
+Write all three files to: {PLAN_DIRECTORY}
 ```
 
 After the moderator writes the files, present a summary to the user:
 - Number of personas, rounds completed
+- Sources reviewed and evidence grade
+- Recommendation made, including why the selected solution beats alternatives
 - Key decisions made (resolved items)
 - Any unresolved items requiring human decision
-- File paths for the consensus plan and transcript
+- File paths for the consensus plan, evidence ledger, and transcript
 
 ## Error Handling
 
@@ -178,6 +270,8 @@ After the moderator writes the files, present a summary to the user:
 - If the moderator agent fails, fall back to manual synthesis: present all position papers to the user
 - If plan discovery finds nothing, clearly ask the user for a file path
 - If the plan is too short (<100 words), warn the user that debate value may be limited
+- If research tools are unavailable, state that limitation before the debate and ask the user whether to continue with an offline critique
+- If research completes but evidence is insufficient for the main decision, do not manufacture consensus; produce the evidence ledger and a spike plan instead
 
 ## Additional Resources
 

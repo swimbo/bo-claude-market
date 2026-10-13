@@ -8,7 +8,7 @@ Custom plugins for Claude Code.
 |--------|-------------|
 | [bo-planner](./bo-planner/) | File-based planning — 14-phase model with scope fences, environment snapshots, verification gates, adversarial debate gates, plan gap audit |
 | [implement-bo-plan](./implement-bo-plan/) | Enterprise-grade plan executor — orchestrates agents-argue, standard-design, test-everything, and enterprise-assessment to drive phases 9–14 with quality gates and gap auditing |
-| [agents-argue](./agents-argue/) | Multi-agent adversarial debate — 170 domain-expert personas stress-test plans through structured rounds until consensus. Used as a gate by bo-planner phases 5 and 6 |
+| [agents-argue](./agents-argue/) | Research-backed multi-agent debate — 170 domain-expert personas gather current evidence, stress-test plans, and recommend a solution with an evidence ledger. Used as a gate by bo-planner phases 5 and 6 |
 | [enterprise-assessment](./enterprise-assessment/) | Enterprise readiness evaluator — 12-category assessment with risk scoring, compliance mapping (NIST, SOC2, ISO 27001) |
 | [standard-design](./standard-design/) | Standard Design System — apply, review, and scaffold React + MUI admin interfaces with dual-mode theming |
 | [test-everything](./test-everything/) | Comprehensive testing toolkit — audit gaps, plan strategy, scaffold infrastructure, review quality, contract enforcement |

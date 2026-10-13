@@ -1,10 +1,10 @@
 {
   "name": "agents-argue",
-  "version": "0.1.0",
-  "description": "Multi-agent adversarial debate to stress-test plans. Spawns domain-relevant persona agents that argue positions until consensus emerges.",
+  "version": "0.1.1",
+  "description": "Research-backed multi-agent adversarial debate to investigate, stress-test, and recommend solutions for plans.",
   "author": {
     "name": "Bo",
     "url": "https://github.com/bo"
   },
-  "keywords": ["planning", "debate", "consensus", "multi-agent", "review"]
+  "keywords": ["planning", "debate", "consensus", "multi-agent", "review", "research", "recommendation"]
 }

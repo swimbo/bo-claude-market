@@ -1,7 +1,7 @@
 {
   "name": "agents-argue",
-  "version": "0.1.0",
-  "description": "Multi-agent adversarial debate to stress-test plans. Spawns domain-relevant persona agents that argue positions until consensus emerges.",
+  "version": "0.1.1",
+  "description": "Research-backed multi-agent adversarial debate to investigate, stress-test, and recommend solutions for plans.",
   "author": {
     "name": "Bo",
     "url": "https://github.com/bo"
@@ -11,13 +11,15 @@
     "debate",
     "consensus",
     "multi-agent",
-    "review"
+    "review",
+    "research",
+    "recommendation"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Agents Argue",
-    "shortDescription": "Multi-agent adversarial debate to stress-test plans. Spawns domain-relevant persona agents that argue positions until consensus emerges.",
-    "longDescription": "Multi-agent adversarial debate to stress-test plans. Spawns domain-relevant persona agents that argue positions until consensus emerges.",
+    "shortDescription": "Research-backed multi-agent debate that investigates, stress-tests, and recommends a solution.",
+    "longDescription": "Research-backed multi-agent adversarial debate. Domain-relevant persona agents gather current evidence, cite sources, challenge each other, and produce a recommendation with an evidence ledger, consensus plan, and transcript.",
     "developerName": "Bo",
     "category": "Productivity",
     "capabilities": [
@@ -27,7 +29,7 @@
     "defaultPrompt": [
       "Debate this implementation plan.",
       "Stress-test this architecture.",
-      "Find consensus on these tradeoffs."
+      "Research and recommend the best solution for these tradeoffs."
     ],
     "brandColor": "#0891B2"
   }

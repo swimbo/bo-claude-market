@@ -27,7 +27,7 @@ The six core plugins form a natural workflow. `bo-planner` owns phases 1–8 (pl
 | Phase | Plugin | What It Does |
 |-------|--------|-------------|
 | 1–4. Plan (early) | bo-planner | Requirements, pain point research, data map, user stories |
-| 5–6. Plan (decisions) | bo-planner + agents-argue | Architecture and tech guide drafted, then debated to consensus |
+| 5–6. Plan (decisions) | bo-planner + agents-argue | Architecture and tech guide drafted, then researched, debated, and resolved into an evidence-backed recommendation |
 | 7–8. Plan (UX/UI) | bo-planner | UX and UI plans (when user-facing) |
 | 9. Implementation | implement-bo-plan + standard-design | Parallel subagents build tasks; UI work scaffolded against the design system |
 | 10. E2E Tests | implement-bo-plan + test-everything | Strategy + generated specs from user stories |
